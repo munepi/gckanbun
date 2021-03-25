@@ -26,10 +26,10 @@
 \ifluatex
   \@ifpackageloaded{luatexja}{}{%
     \gcknbn@error{Please load package 'luatexja' when loading this package.}}
-\else\ifptex
+\else\ifuptex
   \def\zw{zw}\def\zh{zh}
 \else
-  \gcknbn@error{Currently only (u)pLaTeX and LuaLaTeX are supported.}
+  \gcknbn@error{Package 'gckanbun' currently supports upLaTeX and LuaLaTeX.}
 \fi\fi
 
 \newcommand*\gcknbn@kanjiskip@fill{%
