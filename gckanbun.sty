@@ -60,7 +60,7 @@
 \def\gcknbn@furigana@okurigana{%
   \futurelet\@let@token\gcknbn@@furigana@okurigana}
 \def\gcknbn@@furigana@okurigana{%
-    \ifx\@let@token\okurigana
+    \ifx\@let@token\gcknbn@okurigana
       \global\gcknbn@furigana@width=\wd\@ne\relax
       \dimen\z@=\wd\z@
       \smash{\hbox{%
@@ -113,7 +113,7 @@
     \else\ifx\@let@token。
       \gcknbn@okurigana@kutoten@skip
       \global\gcknbn@okurigana@width=\z@
-    \else\ifx\@let@token\kaeriten
+    \else\ifx\@let@token\gcknbn@kaeriten
       \gcknbn@okurigana@kaeriten@skip
     \fi\fi\fi
   \endgroup}
