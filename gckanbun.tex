@@ -1,0 +1,92 @@
+%#!lualatex
+\documentclass{jlreq}
+\usepackage{gckanbun}
+\usepackage{shortvrb}\MakeShortVerb{\|}
+
+\newcommand*\upLaTeX{up\kern-.05em\LaTeX}
+\newcommand*\LuaLaTeX{Lua\LaTeX}
+
+\title{\textsf{gckanbun} Package}
+\author{Munehiro Yamamoto}
+\date{2021/03/25 v1.0}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This package provides a KANBUN (漢文) typesetting for {\upLaTeX} and \LuaLaTeX.
+
+このパッケージは、{\upLaTeX}と{\LuaLaTeX}に対して漢文組みを提供します。
+\end{abstract}
+
+\section{\textsf{gckanbun}パッケージの読み込み}
+
+\textsf{gckanbun}パッケージを読み込むだけです。
+
+{\LuaLaTeX}の場合、\textsf{luatexja}パッケージをあらかじめ読み込んでおく必要があります。
+なお、\textsf{jlreq}クラスを利用すると、jlreqクラス内部で\textsf{luatexja}パッケージを読み込みます。
+
+\begin{quote}
+\begin{verbatim}
+%\usepackage{luatexja}%%<= LuaLaTeXの場合
+\usepackage[<オプション>]{gckanbun}
+\end{verbatim}
+\end{quote}
+
+利用可能なオプションは以下のとおりです。
+\begin{itemize}
+\item |prefix=<prefix>|（デフォルト値：|gckanbun|）：
+\textsf{gckanbun}パッケージが提供する3つのコマンド|\gckanbunruby|、|\gckanbunokurigana|、|\gckanbunkaeriten|をそれぞれ|\<prefix>ruby|、|\<prefix>okurigana|、|\<prefix>kaeriten|として提供します。
+\end{itemize}
+
+\section{例}
+
+以下の{\LaTeX}文章を{\LuaLaTeX}でタイプセットします。
+つまり、|lualatex|コマンドを実行します。
+
+\begin{quote}
+\small
+\begin{verbatim}
+%#!lualatex
+\documentclass[tate]{jlreq}
+\usepackage[prefix=]{gckanbun}%%=> <prefix>を「なし」としました。
+\begin{document}
+自\okurigana{リ}\kaeriten{二}桓公\kaeriten{一}八世\okurigana{ニシテ}
+至\okurigana{ル}\kaeriten{二}景公\okurigana{ニ}\kaeriten{一}。
+有\okurigana{リ}\kaeriten{二}晏子\okurigana{トイフ}者\kaeriten{一}、
+\ruby{事}{つか}\okurigana{フ}\kaeriten{レ}之\okurigana{ニ}。
+名\okurigana{ハ}嬰、\ruby{字}{あざな}\okurigana{ハ}平仲。
+以\okurigana{テ}\kaeriten{二}節倹力行\okurigana{ヲ}\kaeriten{一}
+重\okurigana{ンゼラル}\kaeriten{二}於齊\okurigana{ニ}\kaeriten{一}。
+\ruby{一}{いっ}\ruby{狐}{こ}\ruby{裘}{きゅう}三十年、
+豚肩不\kaeriten{レ}\ruby{掩}{おお}\okurigana{ハ}\kaeriten{レ}豆。
+齊國之士、待\okurigana{チテ}以\okurigana{テ}擧\okurigana{グル}\kaeriten{レ}
+火\okurigana{ヲ}者、七十餘家\okurigana{アリ}。
+\end{document}
+\end{verbatim}
+\end{quote}
+
+このとき、結果は以下のとおりです。
+
+\begin{center}
+\let\ruby\gckanbunruby
+\let\okurigana\gckanbunokurigana
+\let\kaeriten\gckanbunkaeriten
+\hbox{\tate
+\vbox to \hsize{\vfil
+\begin{minipage}{15\zw}
+自\okurigana{リ}\kaeriten{二}桓公\kaeriten{一}八世\okurigana{ニシテ}
+至\okurigana{ル}\kaeriten{二}景公\okurigana{ニ}\kaeriten{一}。
+有\okurigana{リ}\kaeriten{二}晏子\okurigana{トイフ}者\kaeriten{一}、
+\ruby{事}{つか}\okurigana{フ}\kaeriten{レ}之\okurigana{ニ}。
+名\okurigana{ハ}嬰、\ruby{字}{あざな}\okurigana{ハ}平仲。
+以\okurigana{テ}\kaeriten{二}節倹力行\okurigana{ヲ}\kaeriten{一}
+重\okurigana{ンゼラル}\kaeriten{二}於齊\okurigana{ニ}\kaeriten{一}。
+\ruby{一}{いっ}\ruby{狐}{こ}\ruby{裘}{きゅう}三十年、
+豚肩不\kaeriten{レ}\ruby{掩}{おお}\okurigana{ハ}\kaeriten{レ}豆。
+齊國之士、待\okurigana{チテ}以\okurigana{テ}擧\okurigana{グル}\kaeriten{レ}
+火\okurigana{ヲ}者、七十餘家\okurigana{アリ}。
+\end{minipage}
+\vfil}}%
+\end{center}
+
+\end{document}
