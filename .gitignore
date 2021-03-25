@@ -1,0 +1,33 @@
+## OS X
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+## Thumbnails
+._*
+
+## Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+/tmp/*
+*~
+!*.pdf
+*.xbb
+*.ps
+*.dvi
+*.out
+*.aux
+*.log
+*.synctex.*
+
+extras/
+
+test-*.pdf
+
+Work/*
+
+## CTAN upload archive
+gckanbun.tds.zip
+gckanbun.zip
