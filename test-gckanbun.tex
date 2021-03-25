@@ -1,0 +1,177 @@
+%% https://gist.github.com/munepi/5c9e53936e3540b8374b4ab14e6b7832
+%#!lualatex
+% #!ptex2pdf -l -u
+\documentclass[paper=a5,tate]{jlreq}
+%\usepackage{gckanbun}%%=> provides \gckanbunruby, \gckanbunokurigana, \gckanbunkaeriten as default
+\usepackage[prefix=]{gckanbun}%%=> provides \ruby, \okurigana, \kaeriten
+%\usepackage[prefix=kanbun]{gckanbun}%%=> provides \kanbunruby, \kanbunokurigana, \kanbunkaeriten
+
+\newcommand*{\onelineskip}{\par\vspace{\baselineskip}\par}
+\begin{document}
+【訓点（返り点・訓点送り仮名）】
+
+% Tateten（縦点）
+% Unicode	表示	名称	備考
+U+3190	㆐	%IDEOGRAPHIC ANNOTATION LINKING MARK
+
+% Kaeriten（返り点）
+% Unicode	表示	名称	備考
+U+3191	㆑	%IDEOGRAPHIC ANNOTATION REVERSE MARK
+U+3192	㆒	%IDEOGRAPHIC ANNOTATION ONE MARK
+U+3193	㆓	%IDEOGRAPHIC ANNOTATION TWO MARK
+U+3194	㆔	%IDEOGRAPHIC ANNOTATION THREE MARK
+U+3195	㆕	%IDEOGRAPHIC ANNOTATION FOUR MARK
+U+3196	㆖	%IDEOGRAPHIC ANNOTATION TOP MARK
+U+3197	㆗	%IDEOGRAPHIC ANNOTATION MIDDLE MARK
+U+3198	㆘	%IDEOGRAPHIC ANNOTATION BOTTOM MARK
+U+3199	㆙	%IDEOGRAPHIC ANNOTATION FIRST MARK
+U+319A	㆚	%IDEOGRAPHIC ANNOTATION SECOND MARK
+U+319B	㆛	%IDEOGRAPHIC ANNOTATION THIRD MARK
+U+319C	㆜	%IDEOGRAPHIC ANNOTATION FOURTH MARK
+U+319D	㆝	%IDEOGRAPHIC ANNOTATION HEAVEN MARK
+U+319E	㆞	%IDEOGRAPHIC ANNOTATION EARTH MARK
+U+319F	㆟	%IDEOGRAPHIC ANNOTATION MAN MARK
+
+%% 以下のサンプルは、青空文庫の訓点 https://www.aozora.gr.jp/annotation/kunten.html を元にしています。
+［返り点］
+% 自［＃二］女王國［＃一］東度［＃レ］海千餘里。
+
+①
+自\kaeriten{㆓}女王國\kaeriten{㆒}東度\kaeriten{㆑}海千餘里。
+
+②レ点とその他の返り点が組み合わさっている場合
+% 見［＃二］大人所［＃一レ］敬。
+
+見\kaeriten{㆓}大人所\kaeriten{㆒㆑}敬。
+
+③竪点と返り点の記載順
+% 而敬‐［＃二］祭天神地祇［＃一］。
+
+而敬\kaeriten-{㆓}祭天神地祇\kaeriten{㆒}。
+而敬\kaeriten‐{㆓}祭天神地祇\kaeriten{㆒}。
+
+［訓点送り仮名］
+% 山城［＃（ノ）］國久世［＃（ノ）］郡水主［＃（ニ）］坐［＃（ス）］山背［＃（ノ）］大國魂命［＃（ノ）］神、
+
+①
+山城\okurigana{ノ}國久世\okurigana{ノ}郡水主\okurigana{ニ}坐\okurigana{ス}山背\okurigana{ノ}大國魂命\okurigana{ノ}神、
+
+②訓点送り仮名として、漢字（万葉仮名）が用いられている場合
+% 爾時倭姫命見悦給［＃（弖）］、其處［＃（爾）］魚見社定賜［＃（支）］とあり。
+
+爾時倭姫命見悦給\okurigana{弖}、其處\okurigana{爾}魚見社定賜\okurigana{支}とあり。
+
+［返り点と訓点送り仮名の混在］
+% 噛［＃（テ）］［＃二］古人貧交行［＃（ノ）］之詩［＃（ヲ）］［＃一］吐［＃（テ）］而戯序［＃（ス）］
+
+噛\okurigana{テ}\kaeriten{㆓}古人貧交行\okurigana{ノ}之詩\okurigana{ヲ}\kaeriten{㆒}吐\okurigana{テ}而戯序\okurigana{ス}
+
+［例］
+\ruby{一}{いっ}\ruby{狐}{こ}\ruby{裘}{きゅう}三十年
+
+自\okurigana{リ}\kaeriten{二}
+桓公\kaeriten{一}
+八世\okurigana{ニシテ}
+至\okurigana{ル}\kaeriten{二}
+景公\okurigana{ニ}\kaeriten{一}。
+有\okurigana{リ}\kaeriten{二}
+晏
+子\okurigana{トイフ}
+者\kaeriten{一}、
+\ruby{事}{つか}\okurigana{フ}\kaeriten{レ}
+之\okurigana{ニ}。
+名\okurigana{ハ}
+嬰、
+\ruby{字}{あざな}\okurigana{ハ}平仲。
+以\okurigana{テ}\kaeriten{二}
+節倹力
+行\okurigana{ヲ}\kaeriten{一}
+重\okurigana{ンゼラル}\kaeriten{二}
+於
+齊\okurigana{ニ}\kaeriten{一}。
+\ruby{一}{いっ}
+\ruby{狐}{こ}
+\ruby{裘}{きゅう}
+三十年、豚肩
+不\kaeriten{レ}
+\ruby{掩}{おお}\okurigana{ハ}\kaeriten{レ}
+豆。齊國之士、
+待\okurigana{チテ}
+以\okurigana{テ}
+擧\okurigana{グル}\kaeriten{レ}
+火\okurigana{ヲ}
+者、七十餘家\okurigana{アリ}。
+
+晏子
+出\okurigana{ヅ}。
+其\okurigana{ノ}御之妻、
+従\okurigana{リ}\kaeriten{二}
+門間\kaeriten{一}
+窺\okurigana{ヘバ}、
+其\okurigana{ノ}夫
+擁\okurigana{シ}\kaeriten{二}
+大蓋\okurigana{ヲ}\kaeriten{一}、
+\ruby{策}{むちう}\okurigana{チ}\kaeriten{二}
+駟馬\okurigana{ヲ}\kaeriten{一}、
+意気揚揚\okurigana{トシテ}
+自得\okurigana{ス}。
+既\okurigana{ニシテ}而
+帰\okurigana{ル}。
+妻請\okurigana{ヒテ}\kaeriten{レ}
+去\okurigana{ランコトヲ}
+曰\okurigana{ハク}、
+「晏子\okurigana{ハ}
+身相\okurigana{トシテ}\kaeriten{二}
+齊國\okurigana{ニ}\kaeriten{一}、
+名顯\okurigana{ハル}\kaeriten{二}
+諸侯\okurigana{ニ}\kaeriten{一}。
+観\okurigana{ルニ}\kaeriten{二}
+其\okurigana{ノ}
+志\okurigana{ヲ}\kaeriten{一}、
+\ruby{嘗}{つね}\okurigana{ニ}
+有\okurigana{リ}\kaeriten{二}
+以\okurigana{テ}
+自\okurigana{ラ}
+下\okurigana{ルコト}\kaeriten{一}。
+子\okurigana{ハ}
+為\okurigana{リテ}\kaeriten{二}
+人\okurigana{ノ}
+僕御\okurigana{ト}\kaeriten{一}、
+自\okurigana{ラ}
+以\okurigana{テ}
+為\okurigana{ス}\kaeriten{レ}
+足\okurigana{レリト}。
+妾是\okurigana{ヲ}
+以\okurigana{テ}
+求\okurigana{ムル}\kaeriten{レ}
+去\okurigana{ランコトヲ}
+也\okurigana{ト}。」
+御者\ruby{乃}{すなわ}\okurigana{チ}
+自\okurigana{ラ}
+抑損\okurigana{ス}。
+晏子
+怪\okurigana{ミテ}
+而問\okurigana{フ}\kaeriten{レ}
+之\okurigana{ヲ}。
+以\okurigana{テ}\kaeriten{レ}
+實\okurigana{ヲ}
+\ruby{対}{こた}\okurigana{フ}。
+薦\okurigana{メテ}
+為\okurigana{セリ}\kaeriten{二}
+大夫\okurigana{ト}\kaeriten{一}。
+
+\onelineskip
+
+漢文に対するふりがなは、モノルビ仕様です。
+例えば、「\ruby{母}{ぼ}\ruby{字}{じ}\okurigana{ト}」。
+漢文に対するふりがなをグループルビとすると、
+「\ruby{母字}{ぼじ}\okurigana{ト}」となり、正しく組版されません。
+
+\ruby{□}{ふ}\okurigana{オクリガナ}\kaeriten{一レ}
+\ruby{□}{ふり}\okurigana{オクリガナ}\kaeriten{一レ}
+□\okurigana{オクリ}\kaeriten{一レ}。
+□\okurigana{ランコトヲ}\kaeriten{一}□□□□□
+□\okurigana{ト}\kaeriten{二}、□□□□□
+□\okurigana{ト}\kaeriten{三}。
+
+\end{document}

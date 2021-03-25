@@ -1,0 +1,182 @@
+% #!lualatex test-gckanbun
+%#!ptex2pdf -l -u test-gckanbun
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{gckanbun}
+  [2021/03/25 v0.3 KANBUN typesetting package (Green Cherry Ltd.)]
+
+%% declare package errors
+\def\gcknbn@error{\PackageError{gckanbun}}
+\def\gcknbn@warning{\PackageWarning{gckanbun}}
+\def\gcknbn@warningnoline{\PackageWarningNoLine{gckanbun}}
+\def\gcknbn@info{\PackageInfo{gckanbun}}
+
+\RequirePackage{keyval}
+\DeclareOption*{\gcknbn@setkey}
+\def\gcknbn@setkey{\expandafter\@gcknbn@setkey\expandafter{\CurrentOption}}
+\def\@gcknbn@setkey{\setkeys{gcknbn}}
+\def\gcknbn@prefix{gckanbun}%%given prefix for each commads
+\define@key{gcknbn}{prefix}{\gdef\gcknbn@prefix{#1}}
+
+\ExecuteOptions{prefix}
+\ProcessOptions\relax
+
+%% auto-detect engine
+\RequirePackage{ifuptex}
+\RequirePackage{ifluatex}
+\ifluatex
+  \@ifpackageloaded{luatexja}{}{%
+    \gcknbn@error{Please load package 'luatexja' when loading this package.}}
+\else\ifptex
+  \def\zw{zw}\def\zh{zh}
+\else
+  \gcknbn@error{Currently only (u)pLaTeX and LuaLaTeX are supported.}
+\fi\fi
+
+\newcommand*\gcknbn@kanjiskip@fill{%
+  \ifluatex
+    \ltjsetparameter{kanjiskip=\fill}%
+  \else
+    \kanjiskip=\fill\relax
+  \fi
+}
+
+%% ルビ
+%%  * グループルビ
+%%  * 漢文訓点に対するふりがな（モノルビ）
+\let\gcknbn@rubybox@text\relax
+\newdimen\gcknbn@rubybox@width
+\newdimen\gcknbn@furigana@width \gcknbn@furigana@width\z@
+\newdimen\gcknbn@dima
+\DeclareRobustCommand*\gcknbn@ruby[2]{%
+  \leavevmode% \setbox0=\hbox{#1}\setbox1=\hbox{\tiny#2}%
+  \begingroup
+    \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@
+    \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
+    \setbox\z@=\hbox{#1}\setbox\@ne=\hbox{\tiny#2}%
+    \gdef\gcknbn@rubybox@text{#2}%
+    \global\gcknbn@rubybox@width=\wd\z@\relax
+    \gcknbn@furigana@okurigana}
+
+\def\gcknbn@furigana@okurigana{%
+  \futurelet\@let@token\gcknbn@@furigana@okurigana}
+\def\gcknbn@@furigana@okurigana{%
+    \ifx\@let@token\okurigana
+      \global\gcknbn@furigana@width=\wd\@ne\relax
+      \dimen\z@=\wd\z@
+      \smash{\hbox{%
+        \vbox{\hbox to \dimen\z@{\box\@ne\hss}%
+          \nointerlineskip\hbox to \dimen\z@{\hfil\box\z@\hfil}}}}%
+    \else
+      \ifdim\wd\z@>\wd\@ne\dimen\z@=\wd\z@\else\dimen\z@=\wd\@ne\fi
+      \penalty\@lowpenalty
+      \smash{\hbox{\gcknbn@kanjiskip@fill
+        \vbox{\hbox to \dimen\z@{\tiny\hfil\gcknbn@rubybox@text\hfil}%
+          \nointerlineskip\hbox to \dimen\z@{\hfil\box\z@\hfil}}}}%
+    \fi
+  \endgroup}
+
+%% 訓点
+\newdimen\gcknbn@okurigana@width \gcknbn@okurigana@width\z@
+\newdimen\gcknbn@kaeriten@width \gcknbn@kaeriten@width\z@
+%%訓点送り仮名
+\newcommand*\gcknbn@okurigana[1]{%
+  \nobreak\leavevmode
+  \begingroup
+    \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@
+    \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
+    \setbox\z@=\hbox{\tiny #1}%
+    \ifdim\gcknbn@furigana@width>0.9999\zw\relax
+      \global\gcknbn@okurigana@width=\dimexpr\gcknbn@furigana@width + \wd\z@ - 1\zw\relax
+    \else
+      \global\gcknbn@okurigana@width=\dimexpr\wd\z@ - .5\zw\relax
+    \fi
+    \smash{\hbox{%
+      \vbox{\hbox to \gcknbn@okurigana@width{%
+        \ifdim\gcknbn@furigana@width>0.9999\zw\relax
+          \hspace*{\dimexpr\gcknbn@furigana@width - 1\zw\relax}%
+        \else
+          \hspace*{-.5\zw}%
+        \fi
+        \box\z@}%
+        \nointerlineskip
+        \hbox to \gcknbn@okurigana@width{\hfil\vphantom{\char\euc"A1A1%"
+          }\hfil}}}}%
+    \global\gcknbn@furigana@width=\z@\relax
+    \gcknbn@okurigana@kaeriten}
+
+\def\gcknbn@okurigana@kaeriten{%
+  \futurelet\@let@token\gcknbn@@okurigana@kaeriten}
+\def\gcknbn@@okurigana@kaeriten{%
+    \ifx\@let@token、
+      \gcknbn@okurigana@kutoten@skip
+      \global\gcknbn@okurigana@width=\z@
+    \else\ifx\@let@token。
+      \gcknbn@okurigana@kutoten@skip
+      \global\gcknbn@okurigana@width=\z@
+    \else\ifx\@let@token\kaeriten
+      \gcknbn@okurigana@kaeriten@skip
+    \fi\fi\fi
+  \endgroup}
+\def\gcknbn@okurigana@kutoten@skip{%
+  \hspace*{-\gcknbn@okurigana@width}}
+\def\gcknbn@okurigana@kaeriten@skip{%
+  \hspace*{-\gcknbn@okurigana@width}}
+
+%%訓点返り点
+\newcommand*\gcknbn@kaeriten{%
+  \@ifnextchar-{\gcknbn@tateten@kaeriten@hh}{%
+  \@ifnextchar‐{\gcknbn@tateten@kaeriten@zh}{%
+    \gcknbn@@kaeriten}}}
+
+\newcommand*\gcknbn@@kaeriten[1]{%
+  \nobreak\leavevmode
+  \begingroup
+    \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@
+    \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
+    \setbox\z@=\hbox{\tiny #1}%
+    \global\gcknbn@kaeriten@width=\wd\z@\relax
+    \smash{\lower.25\zw\hbox{\box\z@\hss}}%
+  \endgroup\gcknbn@kaeriten@kutoten}
+
+\def\gcknbn@kaeriten@kutoten{\futurelet\@let@token\gcknbn@@kaeriten@kutoten}
+\def\gcknbn@@kaeriten@kutoten{%
+  \ifx\@let@token、
+    \gcknbn@kaeriten@kutoten@skip
+    \global\gcknbn@kaeriten@width=\z@
+  \else\ifx\@let@token。
+    \gcknbn@kaeriten@kutoten@skip
+    \global\gcknbn@kaeriten@width=\z@
+  \else
+    \gcknbn@kaeriten@okurigana@skip
+  \fi\fi
+}
+\def\gcknbn@kaeriten@kutoten@skip{%
+  \hspace*{-\gcknbn@kaeriten@width}%
+}
+\def\gcknbn@kaeriten@okurigana@skip{%
+  \ifdim\gcknbn@okurigana@width>\gcknbn@kaeriten@width
+    \hspace*{\dimexpr\gcknbn@okurigana@width - \gcknbn@kaeriten@width}%
+  \fi
+}
+
+\def\gcknbn@tateten@kaeriten@hh-{\gcknbn@@tateten@kaeriten}
+\def\gcknbn@tateten@kaeriten@zh‐{\gcknbn@@tateten@kaeriten}
+\newcommand*\gcknbn@@tateten@kaeriten[1]{%
+  \nobreak\leavevmode
+  \begingroup
+    \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@
+    \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
+    \setbox\z@=\hbox{\tiny\char"3190}%"
+    \global\gcknbn@kaeriten@width=\wd\z@\relax
+    \smash{\lower.35\zw\hbox{%
+    \vbox{\hbox to \gcknbn@kaeriten@width{\hfil\box\z@\hfil}%
+    \vspace*{-.1\zw}%
+    \nointerlineskip\hbox to \gcknbn@kaeriten@width{\tiny\hfil#1\hfil}}}}%
+  \endgroup}
+
+%% Finaly, provide \<prefix>ruby, \<prefix>okurigana, \<prefix>kaeriten
+\expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby
+\expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana
+\expandafter\let\csname\gcknbn@prefix kaeriten\endcsname\gcknbn@kaeriten
+
+\endinput
