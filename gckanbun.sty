@@ -1,5 +1,6 @@
-% #!lualatex test-gckanbun
-%#!ptex2pdf -l -u test-gckanbun
+%#!lualatex test-gckanbun
+% #!ptex2pdf -l -u test-gckanbun
+% #!ptex2pdf -l test-gckanbun
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{gckanbun}
   [2021/03/25 v1.1 KANBUN typesetting package (Green Cherry Ltd.)]
@@ -14,7 +15,7 @@
 \DeclareOption*{\gcknbn@setkey}
 \def\gcknbn@setkey{\expandafter\@gcknbn@setkey\expandafter{\CurrentOption}}
 \def\@gcknbn@setkey{\setkeys{gcknbn}}
-\def\gcknbn@prefix{gckanbun}%%given prefix for each commads
+\def\gcknbn@prefix{gckanbun}%%given <prefix> for each commands
 \define@key{gcknbn}{prefix}{\gdef\gcknbn@prefix{#1}}
 
 \ExecuteOptions{prefix}
@@ -28,9 +29,11 @@
     \gcknbn@error{Please load package 'luatexja' when loading this package.}}
 \else\ifuptex
   \def\zw{zw}\def\zh{zh}
+\else\ifptex
+  \def\zw{zw}\def\zh{zh}
 \else
-  \gcknbn@error{Package 'gckanbun' currently supports upLaTeX and LuaLaTeX.}
-\fi\fi
+  \gcknbn@error{Package 'gckanbun' currently supports (u)pLaTeX and LuaLaTeX.}
+\fi\fi\fi
 
 \newcommand*\gcknbn@kanjiskip@fill{%
   \ifluatex
