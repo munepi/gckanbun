@@ -2,7 +2,7 @@
 % #!ptex2pdf -l -u
 %#!ptex2pdf -l
 \documentclass{jlreq}\listfiles
-\usepackage{gckanbun}
+\usepackage[prefix=]{gckanbun}%%=> <prefix>=(empty)
 \usepackage{shortvrb}\MakeShortVerb{\|}
 
 \newcommand*\pLaTeX{p\kern-.05em\LaTeX}
@@ -26,7 +26,7 @@ This package provides a KANBUN (漢文) typesetting for (u){\pLaTeX} and \LuaLaT
 \textsf{gckanbun}パッケージを読み込むだけです。
 
 {\LuaLaTeX}の場合、\textsf{luatexja}パッケージをあらかじめ読み込んでおく必要があります。
-なお、\textsf{jlreq}クラスを利用すると、jlreqクラス内部で\textsf{luatexja}パッケージを読み込みます。
+なお、\textsf{jlreq}クラスを利用すると、\textsf{jlreq}クラス内部で\textsf{luatexja}パッケージを読み込みます。
 
 \begin{quote}
 \begin{verbatim}
@@ -39,6 +39,8 @@ This package provides a KANBUN (漢文) typesetting for (u){\pLaTeX} and \LuaLaT
 \begin{itemize}
 \item |prefix=<prefix>|（デフォルト値：|gckanbun|）：
 \textsf{gckanbun}パッケージが提供する3つのコマンド|\gckanbunruby|、|\gckanbunokurigana|、|\gckanbunkaeriten|をそれぞれ|\<prefix>ruby|、|\<prefix>okurigana|、|\<prefix>kaeriten|として提供します。
+
+このオプションにより、他のパッケージで提供されるルビ振りコマンド|\ruby|との衝突を避けられます。
 \end{itemize}
 
 \section{例}
@@ -71,9 +73,6 @@ This package provides a KANBUN (漢文) typesetting for (u){\pLaTeX} and \LuaLaT
 このとき、結果は以下のとおりです。
 
 \begin{center}
-\let\ruby\gckanbunruby
-\let\okurigana\gckanbunokurigana
-\let\kaeriten\gckanbunkaeriten
 \hbox{\tate
 \vbox to \hsize{\vfil
 \begin{minipage}{15\zw}
