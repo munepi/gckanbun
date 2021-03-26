@@ -1,8 +1,8 @@
 # gckanbun Package
 
-KANBUN ("Chinese writing") typesetting for upLaTeX and LuaLaTeX
+KANBUN ("Chinese writing") typesetting for (u)pLaTeX and LuaLaTeX
 
-This package provides a KANBUN (漢文, "Chinese writing") typesetting for upLaTeX and LuaLaTeX.
+This package provides a KANBUN (漢文, "Chinese writing") typesetting for (u)pLaTeX and LuaLaTeX.
 
 ## Requirements
 

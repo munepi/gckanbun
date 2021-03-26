@@ -1,8 +1,11 @@
-%#!lualatex
-\documentclass{jlreq}
+% #!lualatex
+% #!ptex2pdf -l -u
+%#!ptex2pdf -l
+\documentclass{jlreq}\listfiles
 \usepackage{gckanbun}
 \usepackage{shortvrb}\MakeShortVerb{\|}
 
+\newcommand*\pLaTeX{p\kern-.05em\LaTeX}
 \newcommand*\upLaTeX{up\kern-.05em\LaTeX}
 \newcommand*\LuaLaTeX{Lua\LaTeX}
 
@@ -13,9 +16,9 @@
 \maketitle
 
 \begin{abstract}
-This package provides a KANBUN (漢文) typesetting for {\upLaTeX} and \LuaLaTeX.
+This package provides a KANBUN (漢文) typesetting for (u){\pLaTeX} and \LuaLaTeX.
 
-このパッケージは、{\upLaTeX}と{\LuaLaTeX}に対して漢文組みを提供します。
+このパッケージは、(u){\pLaTeX}と{\LuaLaTeX}に対して漢文組みを提供します。
 \end{abstract}
 
 \section{\textsf{gckanbun}パッケージの読み込み}
