@@ -46,6 +46,17 @@
   \gcknbn@error{Package 'gckanbun' currently supports (u)pLaTeX and LuaLaTeX.}
 \fi\fi\fi
 
+%% 縦書き判定
+\newif\ifgcknbn@tdir \gcknbn@tdirfalse
+\@ifundefined{iftdir}{\let\iftdir\iffalse}\relax
+\ifluatex
+  \ifnum\ltjgetparameter{direction}=3
+    \gcknbn@tdirtrue
+  \fi
+\else\iftdir
+  \gcknbn@tdirtrue
+\fi\fi
+
 \newcommand*\gcknbn@kanjiskip@fill{%
   \ifluatex
     \ltjsetparameter{kanjiskip=\fill}%
