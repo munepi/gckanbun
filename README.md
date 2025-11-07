@@ -17,7 +17,6 @@ Copy: `gckanbun.sty` -> `$TEXMF/tex/latex/gckanbun/`
 
 ## Other kanbun-kundoku (漢文訓読) LaTeX packages such as `gckanbun`
 
-* [kkkanbun](https://github.com/KKTeX/kkkanbun): An implementation of the `gckanbun` package
 * [kanbun](https://github.com/yuanhao-chen-nyoeghau/kanbun)
 
 
