@@ -1,207 +1,589 @@
-%#!lualatex test-gckanbun
-% #!ptex2pdf -l -u test-gckanbun
-% #!ptex2pdf -l test-gckanbun
-%%
-%% This is file 'gckanbun.sty'.
-%%
-%% Copyright (c) 2017-2025 Munehiro Yamamoto
-%%
-%%   * e-mail:   munepixyz@gmail.com
-%%   * GitHub:   https://github.com/munepi
-%%   * Twitter:  @munepixyz
-%%
-%% This package is licensed under the terms of the MIT License.
-%%
-\NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{gckanbun}
-  [2025/11/04 v1.3 KANBUN typesetting package (Green Cherry Ltd.)]
+\documentclass[luatex,fontsize=8pt,paper=b5,fleqn]{jlreq}
+\usepackage{hyperref}
+\usepackage{gckanbun}
+\usepackage{luwa-ul}
+\usepackage{caption}
+\usepackage[most]{tcolorbox}
+\usepackage{fp}
+\usepackage{lltjext}
+\usepackage{luatexja-ruby}
+\usepackage{KKsymbols}
 
-%% declare package errors
-\def\gcknbn@error{\PackageError{gckanbun}}
-\def\gcknbn@warning{\PackageWarning{gckanbun}}
-\def\gcknbn@warningnoline{\PackageWarningNoLine{gckanbun}}
-\def\gcknbn@info{\PackageInfo{gckanbun}}
+% You can omit these font settings.
+\RequirePackage[no-math]{fontspec}
+\RequirePackage[no-math,match,scale=1]{luatexja-fontspec}
+\RequirePackage[hiragino-pro,deluxe,expert]{luatexja-preset}
+\setmainfont{HiraMinPro-W3}[BoldFont=HiraMinPro-W6]\setmainjfont{HiraMinPro-W3}[BoldFont=HiraMinPro-W6]
+\renewfontfamily{\sffamily}{HiraKakuPro-W3}[BoldFont=HiraKakuPro-W6]
+\renewfontfamily{\mcfamily}{HiraMinPro-W3}[BoldFont=HiraMinPro-W6]
+\renewfontfamily{\gtfamily}{HiraKakuPro-W3}[BoldFont=HiraKakuPro-W6]
+\providefontfamily{\mgfamily}{HiraMaruPro-W4}
+\newfontfamily{\sfhira}{HiraKakuPro-W3}[BoldFont=HiraKakuPro-W6]\newjfontfamily{\sfhiraj}{HiraKakuPro-W3}[BoldFont=HiraKakuPro-W6]
+\newfontfamily{\mchira}{HiraMinPro-W3}[BoldFont=HiraMinPro-W6]\newjfontfamily{\mchiraj}{HiraMinPro-W3}[BoldFont=HiraMinPro-W6]
+\newfontfamily{\gthira}{HiraKakuPro-W3}[BoldFont=HiraKakuPro-W6,FontFace={eb}{\shapedefault}{HiraKakuStd-W8}]\newjfontfamily{\gthiraj}{HiraKakuPro-W3}[BoldFont=HiraKakuPro-W6,FontFace={eb}{\shapedefault}{HiraKakuStd-W8}]
+\newfontfamily{\mghira}{HiraMaruPro-W4}\newjfontfamily{\mghiraj}{HiraMaruPro-W4}
+\renewcommand{\sffamily}{\sfhira\sfhiraj}
+\renewcommand{\mcfamily}{\mchira\mchiraj}
+\renewcommand{\gtfamily}{\gthira\gthiraj}
+\renewcommand{\mgfamily}{\mghira\mghiraj}
+%%%
 
-\RequirePackage{keyval}
-\DeclareOption*{\gcknbn@setkey}
-\def\gcknbn@setkey{\expandafter\@gcknbn@setkey\expandafter{\CurrentOption}}
-\def\@gcknbn@setkey{\setkeys{gcknbn}}
-\def\gcknbn@prefix{gckanbun}%%given <prefix> for each commands
-\define@key{gcknbn}{prefix}{\gdef\gcknbn@prefix{#1}}
+\usepackage{listings}
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    breaklines=true,
+    breakatwhitespace=false,  
+    columns=flexible           
+}
 
-\ExecuteOptions{prefix}
-\ProcessOptions\relax
 
-%% auto-detect engine
-\RequirePackage{ifuptex}
-\RequirePackage{ifluatex}
-\ifluatex
-  \@ifpackageloaded{luatexja}{}{%
-    \gcknbn@error{Please load package 'luatexja' when loading this package.}}
-\else\ifuptex
-  \def\zw{zw}\def\zh{zh}
-\else\ifptex
-  \def\zw{zw}\def\zh{zh}
-\else
-  \gcknbn@error{Package 'gckanbun' currently supports (u)pLaTeX and LuaLaTeX.}
-\fi\fi\fi
+\usepackage{hyperref} 
+\hypersetup{
+  luatex, pdfencoding=auto, 
+  colorlinks=true,
+  linkcolor=black,     
+  citecolor=black,     
+  urlcolor=DeepSkyBlue3,      
+  pdfborder={0 0 0}, 
+}
 
-%% 縦書き判定
-\newif\ifgcknbn@tdir \gcknbn@tdirfalse
-\@ifundefined{iftdir}{\let\iftdir\iffalse}\relax
-\ifluatex
-  \ifnum\ltjgetparameter{direction}=3
-    \gcknbn@tdirtrue
-  \fi
-\else\iftdir
-  \gcknbn@tdirtrue
-\fi\fi
+\colorlet{grayLight}{white!80!black} 
 
-\newcommand*\gcknbn@kanjiskip@fill{%
+\NewTCBListing{SourceCode}{ m m !o !O{DeepSkyBlue3} }{%
+  enhanced, colback=black!70, colframe=Snow4,
+  toptitle=-1mm, bottomtitle=-1mm,
+  righttitle=-1mm, lefttitle=-1mm,
+  arc=.5mm, 
+  title={\tcbox[on line, arc=.5mm, boxsep=0pt, boxrule=0pt, top=1mm, bottom=0.8mm, left=2mm, right=2.2mm, colback=gray!80, coltext=white]{\raisebox{-0.1ex}{\vphantom{羅}\vphantom{j}#1}}},fonttitle=\gtfamily\footnotesize,boxrule=0.8pt,
+  breakable,before upper={\color{white}},top=-0.5mm,bottom=-0.5mm,
+  after title=\IfNoValueTF{#3}{}{{\hfill\tcbox[on line, arc=.5mm, boxsep=0pt, boxrule=0pt, top=1mm, bottom=0.8mm, left=2mm, right=2.2mm, colback=white!80!black, coltext=#4]{\raisebox{-0.1ex}{\vphantom{羅}\vphantom{j}#3}}}},
+  listing only,
+  listing options={
+    language={#2},
+    basicstyle=\ttfamily,
+    keywordstyle=\ttfamily\color{white},
+    stringstyle=\itshape\color{white},
+    commentstyle=\small\gtfamily\color{DeepSkyBlue2},
+    showspaces=false,showtabs=false,
+    breaklines=true,breakindent=0pt,
+    showstringspaces=false,
+    columns=fullflexible,
+    tabsize=2,
+    numbers=left,numbersep=1.5pt,
+    numberstyle=\scriptsize\gtfamily\color{gray},
+  }
+}
+
+\NewTColorBox{OutPut}{ m !o !O{DeepSkyBlue3} }{%
+  enhanced, colframe=Snow4,
+  toptitle=-1mm, bottomtitle=-1mm,
+  righttitle=-1mm, lefttitle=-1mm,
+  arc=.5mm, colback=white, 
+  title={\tcbox[on line, arc=.5mm, boxsep=0pt, boxrule=0pt, top=1mm, bottom=0.8mm, left=2mm, right=2.2mm, colback=gray!40, coltext=DeepSkyBlue3]{\raisebox{-0.1ex}{\vphantom{羅}\vphantom{j}#1}}},fonttitle=\gtfamily\footnotesize,boxrule=0.8pt,
+  breakable,top=-0.5mm,bottom=-0.5mm,
+  after title=\IfNoValueTF{#2}{}{{\hfill\tcbox[on line, arc=.5mm, boxsep=0pt, boxrule=0pt, top=1mm, bottom=0.8mm, left=2mm, right=2.2mm, colback=white!80!black, coltext=#3]{\raisebox{-0.1ex}{\vphantom{羅}\vphantom{j}#2}}}}, bottom=2mm, top=2mm, 
+}
+
+
+\makeatletter
+              \RequirePackage{luatexja}
+              \def\ascb@textgt#1{\textgt{#1}}
+              \def\ascb@gtfamily{\gtfamily}
+              \def\ascb@zw#1#2{#1\zw}
+
+\DeclareTColorBox{simple}{ o m O{.5} O{} }% 
+{empty, left=2mm, right=2mm, top=-1mm, attach boxed title to top left={xshift=\ascb@zw{1.2}{11pt}}, boxed title style={empty,left=-2mm,right=-2mm}, colframe=black, coltitle=black, coltext=black, breakable, 
+before upper={\setlength{\parindent}{1em}\relax},
+underlay unbroken={\draw[black,line width=#3pt](title.east) -- (title.east-|frame.east) -- (frame.south east) -- (frame.south west) -- (title.west-|frame.west) -- (title.west); },
+underlay first={\draw[black,line width=#3pt](title.east) -- (title.east-|frame.east) -- (frame.south east) ;
+\draw[black,line width=#3pt] (frame.south west) -- (title.west-|frame.west) -- (title.west); },
+underlay middle={\draw[black,line width=#3pt](frame.north east) -- (frame.south east) ;
+\draw[black,line width=#3pt](frame.south west) -- (frame.north west) ;},
+underlay last={\draw[black,line width=#3pt](frame.north east) -- (frame.south east) -- (frame.south west) -- (frame.north west) ;},
+fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hspace*{.1em}}{title=\hspace*{.1em}【#2】\hspace*{.1em}},#4}
+\makeatother
+
+\title{\texttt{gckanbun} Package Documentation (Reworked)}
+\author{%
+\parbox[r]{7cm}{%
+  Modified ver. : Kawaguchi a.k.a. KKTeX\\
+  Original ver. : Munehiro Yamamoto
+}}
+\date{Version 2.0.0 (2025/11/04)}
+
+
+\begin{document}
+\begin{titlepage}
+  \maketitle
+\end{titlepage}
+\newpage
+\tableofcontents
+\newpage
+
+\section{参考元のパッケージ}
+本パッケージはgckanbunパッケージを、より日本における漢文組版において品質を担保できるように改変したものです。オリジナルの作者様である山本宗宏（Munehiro Yamamoto）さんとの協議により、gckanbunパッケージを従来通り読み込んだ場合に実質的にこのパッケージが読み込まれることになります。
+
+gckanbunはそのルビや返り点の制御構造において非常に優れていたため、大枠はオリジナルのそれを踏襲し、必要最低限の拡張及び変更にとどめています。また、gckanbunパッケージに関する山本さんの記事として、
+\begin{quotation}
+  \url{https://qiita.com/munepi/items/5e6ac49fa5c025123305}
+\end{quotation}
+\noindent もぜひご参照ください。
+
+\section{変更点}
+私は本パッケージを作成するにあたり、既存のgckanbunパッケージを以下を満たすように改変しました。
+
+\begin{itemize}
+  \item[\seihou{1}] \hspace{1em}再読文字に対応するコマンドの提供。
+  \item[\seihou{2}] \hspace{1em}横書き環境でも正しく動くようにする。
+  \item[\seihou{3}] \hspace{1em}一レ点などの特別な返り点に対処するためのコマンドを提供する。
+  \item[\seihou{4}] \hspace{1em}行間に対してルビの「大きさ」が反映されるように変更。（それに伴い、オリジナルで生じていた文字サイズ変更に伴うルビと本文の被りが生じる問題を解消。）
+  \item[\seihou{5}] \hspace{1em}筆者の作成した（TeX Live にも収録されている）luwa-ul パッケージと併用し易い仕様にする。
+\end{itemize}
+
+\section{設置・依存性}
+\subsection{読み込み}
+適切な場所に\texttt{gckanbun.sty}のファイルを設置し、\verb|\usepackage{gckanbun}|とかけば読み込みは完了です。
+
+本パッケージでは、オリジナルの仕様を引き継ぐ形で、\namiKK{\texttt{luatexja}を事前に読み込んでおくことが必須}となるため注意が必要です。ただし、jlreqクラスを仕様する場合は内部的に読み込まれるため、再度読み込む必要はありません。
+
+\subsection{オプション}
+パッケージオプションは\verb|prefix=<prefix>|（デフォルト値：\verb|gckanbun|）となっていて、\texttt{gckanbun}パッケージが提供する3つのコマンド\verb|\gckanbunruby|、\verb|\gckanbunokurigana|、\verb|\gckanbunkaeriten| をそれぞれ\verb|<prefix>ruby|、\verb|<prefix>okurigana|、\verb|<prefix>kaeriten| として提供します。このオプションにより、他のパッケージで提供されるルビ振りコマンド \verb|\ruby| との衝突を避けられます。
+
+\namiKK{以下の説明においては、\texttt{prefix}を空白として指定したものと仮定してコマンド名を表記しています。必要に応じて補って読んでください。}
+
+\section{各種コマンド}
+\subsection{概観}
+漢文組版において必要十分であるコマンドは、
+
+\begin{itemize}
+  \item 返り点
+  \item 振り仮名
+  \item 送り仮名
+  \item 再読振り仮名
+  \item 再読送り仮名
+  \item 一レ点、上レ点、甲レ点、天レ点
+  \item ハイフン
+\end{itemize}
+
+\noindent です。これらに対し、本パッケージでは、それぞれ
+
+\begin{itemize}
+  \item \verb|\kaeriten|、\verb|返り|
+  \item \verb|\furigana|、\verb|振り|
+  \item \verb|\okurigana|、\verb|送り|
+  \item \verb|\furigana|、\verb|振り|のオプショナル引数
+  \item \verb|\okurigana|、\verb|送り|のオプショナル引数
+  \item \verb|\IchiRe|、\verb|\JyouRe|、\verb|\KouRe|、\verb|\TenRe|
+  \item \verb|\KanHyphen|
+\end{itemize}
+
+\noindent が対応しています。
+
+このうち、\texttt{prefix}が適用されるのは\verb|\kaeriten|、\verb|\furigana|、\verb|\okurigana|のみであることに注意が必要です。
+
+\subsection{使用方法}
+
+\subsubsection{\textbackslash kaeriten、\textbackslash 返り}
+これらの２種類のコマンドは全く同一のコマンドです。
+
+\begin{SourceCode}{Input}{TeX}
+  雖\返り{レ}\\
+  雖\返り{\IchiRe}
+\end{SourceCode}
+
+\begin{OutPut}{Output}[横書き]
+
+  雖\返り{レ}鬼\\
+  雖\返り{\IchiRe}鬼
+
+\end{OutPut}
+
+のような出力になります。
+
+\subsubsection{\textbackslash furigana、\textbackslash 振り、\textbackslash okurigana、\textbackslash 送り}
+
+\verb|\furigana|、\verb|\振り|は同一、\verb|\okurigana|、\verb|\送り|は同一です。
+
+\begin{SourceCode}{Input}{TeX}
+  \振り{雖}{いへど}\送り{モ}\\
+  \振り{所}{ゆ}\返り{二}\振り{\KanHyphen}{ゑ}\振り{以}{ん}\\
+  \振り{猶}{な}[ごと]\送り{ホ}[キヲ]
+\end{SourceCode}
+
+\begin{OutPut}{Output}[横書き]
+  \振り{雖}{いへど}\送り{モ}\\
+  \振り{所}{ゆ}\返り{二}\振り{\KanHyphen}{ゑ}\振り{以}{ん}\\
+  \振り{猶}{な}[ごと]\送り{ホ}[キヲ]
+\end{OutPut}
+
+これらのコマンドにはスターオプションがありますが、これは振り仮名や送り仮名を\verb|\smash|に入れるか入れないかを変更するためのオプションです。通常の使用時はオプションなしで使います。
+
+\section{注意}
+このパッケージによって提供されるコマンドは、基本的に「局所的な横書きないし縦書き」に対する出力を保証しません。というのも局所的に縦書きにするためのコマンドである\verb|\tate|などの内部の環境と通常の縦書き環境の仕様は大きく異なるためです。
+
+
+\section{全体縦書き環境における出力例}
+
+\begin{SourceCode}{Input}{TeX}
+  \documentclass[luatex,fontsize=8pt,paper=b5,tate]{jlreq}
+  \usepackage{luwa-ul,gckanbun,KKsymbols}
+
+  \begin{document}\LARGE
+  今夫\送り{レ}江戸\振り{者}{は}、世之所\送り{ノ}\返り{レ}称\送り{スル}名都\振り{大}{だい}\振り{邑}{いふ}{大きな都市}、冠蓋之所\返り{レ}集\送り{マル}\LineNumbering{\kakko{2}}[.5em]\dashKK{舟車之\振り{所}{ところ}\送り{ニシテ}\返り{レ}\振り{湊}{あつ}}\送り{　マル}、実\送り{ニ}\振り{為}{た}\送り{ル}\返り{二}天下之大都会\返り{一}也。
+  而\送り{レドモ}\LineNumbering{\ichimoji{C}}\nolinebreak\underLineKK{其地之為名、訪之於古、未之聞}。
+  豈\送り{二}非\送り{ズ}\返り{三}古今相\送り{ひ}去\送り{ルコト}\振り{日}{ひび}\送り{二}遠\送り{ク}、事之相\送り{ヒ}変\送り{ズルコト}愈多\送り{ク}、求\送り{ムルモ}\返り{二}其\送り{ノ}所\送り{ヲ}\返り{\IchiRe}欲\送り{スル}\返り{レ}聞\送り{カント}而不\送り{ルコト}可\送り{カラ}\返り{レ}得、亦\送り{タ}\振り{猶}{な}[ごと]\送り{ホ}[キヲ]\返り{二}今之於\送り{ケルガ}\返り{\IchiRe}古\送り{ニ}也。
+  \end{document}
+\end{SourceCode}
+
+\begin{OutPut}{Output}[縦書き]
+  \begin{center}
+    \includegraphics[width=.7\linewidth]{whole-vert-sample.pdf}
+  \end{center}
+\end{OutPut}
+
+
+\section{ライセンス}
+オリジナルのライセンスである以下に準拠し、本パッケージをMITライセンスで配布します。条件なども全て以下のライセンス表記に準拠します。
+
+\begin{simple}[gckanbun package]{オリジナルのライセンス全文}
+\noindent This package is licensed under the terms of the MIT License. \bigskip
+
+\noindent Copyright (c) 2017-2021 Munehiro Yamamoto <munepixyz@gmail.com> \bigskip
+
+\noindent Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. \bigskip
+
+\noindent THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+\end{simple}
+
+
+\section{Version History}
+\begin{itemize}
+  \item \textbf{v2.0.0 (2025/11/04)} --- Initial public release as a reworked version.
+\end{itemize}
+
+\section{Source Code}
+\begin{lstlisting}
+  \NeedsTeXFormat{LaTeX2e}
+  \ProvidesPackage{gckanbun}[2025/11/04, Version 2.0.0]
+
+  %% declare package errors
+  \def\gcknbn@error{\PackageError{gckanbun}}
+  \def\gcknbn@warning{\PackageWarning{gckanbun}}
+  \def\gcknbn@warningnoline{\PackageWarningNoLine{gckanbun}}
+  \def\gcknbn@info{\PackageInfo{gckanbun}}
+
+  \RequirePackage{keyval}
+  \DeclareOption*{\gcknbn@setkey}
+  \def\gcknbn@setkey{\expandafter\@gcknbn@setkey\expandafter{\CurrentOption}}
+  \def\@gcknbn@setkey{\setkeys{gcknbn}}
+  \def\gcknbn@prefix{gckanbun}%%given <prefix> for each commands
+  \define@key{gcknbn}{prefix}{\gdef\gcknbn@prefix{#1}}
+
+  \ExecuteOptions{prefix}
+  \ProcessOptions\relax
+
+  %% auto-detect engine
+  \RequirePackage{ifuptex}
+  \RequirePackage{ifluatex}
   \ifluatex
-    \ltjsetparameter{kanjiskip=\fill}%
+    \@ifpackageloaded{luatexja}{}{%
+      \gcknbn@error{Please load package 'luatexja' when loading this package.}}
+  \else\ifuptex
+    \def\zw{zw}\def\zh{zh}
+  \else\ifptex
+    \def\zw{zw}\def\zh{zh}
   \else
-    \kanjiskip=\fill\relax
-  \fi
-}
+    \gcknbn@error{Package 'gckanbun' currently supports (u)pLaTeX and LuaLaTeX.}
+  \fi\fi\fi
 
-%% ルビ
-%%  * グループルビ
-%%  * 漢文訓点に対するふりがな（モノルビ）
-\let\gcknbn@rubybox@text\relax
-\newdimen\gcknbn@rubybox@width
-\newdimen\gcknbn@furigana@width \gcknbn@furigana@width\z@
-\newdimen\gcknbn@dima
-\DeclareRobustCommand*\gcknbn@ruby[2]{%
-  \leavevmode% \setbox0=\hbox{#1}\setbox1=\hbox{\tiny#2}%
-  \begingroup
-    \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@
-    \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
-    \setbox\z@=\hbox{#1}\setbox\@ne=\hbox{\tiny#2}%
-    \gdef\gcknbn@rubybox@text{#2}%
-    \global\gcknbn@rubybox@width=\wd\z@\relax
-    \gcknbn@furigana@okurigana}
-
-\def\gcknbn@furigana@okurigana{%
-  \futurelet\@let@token\gcknbn@@furigana@okurigana}
-\def\gcknbn@@furigana@okurigana{%
-    \ifx\@let@token\gcknbn@okurigana
-      \global\gcknbn@furigana@width=\wd\@ne\relax
-      \dimen\z@=\wd\z@
-      \smash{\hbox{%
-        \vbox{\hbox to \dimen\z@{\box\@ne\hss}%
-          \nointerlineskip\hbox to \dimen\z@{\hfil\box\z@\hfil}}}}%
-    \else
-      \ifdim\wd\z@>\wd\@ne\dimen\z@=\wd\z@\else\dimen\z@=\wd\@ne\fi
-      \penalty\@lowpenalty
-      \smash{\hbox{\gcknbn@kanjiskip@fill
-        \vbox{\hbox to \dimen\z@{\tiny\hfil\gcknbn@rubybox@text\hfil}%
-          \nointerlineskip\hbox to \dimen\z@{\hfil\box\z@\hfil}}}}%
+  %% 縦書き判定
+  \newif\ifgcknbn@tdir \gcknbn@tdirfalse
+  \@ifundefined{iftdir}{\let\iftdir\iffalse}\relax
+  \ifluatex
+    \ifnum\ltjgetparameter{direction}=3%
+      \gcknbn@tdirtrue
     \fi
-  \endgroup}
-
-%% 訓点
-\newdimen\gcknbn@okurigana@width \gcknbn@okurigana@width\z@
-\newdimen\gcknbn@kaeriten@width \gcknbn@kaeriten@width\z@
-%%訓点送り仮名
-\newcommand*\gcknbn@okurigana[1]{%
-  \nobreak\leavevmode
-  \begingroup
-    \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@
-    \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
-    \setbox\z@=\hbox{\tiny #1}%
-    \ifdim\gcknbn@furigana@width>0.9999\zw\relax
-      \global\gcknbn@okurigana@width=\dimexpr\gcknbn@furigana@width + \wd\z@ - 1\zw\relax
-    \else
-      \global\gcknbn@okurigana@width=\dimexpr\wd\z@ - .5\zw\relax
-    \fi
-    \smash{\hbox{%
-      \vbox{\hbox to \gcknbn@okurigana@width{%
-        \ifdim\gcknbn@furigana@width>0.9999\zw\relax
-          \hspace*{\dimexpr\gcknbn@furigana@width - 1\zw\relax}%
-        \else
-          \hspace*{-.5\zw}%
-        \fi
-        \box\z@}%
-        \nointerlineskip
-        \hbox to \gcknbn@okurigana@width{\hfil\vphantom{\char\euc"A1A1%"
-          }\hfil}}}}%
-    \global\gcknbn@furigana@width=\z@\relax
-    \gcknbn@okurigana@kaeriten}
-
-\def\gcknbn@okurigana@kaeriten{%
-  \futurelet\@let@token\gcknbn@@okurigana@kaeriten}
-\def\gcknbn@@okurigana@kaeriten{%
-    \ifx\@let@token、
-      \gcknbn@okurigana@kutoten@skip
-      \global\gcknbn@okurigana@width=\z@
-    \else\ifx\@let@token。
-      \gcknbn@okurigana@kutoten@skip
-      \global\gcknbn@okurigana@width=\z@
-    \else\ifx\@let@token\gcknbn@kaeriten
-      \gcknbn@okurigana@kaeriten@skip
-    \fi\fi\fi
-  \endgroup}
-\def\gcknbn@okurigana@kutoten@skip{%
-  \hspace*{-\gcknbn@okurigana@width}}
-\def\gcknbn@okurigana@kaeriten@skip{%
-  \hspace*{-\gcknbn@okurigana@width}}
-
-%%訓点返り点
-\newcommand*\gcknbn@kaeriten{%
-  \@ifnextchar-{\gcknbn@tateten@kaeriten@hh}{%
-  \@ifnextchar‐{\gcknbn@tateten@kaeriten@zh}{%
-    \gcknbn@@kaeriten}}}
-
-\newcommand*\gcknbn@@kaeriten[1]{%
-  \nobreak\leavevmode
-  \begingroup
-    \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@
-    \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
-    \setbox\z@=\hbox{\tiny #1}%
-    \global\gcknbn@kaeriten@width=\wd\z@\relax
-    \smash{\lower.25\zw\hbox{\box\z@\hss}}%
-  \endgroup\gcknbn@kaeriten@kutoten}
-
-\def\gcknbn@kaeriten@kutoten{\futurelet\@let@token\gcknbn@@kaeriten@kutoten}
-\def\gcknbn@@kaeriten@kutoten{%
-  \ifx\@let@token、
-    \gcknbn@kaeriten@kutoten@skip
-    \global\gcknbn@kaeriten@width=\z@
-  \else\ifx\@let@token。
-    \gcknbn@kaeriten@kutoten@skip
-    \global\gcknbn@kaeriten@width=\z@
-  \else
-    \gcknbn@kaeriten@okurigana@skip
+  \else\iftdir
+    \gcknbn@tdirtrue
   \fi\fi
-}
-\def\gcknbn@kaeriten@kutoten@skip{%
-  \hspace*{-\gcknbn@kaeriten@width}%
-}
-\def\gcknbn@kaeriten@okurigana@skip{%
-  \ifdim\gcknbn@okurigana@width>\gcknbn@kaeriten@width
-    \hspace*{\dimexpr\gcknbn@okurigana@width - \gcknbn@kaeriten@width}%
-  \fi
-}
 
-\def\gcknbn@tateten@kaeriten@hh-{\gcknbn@@tateten@kaeriten}
-\def\gcknbn@tateten@kaeriten@zh‐{\gcknbn@@tateten@kaeriten}
-\newcommand*\gcknbn@@tateten@kaeriten[1]{%
-  \nobreak\leavevmode
-  \begingroup
-    \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@
-    \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
-    \setbox\z@=\hbox{\tiny\char"3190}%"
-    \global\gcknbn@kaeriten@width=\wd\z@\relax
-    \smash{\lower.35\zw\hbox{%
-    \vbox{\hbox to \gcknbn@kaeriten@width{\hfil\box\z@\hfil}%
-    \vspace*{-.1\zw}%
-    \nointerlineskip\hbox to \gcknbn@kaeriten@width{\tiny\hfil#1\hfil}}}}%
-  \endgroup}
+  \newcommand*\gcknbn@kanjiskip@fill{%
+    \ifluatex
+      \ltjsetparameter{kanjiskip=\fill}%
+    \else
+      \kanjiskip=\fill\relax
+    \fi
+  }
 
-%% Finaly, provide \<prefix>ruby, \<prefix>okurigana, \<prefix>kaeriten
-\expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby
-\expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana
-\expandafter\let\csname\gcknbn@prefix kaeriten\endcsname\gcknbn@kaeriten
+  \newlength{\gcknbn@adjust@yokotate}
 
-\endinput
+  \NewDocumentCommand{\gcknbn@adjust@yokotate@use}{}{%
+    \ifgcknbn@tdir
+      \setlength{\gcknbn@adjust@yokotate}{-1.75ex}%
+    \else%
+      \setlength{\gcknbn@adjust@yokotate}{-1.3ex}%
+    \fi%
+  }
+
+  %% ルビ
+  %%  * グループルビ
+  %%  * 漢文訓点に対するふりがな（モノルビ）
+  \let\gcknbn@rubybox@text\relax
+  \let\gcknbn@rubybox@text@s\relax
+  \newdimen\gcknbn@rubybox@width
+  \newdimen\gcknbn@furigana@width \gcknbn@furigana@width\z@
+  \newdimen\gcknbn@furigana@width@s \gcknbn@furigana@width@s\z@
+  \newdimen\gcknbn@dima
+  \DeclareDocumentCommand{\gcknbn@ruby}{ s m m O{\vphantom{羅} }}{%
+    \gcknbn@adjust@yokotate@use%
+    \global\gcknbn@furigana@width\z@%
+    \global\gcknbn@furigana@width@s\z@%
+    \leavevmode%
+    \begingroup%
+      \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@%
+      \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
+      \setbox\z@=\hbox{#2}\setbox\@ne=\hbox{\tiny#3}%
+      \setbox\tw@=\hbox{\tiny#4}%
+      \gdef\gcknbn@rubybox@text{#3}%
+      \gdef\gcknbn@rubybox@text@s{#4}%
+      \global\gcknbn@rubybox@width=\wd\z@\relax%
+      \IfBooleanTF{#1}{\gcknbn@furigana@okurigana@SMASH}{\gcknbn@furigana@okurigana}%
+      }
+
+  \def\gcknbn@furigana@okurigana{%
+    \futurelet\@let@token\gcknbn@@furigana@okurigana}
+
+  \def\gcknbn@furigana@okurigana@SMASH{%
+    \futurelet\@let@token\gcknbn@@furigana@okurigana@SMASH}
+
+  \def\gcknbn@@furigana@okurigana{%
+      \ifx\@let@token\gcknbn@okurigana%
+        \global\gcknbn@furigana@width=\wd\@ne\relax%
+        \global\gcknbn@furigana@width@s=\wd\tw@\relax%
+        \dimen\z@=\wd\z@%
+        \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
+          \vbox{\hbox to \dimen\z@{\box\@ne\hss}%
+            \nointerlineskip\hbox to \dimen\z@{\hfil\box\z@\hfil}%
+            \nointerlineskip\hbox to \dimen\z@{\box\tw@\hss}%
+            }}}%
+      \else
+        \ifdim\wd\z@>\wd\@ne\dimen\z@=\wd\z@\else\dimen\z@=\wd\@ne\fi%
+        \penalty\@lowpenalty%
+        \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
+          \vbox{\hbox to \dimen\z@{\tiny\hfil\gcknbn@rubybox@text\hfil}%
+            \nointerlineskip\hbox to \dimen\z@{\hfil\box\z@\hfil}%
+            \nointerlineskip\hbox to \dimen\z@{\box\tw@\hss}%
+            }}}%
+      \fi%
+    \endgroup}
+
+  \def\gcknbn@@furigana@okurigana@SMASH{%
+      \ifx\@let@token\gcknbn@okurigana%
+        \global\gcknbn@furigana@width=\wd\@ne\relax%
+        \global\gcknbn@furigana@width@s=\wd\tw@\relax%
+        \dimen\z@=\wd\z@%
+        \raisebox{\gcknbn@adjust@yokotate}{\smash{\hbox{%
+        \vbox{\hbox to \dimen\z@{\box\@ne\hss}%
+          \nointerlineskip\hbox to \dimen\z@{\hfil\box\z@\hfil}%
+          \nointerlineskip\hbox to \dimen\z@{\box\tw@\hss}%
+          }}}}%
+      \else%
+        \ifdim\wd\z@>\wd\@ne\dimen\z@=\wd\z@\else\dimen\z@=\wd\@ne\fi%
+        \penalty\@lowpenalty%
+        \raisebox{\gcknbn@adjust@yokotate}{\smash{\hbox{%
+          \vbox{\hbox to \dimen\z@{\tiny\hfil\gcknbn@rubybox@text\hfil}%
+            \nointerlineskip\hbox to \dimen\z@{\hfil\box\z@\hfil}%
+            \nointerlineskip\hbox to \dimen\z@{\box\tw@\hss}%
+            }}}}%
+      \fi
+    \endgroup}
+
+  %% 訓点
+  \newdimen\gcknbn@okurigana@width \gcknbn@okurigana@width\z@
+  \newdimen\gcknbn@okurigana@width@s \gcknbn@okurigana@width@s\z@
+  \newdimen\gcknbn@kaeriten@width \gcknbn@kaeriten@width\z@
+  %%訓点送り仮名
+  \DeclareDocumentCommand{\gcknbn@okurigana}{ s m O{\vphantom{羅}} }{%
+    \nobreak\leavevmode%
+    \gcknbn@adjust@yokotate@use%
+    \global\gcknbn@okurigana@width\z@%
+    \global\gcknbn@okurigana@width@s\z@%
+    \begingroup%
+      \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@%
+      \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
+      \setbox\z@=\hbox{\tiny #2}%
+      \setbox\@ne=\hbox{\tiny #3}%
+      \ifdim\gcknbn@furigana@width>0.9999\zw\relax%
+        \global\gcknbn@okurigana@width=\dimexpr\gcknbn@furigana@width + \wd\z@ - 1\zw\relax%
+      \else%
+        \global\gcknbn@okurigana@width=\dimexpr\wd\z@ - .5\zw\relax%
+      \fi%
+      \ifdim\gcknbn@furigana@width@s>0.9999\zw\relax%
+        \global\gcknbn@okurigana@width@s=\dimexpr\gcknbn@furigana@width@s + \wd\@ne - 1\zw\relax%
+      \else%
+        \global\gcknbn@okurigana@width@s=\dimexpr\wd\@ne - .5\zw\relax%
+      \fi%
+      \IfBooleanTF{#1}{%
+      \smash{\hbox{%
+        \raisebox{\gcknbn@adjust@yokotate}{\vbox{\hbox to \gcknbn@okurigana@width{%
+          \ifdim\gcknbn@furigana@width>0.9999\zw\relax%
+            \hspace*{\dimexpr\gcknbn@furigana@width - 1\zw\relax}%
+          \else%
+            \hspace*{-.5\zw}%
+          \fi%
+          \box\z@}%
+          \nointerlineskip%
+          \hbox to \gcknbn@okurigana@width{\hfil\vphantom{\char\euc"A1A1%"
+            }\hfil}%
+          \nointerlineskip%
+          \hbox to \gcknbn@okurigana@width@s{%
+          \ifdim\gcknbn@furigana@width@s>0.9999\zw\relax%
+            \hspace*{\dimexpr\gcknbn@furigana@width@s - 1\zw\relax}%
+          \else%
+            \hspace*{-.5\zw}%
+          \fi%
+          \box\@ne}%
+          }}}}}%
+      {%
+        \hbox{%
+        \raisebox{\gcknbn@adjust@yokotate}{\vbox{\hbox to \gcknbn@okurigana@width{%
+          \ifdim\gcknbn@furigana@width>0.9999\zw\relax
+            \hspace*{\dimexpr\gcknbn@furigana@width - 1\zw\relax}%
+          \else
+            \hspace*{-.5\zw}%
+          \fi
+          \box\z@}%
+          \nointerlineskip%
+          \hbox to \gcknbn@okurigana@width{\hfil\vphantom{\char\euc"A1A1%"
+            }\hfil}%
+          \nointerlineskip%
+          \hbox to \gcknbn@okurigana@width@s{%
+          \ifdim\gcknbn@furigana@width@s>0.9999\zw\relax
+            \hspace*{\dimexpr\gcknbn@furigana@width@s - 1\zw\relax}%
+          \else%
+            \hspace*{-.5\zw}%
+          \fi%
+          \box\@ne}%
+          }}}%
+      }%
+      \global\gcknbn@furigana@width=\z@\relax%
+      \gcknbn@okurigana@kaeriten}
+
+  \def\gcknbn@okurigana@kaeriten{%
+    \futurelet\@let@token\gcknbn@@okurigana@kaeriten}
+  \def\gcknbn@@okurigana@kaeriten{%
+      \ifx\@let@token、
+        \gcknbn@okurigana@kutoten@skip
+        \global\gcknbn@okurigana@width=\z@
+      \else\ifx\@let@token。
+        \gcknbn@okurigana@kutoten@skip
+        \global\gcknbn@okurigana@width=\z@
+      \else\ifx\@let@token\gcknbn@kaeriten
+        \gcknbn@okurigana@kaeriten@skip
+      \fi\fi\fi
+    \endgroup}
+  \def\gcknbn@okurigana@kutoten@skip{%
+    \hspace*{-\gcknbn@okurigana@width}}
+  \def\gcknbn@okurigana@kaeriten@skip{%
+    \hspace*{-\gcknbn@okurigana@width}}
+
+  %%訓点返り点
+  \newcommand*\gcknbn@kaeriten{%
+    \@ifnextchar-{\gcknbn@tateten@kaeriten@hh}{%
+    \@ifnextchar‐{\gcknbn@tateten@kaeriten@zh}{%
+      \gcknbn@@kaeriten}}}
+
+  \newcommand*\gcknbn@@kaeriten[1]{%
+    \nobreak\leavevmode
+    \begingroup
+      \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@
+      \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
+      \setbox\z@=\hbox{\tiny #1}%
+      \global\gcknbn@kaeriten@width=\wd\z@\relax
+      \smash{\lower.25\zw\hbox{\box\z@\hss}}%
+    \endgroup\gcknbn@kaeriten@kutoten}
+
+  \def\gcknbn@kaeriten@kutoten{\futurelet\@let@token\gcknbn@@kaeriten@kutoten}
+  \def\gcknbn@@kaeriten@kutoten{%
+    \ifx\@let@token、
+      \gcknbn@kaeriten@kutoten@skip
+      \global\gcknbn@kaeriten@width=\z@
+    \else\ifx\@let@token。
+      \gcknbn@kaeriten@kutoten@skip
+      \global\gcknbn@kaeriten@width=\z@
+    \else
+      \gcknbn@kaeriten@okurigana@skip
+    \fi\fi
+  }
+  \def\gcknbn@kaeriten@kutoten@skip{%
+    \hspace*{-\gcknbn@kaeriten@width}%
+  }
+  \def\gcknbn@kaeriten@okurigana@skip{%
+    \ifdim\gcknbn@okurigana@width>\gcknbn@kaeriten@width
+      \hspace*{\dimexpr\gcknbn@okurigana@width - \gcknbn@kaeriten@width}%
+    \fi
+  }
+
+  \def\gcknbn@tateten@kaeriten@hh-{\gcknbn@@tateten@kaeriten}
+  \def\gcknbn@tateten@kaeriten@zh‐{\gcknbn@@tateten@kaeriten}
+  \newcommand*\gcknbn@@tateten@kaeriten[1]{%
+    \nobreak\leavevmode
+    \begingroup
+      \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@
+      \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
+      \setbox\z@=\hbox{\tiny\char"3190}%"
+      \global\gcknbn@kaeriten@width=\wd\z@\relax
+      \smash{\lower.35\zw\hbox{%
+      \vbox{\hbox to \gcknbn@kaeriten@width{\hfil\box\z@\hfil}%
+      \vspace*{-.1\zw}%
+      \nointerlineskip\hbox to \gcknbn@kaeriten@width{\tiny\hfil#1\hfil}}}}%
+    \endgroup}
+
+
+  %% Finaly, provide \<prefix>ruby, \<prefix>okurigana, \<prefix>kaeriten
+  \expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby
+  \expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana
+  \expandafter\let\csname\gcknbn@prefix kaeriten\endcsname\gcknbn@kaeriten
+
+  %% 短縮マクロ
+  \expandafter\let\csname 振り\endcsname\gcknbn@ruby
+  \expandafter\let\csname 送り\endcsname\gcknbn@okurigana
+  \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten
+
+  \NewDocumentCommand{\IchiRe}{}{%
+    \ifnum\ltjgetparameter{direction}=3%
+      \hspace{-.5ex}一\hspace{-1.3ex}レ%
+    \else%
+      \raisebox{.7ex}{一}\llap{レ}%
+    \fi%
+    }
+  \NewDocumentCommand{\JyouRe}{}{%
+    \ifnum\ltjgetparameter{direction}=3%
+      上\hspace{-.4ex}レ%
+    \else%
+      \raisebox{1.7ex}{上}\llap{レ}%
+    \fi%
+    }
+  \NewDocumentCommand{\KouRe}{}{%
+    \ifnum\ltjgetparameter{direction}=3%
+      甲\hspace{-.4ex}レ%
+    \else%
+      \raisebox{1.9ex}{甲}\llap{レ}%
+    \fi%
+    }
+  \NewDocumentCommand{\TenRe}{}{%
+    \ifnum\ltjgetparameter{direction}=3%
+      天\hspace{-.4ex}レ%
+    \else%
+      \raisebox{1.9ex}{天}\llap{レ}%
+    \fi%
+    }
+  \NewDocumentCommand{\KanHyphen}{}{\symbol{"2015}}
+
+  \endinput
+\end{lstlisting}
+
+\end{document}
