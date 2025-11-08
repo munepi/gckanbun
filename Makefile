@@ -48,7 +48,15 @@ test-gckanbun.pdf: test-gckanbun.tex
 
 gckanbun-doc.pdf: gckanbun-doc.tex whole-vert-sample.pdf
 ifeq ($(shell uname),Linux)
-	sed -i -e 's/\(\\RequirePackage\[\)hiragino-pro,\(deluxe,expert\]{luatexja-preset}\)/\1\2/' $<
+	sed -i \
+		-e 's/\(\\RequirePackage\[\)hiragino-pro,\(deluxe,expert\]{luatexja-preset}\)/\1\2/' \
+		-e 's/HiraMinPro-W3/HaranoAjiMincho-Regular/g' \
+		-e 's/HiraMinPro-W6/HaranoAjiMincho-Bold/g' \
+		-e 's/HiraKakuPro-W3/HaranoAjiGothic-Regular/g' \
+		-e 's/HiraKakuPro-W6/HaranoAjiGothic-Bold/g' \
+		-e 's/HiraKakuStd-W8/HaranoAjiGothic-Heavy/g' \
+		-e 's/HiraMaruPro-W4/HaranoAjiGothic-Medium/g' \
+		$<
 endif
 	lualatex $(basename $<)
 	lualatex $(basename $<)
