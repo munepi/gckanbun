@@ -47,6 +47,9 @@ test-gckanbun.pdf: test-gckanbun.tex
 	lualatex $(basename $<)
 
 gckanbun-doc.pdf: gckanbun-doc.tex whole-vert-sample.pdf
+ifeq ($(shell uname),Linux)
+	sed -i -e 's/\(\\RequirePackage\[\)hiragino-pro,\(deluxe,expert\]{luatexja-preset}\)/\1\2/' $<
+endif
 	lualatex $(basename $<)
 	lualatex $(basename $<)
 
