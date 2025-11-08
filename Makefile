@@ -1,26 +1,54 @@
-gckanbun.pdf: gckanbun.tex
-	lualatex gckanbun
+PROJ:=gckanbun
+TEXDOCS:=\
+	gckanbun-doc.tex \
+	test-gckanbun.tex \
+	test-prefix.tex \
+	whole-vert-sample.tex
 
-gckanbun.zip: clean
-	git archive --format=tar --prefix=gckanbun/ HEAD | gtar -x
+## GNU Tar
+__gtar=tar
+ifeq ($(shell uname),Darwin)
+# gtar: install the `gnu-tar` bottle via Homebrew
+__gtar=gtar
+endif
 
-	## remove unpacked files
-	rm -f gckanbun/.gitignore gckanbun/Makefile
 
-	## then, now just make archive
-	zip -9 -r gckanbun.zip gckanbun/*
+.PHONY: ${PROJ}.zip ctanzip
+ctanzip: ${PROJ}.zip
+${PROJ}.zip: test
+	git archive --format=tar --prefix=${PROJ}/ HEAD | ${__gtar} -x
 
-	rm -rf gckanbun
+## remove unpacked files
+	rm -f ${PROJ}/.gitignore ${PROJ}/Makefile
+
+## then, make archive
+	zip -9 -r ${PROJ}.zip ${PROJ}/*
+
+	rm -rf ${PROJ}
 	@echo finished
 
-test-gckanbun.pdf:
-	# platex test-gckanbun && dvipdfmx test-gckanbun
-	uplatex test-gckanbun && dvipdfmx test-gckanbun
-	lualatex test-gckanbun
-
+.PHONY: clean
 clean:
-	rm -rf gckanbun.zip gckanbun
+	rm -rf ${PROJ}.zip ${PROJ}
 	rm -f *.aux *.log
 	find . -type f -name "*~" -delete
 
-.PHONY: gckanbun.zip
+.PHONY: distclean
+distclean: clean
+	rm -f $(TEXDOCS:%.tex=%.pdf)
+
+.PHONY: test
+test: distclean
+	make $(TEXDOCS:%.tex=%.pdf)
+
+test-gckanbun.pdf: test-gckanbun.tex
+	# platex $(basename $<) && dvipdfmx $(basename $<)
+	uplatex $(basename $<) && dvipdfmx $(basename $<)
+	lualatex $(basename $<)
+
+gckanbun-doc.pdf: gckanbun-doc.tex whole-vert-sample.pdf
+	lualatex $(basename $<)
+	lualatex $(basename $<)
+
+%.pdf: %.tex
+	lualatex $<
