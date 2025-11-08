@@ -109,8 +109,8 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
 \title{\texttt{gckanbun} Package Documentation (Reworked)}
 \author{%
 \parbox[r]{7cm}{%
-  Modified ver. : Kawaguchi a.k.a. KKTeX\\
-  Original ver. : Munehiro Yamamoto
+  Original ver. : Munehiro Yamamoto\\
+  Modified ver. : Kawaguchi a.k.a. KKTeX
 }}
 \date{Version 2.0.0 (2025/11/04)}
 
@@ -123,10 +123,10 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
 \tableofcontents
 \newpage
 
-\section{参考元のパッケージ}
-本パッケージはgckanbunパッケージを、より日本における漢文組版において品質を担保できるように改変したものです。オリジナルの作者様である山本宗宏（Munehiro Yamamoto）さんとの協議により、gckanbunパッケージを従来通り読み込んだ場合に実質的にこのパッケージが読み込まれることになります。
+\section{概要}
+このリワークは、gckanbunパッケージをより日本における漢文組版において品質を担保できるように改変したものです。オリジナルの作者様である山本宗宏（Munehiro Yamamoto）さんとの協議により、メンテナーを形式上私KKTeXが引き継ぐこととなりました。
 
-gckanbunはそのルビや返り点の制御構造において非常に優れていたため、大枠はオリジナルのそれを踏襲し、必要最低限の拡張及び変更にとどめています。また、gckanbunパッケージに関する山本さんの記事として、
+元々、gckanbunパッケージはそのルビや返り点の制御構造において非常に優れていたため、大枠はオリジナルのそれを踏襲し、必要最低限の拡張及び変更にとどめています。また、本パッケージに関する山本さんの記事として、
 \begin{quotation}
   \url{https://qiita.com/munepi/items/5e6ac49fa5c025123305}
 \end{quotation}
@@ -229,12 +229,15 @@ gckanbunはそのルビや返り点の制御構造において非常に優れて
 
 \begin{SourceCode}{Input}{TeX}
   \documentclass[luatex,fontsize=8pt,paper=b5,tate]{jlreq}
-  \usepackage{luwa-ul,gckanbun,KKsymbols}
+  \usepackage{luwa-ul,KKsymbols}
+  \usepackage{gckanbun}
 
-  \begin{document}\LARGE
-  今夫\送り{レ}江戸\振り{者}{は}、世之所\送り{ノ}\返り{レ}称\送り{スル}名都\振り{大}{だい}\振り{邑}{いふ}{大きな都市}、冠蓋之所\返り{レ}集\送り{マル}\LineNumbering{\kakko{2}}[.5em]\dashKK{舟車之\振り{所}{ところ}\送り{ニシテ}\返り{レ}\振り{湊}{あつ}}\送り{　マル}、実\送り{ニ}\振り{為}{た}\送り{ル}\返り{二}天下之大都会\返り{一}也。
+
+  \begin{document}\Huge
+  \fboxsep=0pt\fboxrule=.1pt
+  今夫\送り{レ}江戸\振り{者}{は}、世之所\送り{ノ}\返り{レ}称\送り{スル}名都\振り{大}{だい}\振り{邑}{いふ}{大きな都市}、冠蓋之所\返り{レ}集\送り{マル}\LineNumbering{\kakko{2}}[.5em]\dashKK{舟車之\振り{所}{ところ}\送り{ニシテ}\返り{レ}\振り{湊}{あつ}\送り{マル}、}実\送り{ニ}\振り{為}{た}\送り{ル}\返り{二}天下之大都会\返り{一}也。
   而\送り{レドモ}\LineNumbering{\ichimoji{C}}\nolinebreak\underLineKK{其地之為名、訪之於古、未之聞}。
-  豈\送り{二}非\送り{ズ}\返り{三}古今相\送り{ひ}去\送り{ルコト}\振り{日}{ひび}\送り{二}遠\送り{ク}、事之相\送り{ヒ}変\送り{ズルコト}愈多\送り{ク}、求\送り{ムルモ}\返り{二}其\送り{ノ}所\送り{ヲ}\返り{\IchiRe}欲\送り{スル}\返り{レ}聞\送り{カント}而不\送り{ルコト}可\送り{カラ}\返り{レ}得、亦\送り{タ}\振り{猶}{な}[ごと]\送り{ホ}[キヲ]\返り{二}今之於\送り{ケルガ}\返り{\IchiRe}古\送り{ニ}也。
+  豈\送り{二}非\送り{ズ}\返り{三}古今相\送り{ヒ}去\送り{ルコト}\振り{日}{ひび}\送り{ニ}遠\送り{ク}、事之相\送り{ヒ}変\送り{ズルコト}愈多\送り{ク}、求\送り{ムルモ}\返り{二}其\送り{ノ}所\送り{ヲ}\返り{\IchiRe}欲\送り{スル}\返り{レ}聞\送り{カント}而不\送り{ルコト}可\送り{カラ}\返り{レ}得、亦\送り{タ}\振り{猶}{な}[ごと]\送り{ホ}[キヲ]\返り{二}今之於\送り{ケルガ}\返り{\JyouRe}古\送り{ニ}也。
   \end{document}
 \end{SourceCode}
 
@@ -246,16 +249,19 @@ gckanbunはそのルビや返り点の制御構造において非常に優れて
 
 
 \section{ライセンス}
-オリジナルのライセンスである以下に準拠し、本パッケージをMITライセンスで配布します。条件なども全て以下のライセンス表記に準拠します。
+本パッケージをMITライセンスで配布します。条件なども全て以下のライセンス表記に準拠します。
 
-\begin{simple}[gckanbun package]{オリジナルのライセンス全文}
-\noindent This package is licensed under the terms of the MIT License. \bigskip
+\begin{simple}[gckanbun package]{ライセンス全文}
+  This package is licensed under the terms of the MIT License.
 
-\noindent Copyright (c) 2017-2021 Munehiro Yamamoto <munepixyz@gmail.com> \bigskip
+  Copyright (c) 2017-2025 Munehiro Yamamoto <munepixyz@gmail.com>
+  Copyright (c) 2025 Kosei Kawaguchi
 
-\noindent Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. \bigskip
+  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-\noindent THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 \end{simple}
 
 
@@ -266,6 +272,26 @@ gckanbunはそのルビや返り点の制御構造において非常に優れて
 
 \section{Source Code}
 \begin{lstlisting}
+  %%% License %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  % This package is licensed under the terms of the MIT License.
+
+  % Copyright (c) 2017-2025 Munehiro Yamamoto <munepixyz@gmail.com>
+  % Copyright (c) 2025 Kosei Kawaguchi
+
+  % Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+  % The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+  % THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+  % 2025/11/04
+  % 再読送り仮名のボックスの取る幅を毎度リセットするように修正。
+
+  % 2025/11/08
+  % 再読返り点の出力位置および\KanHyphenの仕様を変更。
+
   \NeedsTeXFormat{LaTeX2e}
   \ProvidesPackage{gckanbun}[2025/11/04, Version 2.0.0]
 
@@ -300,14 +326,20 @@ gckanbunはそのルビや返り点の制御構造において非常に優れて
   \fi\fi\fi
 
   %% 縦書き判定
-  \newif\ifgcknbn@tdir \gcknbn@tdirfalse
-  \@ifundefined{iftdir}{\let\iftdir\iffalse}\relax
+  \newif\ifgcknbn@tdir
+  \gcknbn@tdirfalse
+
+  \@ifundefined{iftdir}{\let\iftdir\iffalse}{}%
+
   \ifluatex
-    \ifnum\ltjgetparameter{direction}=3%
+    \@ifundefined{ltjgetparameter}{}{%
+      \ifnum\ltjgetparameter{direction}=3 %
+        \gcknbn@tdirtrue
+      \fi
+    }%
+  \else
+    \iftdir
       \gcknbn@tdirtrue
-    \fi
-  \else\iftdir
-    \gcknbn@tdirtrue
   \fi\fi
 
   \newcommand*\gcknbn@kanjiskip@fill{%
@@ -325,6 +357,16 @@ gckanbunはそのルビや返り点の制御構造において非常に優れて
       \setlength{\gcknbn@adjust@yokotate}{-1.75ex}%
     \else%
       \setlength{\gcknbn@adjust@yokotate}{-1.3ex}%
+    \fi%
+  }
+
+  \newlength{\gcknbn@adjust@kaeri}
+
+  \NewDocumentCommand{\gcknbn@adjust@kaeri@use}{}{%
+    \ifgcknbn@tdir
+      \setlength{\gcknbn@adjust@kaeri}{.35\zw}%
+    \else%
+      \setlength{\gcknbn@adjust@kaeri}{.15\zw}%
     \fi%
   }
 
@@ -486,24 +528,32 @@ gckanbunはそのルビや返り点の制御構造において非常に優れて
       \fi\fi\fi
     \endgroup}
   \def\gcknbn@okurigana@kutoten@skip{%
-    \hspace*{-\gcknbn@okurigana@width}}
+    \ifgcknbn@tdir\hspace*{-\gcknbn@okurigana@width}\else\fi%
+  }
   \def\gcknbn@okurigana@kaeriten@skip{%
-    \hspace*{-\gcknbn@okurigana@width}}
+    \ifdim\gcknbn@okurigana@width>\gcknbn@okurigana@width@s%
+      \hspace*{-\gcknbn@okurigana@width}%
+    \else%
+      \hspace*{-\gcknbn@okurigana@width@s}%
+    \fi
+  }
 
   %%訓点返り点
   \newcommand*\gcknbn@kaeriten{%
     \@ifnextchar-{\gcknbn@tateten@kaeriten@hh}{%
     \@ifnextchar‐{\gcknbn@tateten@kaeriten@zh}{%
       \gcknbn@@kaeriten}}}
+  % \gcknbn@@kaeriten}
 
   \newcommand*\gcknbn@@kaeriten[1]{%
     \nobreak\leavevmode
+    \gcknbn@adjust@kaeri@use%
     \begingroup
       \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@
       \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
       \setbox\z@=\hbox{\tiny #1}%
       \global\gcknbn@kaeriten@width=\wd\z@\relax
-      \smash{\lower.25\zw\hbox{\box\z@\hss}}%
+      \smash{\lower\gcknbn@adjust@kaeri\hbox{\box\z@\hss}}%
     \endgroup\gcknbn@kaeriten@kutoten}
 
   \def\gcknbn@kaeriten@kutoten{\futurelet\@let@token\gcknbn@@kaeriten@kutoten}
@@ -519,11 +569,19 @@ gckanbunはそのルビや返り点の制御構造において非常に優れて
     \fi\fi
   }
   \def\gcknbn@kaeriten@kutoten@skip{%
-    \hspace*{-\gcknbn@kaeriten@width}%
+    \ifgcknbn@tdir%
+      \hspace*{-\gcknbn@kaeriten@width}%
+    \fi
   }
+  \def\gcknbn@okurigana@kutoten@skip{%
+    \hspace*{-\gcknbn@okurigana@width}}
   \def\gcknbn@kaeriten@okurigana@skip{%
     \ifdim\gcknbn@okurigana@width>\gcknbn@kaeriten@width
       \hspace*{\dimexpr\gcknbn@okurigana@width - \gcknbn@kaeriten@width}%
+    \fi
+    \ifdim\gcknbn@okurigana@width<\gcknbn@okurigana@width@s%
+      \hspace*{\gcknbn@okurigana@width@s - \gcknbn@kaeriten@width}%
+    \else
     \fi
   }
 
@@ -554,28 +612,28 @@ gckanbunはそのルビや返り点の制御構造において非常に優れて
   \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten
 
   \NewDocumentCommand{\IchiRe}{}{%
-    \ifnum\ltjgetparameter{direction}=3%
-      \hspace{-.5ex}一\hspace{-1.3ex}レ%
+    \ifgcknbn@tdir
+      \hspace{-.5ex}一\hspace{-1.9ex}レ%
     \else%
-      \raisebox{.7ex}{一}\llap{レ}%
+      \raisebox{.5ex}{一}\llap{レ}%
     \fi%
     }
   \NewDocumentCommand{\JyouRe}{}{%
-    \ifnum\ltjgetparameter{direction}=3%
-      上\hspace{-.4ex}レ%
+    \ifgcknbn@tdir
+      上\hspace{-.7ex}レ%
     \else%
       \raisebox{1.7ex}{上}\llap{レ}%
     \fi%
     }
   \NewDocumentCommand{\KouRe}{}{%
-    \ifnum\ltjgetparameter{direction}=3%
+    \ifgcknbn@tdir
       甲\hspace{-.4ex}レ%
     \else%
       \raisebox{1.9ex}{甲}\llap{レ}%
     \fi%
     }
   \NewDocumentCommand{\TenRe}{}{%
-    \ifnum\ltjgetparameter{direction}=3%
+    \ifgcknbn@tdir
       天\hspace{-.4ex}レ%
     \else%
       \raisebox{1.9ex}{天}\llap{レ}%

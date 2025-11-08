@@ -1,23 +1,22 @@
-%%% The original license %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% License %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This package is licensed under the terms of the MIT License.
 
-% Copyright (c) 2017-2021 Munehiro Yamamoto <munepixyz@gmail.com>
+% Copyright (c) 2017-2025 Munehiro Yamamoto <munepixyz@gmail.com>
+% Copyright (c) 2025 Kosei Kawaguchi
 
-% Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+% Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+% The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 % THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-%%% Modefied version %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% This package is modefied version of gcmkanbun.
-% The author of modified ver. is KKTeX a.k.a. Kosei Kawaguchi. (@KKTeX_LaTeX3) %%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 % 2025/11/04
-% 再読返り点のボックスの取る幅を毎度リセットするように修正。
+% 再読送り仮名のボックスの取る幅を毎度リセットするように修正。
 
+% 2025/11/08
+% 再読返り点の出力位置および\KanHyphenの仕様を変更。
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{gckanbun}[2025/11/04, Version 2.0.0]
@@ -84,6 +83,16 @@
     \setlength{\gcknbn@adjust@yokotate}{-1.75ex}%
   \else%
     \setlength{\gcknbn@adjust@yokotate}{-1.3ex}%
+  \fi%
+}
+
+\newlength{\gcknbn@adjust@kaeri}
+
+\NewDocumentCommand{\gcknbn@adjust@kaeri@use}{}{%
+  \ifgcknbn@tdir
+    \setlength{\gcknbn@adjust@kaeri}{.35\zw}%
+  \else%
+    \setlength{\gcknbn@adjust@kaeri}{.15\zw}%
   \fi%
 }
 
@@ -245,24 +254,32 @@
     \fi\fi\fi
   \endgroup}
 \def\gcknbn@okurigana@kutoten@skip{%
-  \hspace*{-\gcknbn@okurigana@width}}
+  \ifgcknbn@tdir\hspace*{-\gcknbn@okurigana@width}\else\fi%
+}
 \def\gcknbn@okurigana@kaeriten@skip{%
-  \hspace*{-\gcknbn@okurigana@width}}
+  \ifdim\gcknbn@okurigana@width>\gcknbn@okurigana@width@s%
+    \hspace*{-\gcknbn@okurigana@width}%
+  \else%
+    \hspace*{-\gcknbn@okurigana@width@s}%
+  \fi
+}
 
 %%訓点返り点
 \newcommand*\gcknbn@kaeriten{%
   \@ifnextchar-{\gcknbn@tateten@kaeriten@hh}{%
   \@ifnextchar‐{\gcknbn@tateten@kaeriten@zh}{%
     \gcknbn@@kaeriten}}}
+% \gcknbn@@kaeriten}
 
 \newcommand*\gcknbn@@kaeriten[1]{%
   \nobreak\leavevmode
+  \gcknbn@adjust@kaeri@use%
   \begingroup
     \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@
     \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
     \setbox\z@=\hbox{\tiny #1}%
     \global\gcknbn@kaeriten@width=\wd\z@\relax
-    \smash{\lower.25\zw\hbox{\box\z@\hss}}%
+    \smash{\lower\gcknbn@adjust@kaeri\hbox{\box\z@\hss}}%
   \endgroup\gcknbn@kaeriten@kutoten}
 
 \def\gcknbn@kaeriten@kutoten{\futurelet\@let@token\gcknbn@@kaeriten@kutoten}
@@ -278,11 +295,19 @@
   \fi\fi
 }
 \def\gcknbn@kaeriten@kutoten@skip{%
-  \hspace*{-\gcknbn@kaeriten@width}%
+  \ifgcknbn@tdir%
+    \hspace*{-\gcknbn@kaeriten@width}%
+  \fi
 }
+\def\gcknbn@okurigana@kutoten@skip{%
+  \hspace*{-\gcknbn@okurigana@width}}
 \def\gcknbn@kaeriten@okurigana@skip{%
   \ifdim\gcknbn@okurigana@width>\gcknbn@kaeriten@width
     \hspace*{\dimexpr\gcknbn@okurigana@width - \gcknbn@kaeriten@width}%
+  \fi
+  \ifdim\gcknbn@okurigana@width<\gcknbn@okurigana@width@s%
+    \hspace*{\gcknbn@okurigana@width@s - \gcknbn@kaeriten@width}%
+  \else
   \fi
 }
 
@@ -313,28 +338,28 @@
 \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten
 
 \NewDocumentCommand{\IchiRe}{}{%
-  \ifnum\ltjgetparameter{direction}=3%
-    \hspace{-.5ex}一\hspace{-1.3ex}レ%
+  \ifgcknbn@tdir
+    \hspace{-.5ex}一\hspace{-1.9ex}レ%
   \else%
-    \raisebox{.7ex}{一}\llap{レ}%
+    \raisebox{.5ex}{一}\llap{レ}%
   \fi%
   }
 \NewDocumentCommand{\JyouRe}{}{%
-  \ifnum\ltjgetparameter{direction}=3%
-    上\hspace{-.4ex}レ%
+  \ifgcknbn@tdir
+    上\hspace{-.7ex}レ%
   \else%
     \raisebox{1.7ex}{上}\llap{レ}%
   \fi%
   }
 \NewDocumentCommand{\KouRe}{}{%
-  \ifnum\ltjgetparameter{direction}=3%
+  \ifgcknbn@tdir
     甲\hspace{-.4ex}レ%
   \else%
     \raisebox{1.9ex}{甲}\llap{レ}%
   \fi%
   }
 \NewDocumentCommand{\TenRe}{}{%
-  \ifnum\ltjgetparameter{direction}=3%
+  \ifgcknbn@tdir
     天\hspace{-.4ex}レ%
   \else%
     \raisebox{1.9ex}{天}\llap{レ}%
