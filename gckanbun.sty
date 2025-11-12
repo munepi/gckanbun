@@ -133,8 +133,8 @@
       \fi%
     \else%
       \ifdim\wd\tw@>\zw%
-        \global\gcknbn@intr@pre=0em%再読あり前方
-        \global\gcknbn@intr@post=0em\relax%再読あり後方
+        \global\gcknbn@intr@pre=\dimexpr(\wd\tw@-\zw)/2\relax%再読あり前方
+        \global\gcknbn@intr@post=\dimexpr(\wd\tw@-\zw)/2\relax%再読あり後方
       \else%
         \global\gcknbn@intr@pre=0em\relax%
         \global\gcknbn@intr@post=0em\relax%
@@ -171,7 +171,14 @@
           \nointerlineskip\hbox to \dimen\z@{\box\tw@\hss}%
           }}}%
     \else
-      \ifdim\wd\z@>\wd\@ne\dimen\z@=\wd\z@\else\dimen\z@=\wd\@ne\fi%
+      \ifdim\wd\z@>\wd\@ne% \dimen\z@=max{\wd\z@,\wd\@ne,\wd\tw@}
+        \dimen\z@=\wd\z@%
+      \else%
+        \dimen\z@=\wd\@ne%
+      \fi%
+      \ifdim\dimen\z@<\wd\tw@%
+        \dimen\z@=\wd\tw@%
+      \fi%
       \penalty\@lowpenalty%
       \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
         \vbox{\hbox to \dimen\z@{\tiny\hfil\gcknbn@rubybox@text\hfil}%
