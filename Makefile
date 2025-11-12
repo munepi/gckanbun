@@ -1,9 +1,8 @@
 PROJ:=gckanbun
 TEXDOCS:=\
 	gckanbun-doc.tex \
-	test-gckanbun.tex \
-	test-prefix.tex \
-	whole-vert-sample.tex
+	whole-vert-sample.tex \
+	kanshi-sample.tex
 
 ## GNU Tar
 __gtar=tar
@@ -30,7 +29,7 @@ ${PROJ}.zip: test
 .PHONY: clean
 clean:
 	rm -rf ${PROJ}.zip ${PROJ}
-	rm -f *.aux *.log
+	rm -f *.aux *.log *.out *.listing *.ltjruby *.toc
 	find . -type f -name "*~" -delete
 
 .PHONY: distclean
@@ -41,12 +40,12 @@ distclean: clean
 test: distclean
 	make $(TEXDOCS:%.tex=%.pdf)
 
-test-gckanbun.pdf: test-gckanbun.tex
-	# platex $(basename $<) && dvipdfmx $(basename $<)
-	uplatex $(basename $<) && dvipdfmx $(basename $<)
-	lualatex $(basename $<)
+# test-gckanbun.pdf: test-gckanbun.tex
+# 	# platex $(basename $<) && dvipdfmx $(basename $<)
+# 	uplatex $(basename $<) && dvipdfmx $(basename $<)
+# 	lualatex $(basename $<)
 
-gckanbun-doc.pdf: gckanbun-doc.tex whole-vert-sample.pdf
+gckanbun-doc.pdf: gckanbun-doc.tex whole-vert-sample.pdf kanshi-sample.pdf 
 ifeq ($(shell uname),Linux)
 	sed -i \
 		-e 's/\(\\RequirePackage\[\)hiragino-pro,\(deluxe,expert\]{luatexja-preset}\)/\1\2/' \

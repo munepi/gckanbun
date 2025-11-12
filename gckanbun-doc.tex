@@ -108,11 +108,11 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
 
 \title{\texttt{gckanbun} Package Documentation (Reworked)}
 \author{%
-\parbox[r]{7cm}{%
+\parbox[r]{8cm}{%
   Original ver. : Munehiro Yamamoto\\
-  Modified ver. : Kawaguchi a.k.a. KKTeX
+  Modified ver. : Kosei Kawaguchi a.k.a. KKTeX
 }}
-\date{Version 2.0.0 (2025/11/04)}
+\date{Version 2.1.0 (2025/11/12)}
 
 
 \begin{document}
@@ -124,9 +124,9 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
 \newpage
 
 \section{概要}
-このリワークは、gckanbunパッケージをより日本における漢文組版において品質を担保できるように改変したものです。オリジナルの作者様である山本宗宏（Munehiro Yamamoto）さんとの協議により、メンテナーを形式上私KKTeXが引き継ぐこととなりました。
+このリワークは、gckanbunパッケージを、日本における漢文組版においてより高い品質を担保できるように改変したものです。オリジナルの作者様である山本宗宏（Munehiro Yamamoto）さんとの協議により、メンテナーを形式上私川口晃世（KKTeX）が引き継ぐこととなりました。
 
-元々、gckanbunパッケージはそのルビや返り点の制御構造において非常に優れていたため、大枠はオリジナルのそれを踏襲し、必要最低限の拡張及び変更にとどめています。また、本パッケージに関する山本さんの記事として、
+gckanbunパッケージはそのルビや返り点の制御構造において非常に優れていたため、大枠はオリジナルのそれを踏襲し、必要最低限の拡張及び変更にとどめています。また、本パッケージに関する山本さんの記事として、
 \begin{quotation}
   \url{https://qiita.com/munepi/items/5e6ac49fa5c025123305}
 \end{quotation}
@@ -147,7 +147,7 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
 \subsection{読み込み}
 適切な場所に\texttt{gckanbun.sty}のファイルを設置し、\verb|\usepackage{gckanbun}|とかけば読み込みは完了です。
 
-本パッケージでは、オリジナルの仕様を引き継ぐ形で、\namiKK{\texttt{luatexja}を事前に読み込んでおくことが必須}となるため注意が必要です。ただし、jlreqクラスを仕様する場合は内部的に読み込まれるため、再度読み込む必要はありません。
+本パッケージはLuaLaTeXでも(u)pLaTeXでも使用が可能です。
 
 \subsection{オプション}
 パッケージオプションは\verb|prefix=<prefix>|（デフォルト値：\verb|gckanbun|）となっていて、\texttt{gckanbun}パッケージが提供する3つのコマンド\verb|\gckanbunruby|、\verb|\gckanbunokurigana|、\verb|\gckanbunkaeriten| をそれぞれ\verb|<prefix>ruby|、\verb|<prefix>okurigana|、\verb|<prefix>kaeriten| として提供します。このオプションにより、他のパッケージで提供されるルビ振りコマンド \verb|\ruby| との衝突を避けられます。
@@ -171,11 +171,11 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
 \noindent です。これらに対し、本パッケージでは、それぞれ
 
 \begin{itemize}
-  \item \verb|\kaeriten|、\verb|返り|
-  \item \verb|\furigana|、\verb|振り|
-  \item \verb|\okurigana|、\verb|送り|
-  \item \verb|\furigana|、\verb|振り|のオプショナル引数
-  \item \verb|\okurigana|、\verb|送り|のオプショナル引数
+  \item \verb|\kaeriten|、\verb|\返り|
+  \item \verb|\furigana|、\verb|\振り|
+  \item \verb|\okurigana|、\verb|\送り|
+  \item \verb|\furigana|、\verb|\振り|のオプショナル引数
+  \item \verb|\okurigana|、\verb|\送り|のオプショナル引数
   \item \verb|\IchiRe|、\verb|\JyouRe|、\verb|\KouRe|、\verb|\TenRe|
   \item \verb|\KanHyphen|
 \end{itemize}
@@ -225,17 +225,26 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
 このパッケージによって提供されるコマンドは、基本的に「局所的な横書きないし縦書き」に対する出力を保証しません。というのも局所的に縦書きにするためのコマンドである\verb|\tate|などの内部の環境と通常の縦書き環境の仕様は大きく異なるためです。
 
 
-\section{全体縦書き環境における出力例}
+\section{通常の漢文}
+通常の漢文を打つ際には、
+
+\begin{itemize}
+  \item ルビはモノルビ仕様
+  \item 必ず\verb|\振り|→\verb|\送り|→\verb|\返り|の順番にコマンドを配置
+\end{itemize}
+
+\noindent の２点に注意します。
+
+縦書き環境における出力は以下のようになります。漢詩でなければ、通常の文章と同様の打ち方で問題ありません。
+
+漢文に傍線を引く場合、luwa-ulパッケージが最適です。自動でルビを検出し、下線を適切に持ち上げてくれます。
 
 \begin{SourceCode}{Input}{TeX}
   \documentclass[luatex,fontsize=8pt,paper=b5,tate]{jlreq}
   \usepackage{luwa-ul,KKsymbols}
   \usepackage{gckanbun}
-
-
-  \begin{document}\Huge
-  \fboxsep=0pt\fboxrule=.1pt
-  今夫\送り{レ}江戸\振り{者}{は}、世之所\送り{ノ}\返り{レ}称\送り{スル}名都\振り{大}{だい}\振り{邑}{いふ}{大きな都市}、冠蓋之所\返り{レ}集\送り{マル}\LineNumbering{\kakko{2}}[.5em]\dashKK{舟車之\振り{所}{ところ}\送り{ニシテ}\返り{レ}\振り{湊}{あつ}\送り{マル}、}実\送り{ニ}\振り{為}{た}\送り{ル}\返り{二}天下之大都会\返り{一}也。
+  \begin{document}\Huge%
+  今夫\送り{レ}江戸\振り{者}{は}、世之所\送り{ノ}\返り{レ}称\送り{スル}名都\振り{大}{だい}\振り{邑}{いふ}、冠蓋之所\返り{レ}集\送り{マル}\LineNumbering{\kakko{2}}[.5em]\dashKK{舟車之\振り{所}{ところ}\送り{ニシテ}\返り{レ}\振り{湊}{あつ}\送り[intrusion=post]{マル}}、実\送り{ニ}\振り{為}{た}\送り{ル}\返り{二}天下之大都会\返り{一}也。
   而\送り{レドモ}\LineNumbering{\ichimoji{C}}\nolinebreak\underLineKK{其地之為名、訪之於古、未之聞}。
   豈\送り{二}非\送り{ズ}\返り{三}古今相\送り{ヒ}去\送り{ルコト}\振り{日}{ひび}\送り{ニ}遠\送り{ク}、事之相\送り{ヒ}変\送り{ズルコト}愈多\送り{ク}、求\送り{ムルモ}\返り{二}其\送り{ノ}所\送り{ヲ}\返り{\IchiRe}欲\送り{スル}\返り{レ}聞\送り{カント}而不\送り{ルコト}可\送り{カラ}\返り{レ}得、亦\送り{タ}\振り{猶}{な}[ごと]\送り{ホ}[キヲ]\返り{二}今之於\送り{ケルガ}\返り{\JyouRe}古\送り{ニ}也。
   \end{document}
@@ -247,14 +256,77 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
   \end{center}
 \end{OutPut}
 
+\section{漢詩}
+
+漢詩を打つ場合には、\verb|\makebox|と\verb|intrusion|オプションを使います。\verb|intrusion|オプションを指定すると、ルビ文字が親文字の幅を超えた時に前後の領域に「侵入」する形で配置されます。
+
+しかし、漢文はほとんどの文字に何らかのルビが振られるため、普段から侵入を許可する仕様にするとかえって読みづらいです。したがって、本当に必要な時にだけこのオプションを使うべきです。
+
+漢詩において、各句の最初と最後の字が水平方向に揃っていないと見栄えを損なってしまいます。そこで、gckanbunパッケージでは\verb|\makebox|と\verb|intrusion|オプションの組み合わせによって漢詩を組版することを推奨します。
+
+\begin{description}
+  \item[\texttt{\textbackslash 振り}] \verb|intrusion=pre/post/both| の３種類
+  \item[\texttt{\textbackslash 送り}] \verb|intrusion=post/both| の２種類
+  \item[\texttt{\textbackslash 返り}] \verb|intrusion=post/both| の２種類
+\end{description}
+
+\noindent が各コマンドで提供されるオプションであることに注意し、
+
+\begin{SourceCode}{Input}{TeX}
+  \documentclass[luatex,fontsize=8pt,paper=b5,tate]{jlreq}
+  \usepackage{luwa-ul,KKsymbols}
+  \usepackage{gckanbun}
+  \begin{document}\Huge%
+  \makebox[8em][t]{%
+    \振り[intrusion=pre]{春}{しゅん}\hfill%
+    \振り{眠}{みん}\hfill%
+    不\返り{レ}\hfill%
+    \振り{覚}{おぼ}\送り{エ}\返り{レ}\hfill%
+    \振り{暁}{あかつき}\送り[intrusion=post]{ヲ}%
+  }
+
+  \makebox[8em][t]{%
+    \振り{処}{しょ}\hfill%
+    \振り{処}{しょ}\hfill%
+    聞\送り{ク}\返り{二}\hfill%
+    \underLineKK{\振り{啼}{てい}\hfill%
+    鳥\送り{ヲ}\返り[intrusion=post]{一}}%
+  }
+
+  \makebox[8em][t]{%
+    \振り{夜}{や}\hfill%
+    \振り{来}{らい}\hfill%
+    風\hfill%
+    雨\送り{ノ}\hfill%
+    声%
+  }
+
+  \makebox[8em][t]{%
+    花\hfill%
+    \振り{落}{お}\送り{ツルコト}\hfill%
+    知\送り{ル}\hfill%
+    \振り{多}{た}\hfill%
+    \振り[intrusion=post]{少}{しょう}%
+  }
+
+  \end{document}
+\end{SourceCode}
+
+\begin{OutPut}{Output}[縦書き]
+  \begin{center}
+    \includegraphics[width=.7\linewidth]{kanshi-sample.pdf}
+  \end{center}
+\end{OutPut}
+
+以上のように「漢字１文字ごとに\verb|\hfill|を挿入」することによって適切な空きを確保し、その上で句の最初の文字に（必要ならば）\verb|intrusion=pre|、最後の文字に\verb|intrusion=post|とします。ただし、たとえば「\verb|鳥\送り{ヲ}\返り{一}|」のような１まとまりにおいて、\verb|\送り|と\verb|\返り|の両方に対して\verb|intrusion=post|をつける必要はありません。「一番最後の」要素に対してのみ\verb|intrusion=post|をつければ十分です。
 
 \section{ライセンス}
 本パッケージをMITライセンスで配布します。条件なども全て以下のライセンス表記に準拠します。
 
-\begin{simple}[gckanbun package]{ライセンス全文}
+\begin{simple}[gckanbun package]{ライセンス全文}\setlength{\parindent}{0em}
   This package is licensed under the terms of the MIT License.
 
-  Copyright (c) 2017-2025 Munehiro Yamamoto <munepixyz@gmail.com>
+  Copyright (c) 2017-2025 Munehiro Yamamoto <munepixyz@gmail.com>\\
   Copyright (c) 2025 Kosei Kawaguchi
 
   Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -268,6 +340,7 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
 \section{Version History}
 \begin{itemize}
   \item \textbf{v2.0.0 (2025/11/04)} --- Initial public release as a reworked version.
+  \item \textbf{v2.1.0 (2025/11/12)} --- Modefied package documentation. Also, KKTeX added some options for KANSHI typesetting.
 \end{itemize}
 
 \section{Source Code}
@@ -293,7 +366,7 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
   % 再読返り点の出力位置および\KanHyphenの仕様を変更。
 
   \NeedsTeXFormat{LaTeX2e}
-  \ProvidesPackage{gckanbun}[2025/11/04, Version 2.0.0]
+  \ProvidesPackage{gckanbun}[2025/11/12, Version 2.1.0]
 
   %% declare package errors
   \def\gcknbn@error{\PackageError{gckanbun}}
@@ -301,7 +374,7 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
   \def\gcknbn@warningnoline{\PackageWarningNoLine{gckanbun}}
   \def\gcknbn@info{\PackageInfo{gckanbun}}
 
-  \RequirePackage{keyval}
+  \RequirePackage{keyval,etoolbox}
   \DeclareOption*{\gcknbn@setkey}
   \def\gcknbn@setkey{\expandafter\@gcknbn@setkey\expandafter{\CurrentOption}}
   \def\@gcknbn@setkey{\setkeys{gcknbn}}
@@ -379,18 +452,51 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
   \newdimen\gcknbn@furigana@width \gcknbn@furigana@width\z@
   \newdimen\gcknbn@furigana@width@s \gcknbn@furigana@width@s\z@
   \newdimen\gcknbn@dima
-  \DeclareDocumentCommand{\gcknbn@ruby}{ s m m O{\vphantom{羅} }}{%
+
+  % pre,post,bothをとれる。
+  \newdimen\gcknbn@intr@pre
+  \newdimen\gcknbn@intr@post
+  \define@key{gcknbn@ruby}{intrusion}{\edef\gcknbn@ruby@intr@mark{#1}}
+
+  \DeclareDocumentCommand{\gcknbn@ruby}{ s O{} m m O{\vphantom{羅} }}{%
     \gcknbn@adjust@yokotate@use%
     \global\gcknbn@furigana@width\z@%
     \global\gcknbn@furigana@width@s\z@%
+    \global\def\gcknbn@ruby@intr@mark{}%
     \leavevmode%
     \begingroup%
+      \setkeys{gcknbn@ruby}{#2}%
       \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@%
       \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
-      \setbox\z@=\hbox{#2}\setbox\@ne=\hbox{\tiny#3}%
-      \setbox\tw@=\hbox{\tiny#4}%
-      \gdef\gcknbn@rubybox@text{#3}%
-      \gdef\gcknbn@rubybox@text@s{#4}%
+      \setbox\z@=\hbox{#3}\setbox\@ne=\hbox{\tiny#4}%
+      \setbox\tw@=\hbox{\tiny#5}%
+      \ifdim\wd\@ne>\wd\tw@%侵入量計算
+        \ifdim\wd\@ne>\zw%
+          \global\gcknbn@intr@pre=\dimexpr(\wd\@ne-\zw)/2\relax%再読なし前方
+          \global\gcknbn@intr@post=\dimexpr(\wd\@ne-\zw)/2\relax%再読なし後方
+        \else%
+          \global\gcknbn@intr@pre=0em\relax%
+          \global\gcknbn@intr@post=0em\relax%
+        \fi%
+      \else%
+        \ifdim\wd\tw@>\zw%
+          \global\gcknbn@intr@pre=0em%再読あり前方
+          \global\gcknbn@intr@post=0em\relax%再読あり後方
+        \else%
+          \global\gcknbn@intr@pre=0em\relax%
+          \global\gcknbn@intr@post=0em\relax%
+        \fi%
+      \fi%
+      \ifdefstring{\gcknbn@ruby@intr@mark}{pre}{%
+        \kern-\gcknbn@intr@pre%
+      }{%
+        \ifdefstring{\gcknbn@ruby@intr@mark}{both}{%
+          \kern-\gcknbn@intr@pre%
+        }{%
+          % それ以外は何もなし
+      }}%
+      \gdef\gcknbn@rubybox@text{#4}%
+      \gdef\gcknbn@rubybox@text@s{#5}%
       \global\gcknbn@rubybox@width=\wd\z@\relax%
       \IfBooleanTF{#1}{\gcknbn@furigana@okurigana@SMASH}{\gcknbn@furigana@okurigana}%
       }
@@ -417,9 +523,17 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
         \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
           \vbox{\hbox to \dimen\z@{\tiny\hfil\gcknbn@rubybox@text\hfil}%
             \nointerlineskip\hbox to \dimen\z@{\hfil\box\z@\hfil}%
-            \nointerlineskip\hbox to \dimen\z@{\box\tw@\hss}%
+            \nointerlineskip\hbox to \dimen\z@{\hss\box\tw@\hss}%
             }}}%
       \fi%
+      \ifdefstring{\gcknbn@ruby@intr@mark}{post}{%
+        \kern-\gcknbn@intr@post%
+      }{%
+      \ifdefstring{\gcknbn@ruby@intr@mark}{both}{%
+          \kern-\gcknbn@intr@post%
+        }{%
+          % それ以外は何もなし
+      }}%
     \endgroup}
 
   \def\gcknbn@@furigana@okurigana@SMASH{%
@@ -438,26 +552,40 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
         \raisebox{\gcknbn@adjust@yokotate}{\smash{\hbox{%
           \vbox{\hbox to \dimen\z@{\tiny\hfil\gcknbn@rubybox@text\hfil}%
             \nointerlineskip\hbox to \dimen\z@{\hfil\box\z@\hfil}%
-            \nointerlineskip\hbox to \dimen\z@{\box\tw@\hss}%
+            \nointerlineskip\hbox to \dimen\z@{\hss\box\tw@\hss}%
             }}}}%
       \fi
+      \ifdefstring{\gcknbn@ruby@intr@mark}{post}{%
+        \kern-\gcknbn@intr@post%
+      }{%
+        \ifdefstring{\gcknbn@ruby@intr@mark}{both}{%
+          \kern-\gcknbn@intr@post%
+        }{%
+          % それ以外は何もなし
+      }}%
     \endgroup}
 
   %% 訓点
   \newdimen\gcknbn@okurigana@width \gcknbn@okurigana@width\z@
   \newdimen\gcknbn@okurigana@width@s \gcknbn@okurigana@width@s\z@
   \newdimen\gcknbn@kaeriten@width \gcknbn@kaeriten@width\z@
+
+  % post,bothをとれるが挙動は一緒
+  \define@key{gcknbn@okurigana}{intrusion}{\edef\gcknbn@okuri@intr@mark{#1}}
+
   %%訓点送り仮名
-  \DeclareDocumentCommand{\gcknbn@okurigana}{ s m O{\vphantom{羅}} }{%
+  \DeclareDocumentCommand{\gcknbn@okurigana}{ s O{} m O{\vphantom{羅}} }{%
     \nobreak\leavevmode%
     \gcknbn@adjust@yokotate@use%
     \global\gcknbn@okurigana@width\z@%
     \global\gcknbn@okurigana@width@s\z@%
+    \global\def\gcknbn@okuri@intr@mark{}%
     \begingroup%
+      \setkeys{gcknbn@okurigana}{#2}%
       \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@%
       \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
-      \setbox\z@=\hbox{\tiny #2}%
-      \setbox\@ne=\hbox{\tiny #3}%
+      \setbox\z@=\hbox{\tiny #3}%
+      \setbox\@ne=\hbox{\tiny #4}%
       \ifdim\gcknbn@furigana@width>0.9999\zw\relax%
         \global\gcknbn@okurigana@width=\dimexpr\gcknbn@furigana@width + \wd\z@ - 1\zw\relax%
       \else%
@@ -512,7 +640,9 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
           }}}%
       }%
       \global\gcknbn@furigana@width=\z@\relax%
-      \gcknbn@okurigana@kaeriten}
+      \gcknbn@okurigana@intr%
+      \gcknbn@okurigana@kaeriten%
+      }
 
   \def\gcknbn@okurigana@kaeriten{%
     \futurelet\@let@token\gcknbn@@okurigana@kaeriten}
@@ -525,6 +655,15 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
         \global\gcknbn@okurigana@width=\z@
       \else\ifx\@let@token\gcknbn@kaeriten
         \gcknbn@okurigana@kaeriten@skip
+      \else%
+        \ifdefstring{\gcknbn@okuri@intr@mark}{post}{%
+          \kern-\gcknbn@intr@post%
+        }{%
+        \ifdefstring{\gcknbn@okuri@intr@mark}{both}{%
+            \kern-\gcknbn@intr@post%
+          }{%
+            % それ以外は何もなし
+        }}%
       \fi\fi\fi
     \endgroup}
   \def\gcknbn@okurigana@kutoten@skip{%
@@ -537,6 +676,13 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
       \hspace*{-\gcknbn@okurigana@width@s}%
     \fi
   }
+  \def\gcknbn@okurigana@intr{%
+    \ifdim\gcknbn@okurigana@width>\gcknbn@okurigana@width@s%
+      \global\gcknbn@intr@post=\gcknbn@okurigana@width%
+    \else%
+      \global\gcknbn@intr@post=\gcknbn@okurigana@width@s%
+    \fi
+  }
 
   %%訓点返り点
   \newcommand*\gcknbn@kaeriten{%
@@ -545,16 +691,26 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
       \gcknbn@@kaeriten}}}
   % \gcknbn@@kaeriten}
 
-  \newcommand*\gcknbn@@kaeriten[1]{%
+  % post,bothをとれるが挙動は一緒
+  \define@key{gcknbn@kaeriten}{intrusion}{\edef\gcknbn@kaeri@intr@mark{#1}}
+
+  \NewDocumentCommand\gcknbn@@kaeriten{ O{} m }{%
     \nobreak\leavevmode
     \gcknbn@adjust@kaeri@use%
+    \global\def\gcknbn@kaeri@intr@mark{}%
+    \setkeys{gcknbn@kaeriten}{#1}%
     \begingroup
       \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@
       \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
-      \setbox\z@=\hbox{\tiny #1}%
+      \setbox\z@=\hbox{\tiny #2}%
       \global\gcknbn@kaeriten@width=\wd\z@\relax
+      \ifdim\wd\z@>\gcknbn@intr@post%
+        \global\gcknbn@intr@post=\wd\z@%
+      \fi%
       \smash{\lower\gcknbn@adjust@kaeri\hbox{\box\z@\hss}}%
-    \endgroup\gcknbn@kaeriten@kutoten}
+    \endgroup%
+    \gcknbn@kaeriten@kutoten%
+    }
 
   \def\gcknbn@kaeriten@kutoten{\futurelet\@let@token\gcknbn@@kaeriten@kutoten}
   \def\gcknbn@@kaeriten@kutoten{%
@@ -564,8 +720,16 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
     \else\ifx\@let@token。
       \gcknbn@kaeriten@kutoten@skip
       \global\gcknbn@kaeriten@width=\z@
-    \else
+    \else%
       \gcknbn@kaeriten@okurigana@skip
+      \ifdefstring{\gcknbn@kaeri@intr@mark}{post}{%
+        \kern-\gcknbn@intr@post%
+      }{%
+      \ifdefstring{\gcknbn@kaeri@intr@mark}{both}{%
+          \kern-\gcknbn@intr@post%
+        }{%
+          % それ以外は何もなし
+      }}%
     \fi\fi
   }
   \def\gcknbn@kaeriten@kutoten@skip{%
