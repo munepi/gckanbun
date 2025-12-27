@@ -13,10 +13,6 @@ This package provides a comprehensive set of commands required for typesetting c
 
 Munehiro Yamamoto, the author of the original, generously granted permission to release this modified version.
 
-Dependencies:
--------------
-luatex-ja (If you don't use jlreq class, you MUST load luatex-ja package in advance.)
-
 License:
 -------------
 This package is licensed under the terms of the MIT License.
