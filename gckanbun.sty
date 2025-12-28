@@ -13,9 +13,13 @@
 
 % 未実装
 % グループルビ v2.3.0で実装？
-% とりあえず次のアプデでv2.2.5実装
-% \GCKEnv なるコマンドを用意。
-% その範囲内でスコープし、\振り、\送り、\返りを\smashする。
+
+% 2.2.5
+% あとはLua以外への対応。
+% 鉄緑の教材にもう少し近づけるか否か。
+% デフォルトで\kanjiskipが「。」ないし「、」の前に挿入される
+% 以上、各コマンドの後のskipもそうせざるを得ない。
+
 
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesPackage{gckanbun}[2025/12/28, Version 2.2.5--undev]
@@ -251,15 +255,27 @@
 }
 \def\gcknbn@@furigana@okurigana{% normal
   \ifx\@let@token\gcknbn@okurigana% 次が送り仮名の時
-    \global\gcknbn@furigana@width=\wd\@ne\relax%
-    \global\gcknbn@furigana@width@s=\wd\tw@\relax%
+    \gckanbun@furigana@lenset%
     \dimen\z@=\wd\z@%
     \gckanbun@furigana@boxing@nextokuri%
-  \else% 次が送り仮名ではない時
+  \else\ifx\@let@token、% 次が送り仮名ではない時
+    \gckanbun@furigana@lenset%
     \gckanbun@furigana@boxcal%
     \penalty\@lowpenalty%
     \gckanbun@furigana@boxing@nextsonota%
-  \fi%
+    \gcknbn@furigana@kutoten@skip%
+  \else\ifx\@let@token。%
+    \gckanbun@furigana@lenset%
+    \gckanbun@furigana@boxcal%
+    \penalty\@lowpenalty%
+    \gckanbun@furigana@boxing@nextsonota%
+    \gcknbn@furigana@kutoten@skip%
+  \else%
+    \gckanbun@furigana@lenset%
+    \gckanbun@furigana@boxcal%
+    \penalty\@lowpenalty%
+    \gckanbun@furigana@boxing@nextsonota%
+  \fi\fi\fi%
   \ifdefstring{\gcknbn@ruby@intr@mark}{post}{%
     \kern-\gcknbn@intr@post%
   }{%
@@ -271,20 +287,35 @@
 \endgroup}
 \def\gcknbn@@furigana@okurigana@smashed{% smashed
   \ifx\@let@token\gcknbn@okurigana@smashed% 次が送り仮名の時
-    \global\gcknbn@furigana@width=\wd\@ne\relax%
-    \global\gcknbn@furigana@width@s=\wd\tw@\relax%
+    \gckanbun@furigana@lenset%
     \dimen\z@=\wd\z@%
     \gckanbun@furigana@boxing@nextokuri*%
   \else\ifx\@let@token\gcknbn@kaeriten@smashed% 次が送り仮名ではない時
+    \gckanbun@furigana@lenset%
     \gckanbun@furigana@boxcal%
     \penalty\@lowpenalty%
     \gckanbun@furigana@boxing@nextsonota*%
-  \else%
+  \else\ifx\@let@token、%
+    \gckanbun@furigana@lenset%
     \gckanbun@furigana@boxcal%
     \penalty\@lowpenalty%
     \gckanbun@furigana@boxing@nextsonota*%
     \kanjiskip@gckanbun@env%
-  \fi\fi%
+    \gcknbn@furigana@kutoten@skip%
+  \else\ifx\@let@token。%
+    \gckanbun@furigana@lenset%
+    \gckanbun@furigana@boxcal%
+    \penalty\@lowpenalty%
+    \gckanbun@furigana@boxing@nextsonota*%
+    \kanjiskip@gckanbun@env%
+    \gcknbn@furigana@kutoten@skip%
+  \else%
+    \gckanbun@furigana@lenset%
+    \gckanbun@furigana@boxcal%
+    \penalty\@lowpenalty%
+    \gckanbun@furigana@boxing@nextsonota*%
+    \kanjiskip@gckanbun@env%
+  \fi\fi\fi\fi%
   \ifdefstring{\gcknbn@ruby@intr@mark}{post}{%
     \kern-\gcknbn@intr@post%
   }{%
@@ -294,6 +325,30 @@
       % それ以外は何もなし
   }}%
 \endgroup}
+
+\def\gckanbun@furigana@lenset{%
+  \global\gcknbn@furigana@width=\wd\@ne\relax%
+  \global\gcknbn@furigana@width@s=\wd\tw@\relax%
+}
+\newdimen\gcknbn@furigana@kutouten@kern
+\def\gcknbn@furigana@kutoten@skip{%
+  \gcknbn@furigana@kutouten@kern=0pt\relax % リセット
+  % どちらか一方が1\zwより大きいか
+  \ifnum 0%
+    \ifdim\gcknbn@furigana@width > 1\zw 1\fi%
+    \ifdim\gcknbn@furigana@width@s > 1\zw 1\fi%
+    > 0%
+    %片方が1\zwを超えている場合
+    \ifdim\gcknbn@furigana@width > \gcknbn@furigana@width@s%
+      \gcknbn@furigana@kutouten@kern=\gcknbn@furigana@width%
+    \else%
+      \gcknbn@furigana@kutouten@kern=\gcknbn@furigana@width@s%
+    \fi%
+    \advance\gcknbn@furigana@kutouten@kern by -1\zw%
+    \divide\gcknbn@furigana@kutouten@kern by \tw@%
+  \fi%
+  \hspace*{-\gcknbn@furigana@kutouten@kern}%
+}
 
 %% 訓点
 \newdimen\gcknbn@okurigana@width \gcknbn@okurigana@width\z@
@@ -454,7 +509,11 @@
   \endgroup}
 
 \def\gcknbn@okurigana@kutoten@skip{%
-  \ifgcknbn@tdir\hspace*{-\gcknbn@okurigana@width}\else\fi%
+  \ifdim\gcknbn@okurigana@width>\gcknbn@okurigana@width@s%
+    \hspace*{-\gcknbn@okurigana@width}%
+  \else%
+    \hspace*{-\gcknbn@okurigana@width@s}%
+  \fi%
 }
 
 \def\gcknbn@okurigana@kaeriten@skip{%
@@ -559,8 +618,6 @@
     \hspace*{-\gcknbn@kaeriten@width}%
   \fi%
 }
-
-\def\gcknbn@okurigana@kutoten@skip{\hspace*{-\gcknbn@okurigana@width}}
 
 \def\gcknbn@kaeriten@okurigana@skip{%
   \ifdim\gcknbn@okurigana@width>\gcknbn@kaeriten@width%
