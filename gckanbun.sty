@@ -65,6 +65,17 @@
     \gcknbn@tdirtrue
 \fi\fi
 
+\newcommand{\kanjiskip@gckanbun@env}{%
+  \ifhmode
+    % 1. 行頭（直前に何もノードがない状態）では何もしない
+    % 2. または直前の空き(lastskip)が0より大きい場合のみ処理する
+    \ifdim\lastskip > -1pt\relax % 行頭や特定の条件下では lastskip は 0 か特殊な値
+      \unskip
+      \hspace{\ltjgetparameter{kanjiskip}}\relax 
+    \fi
+  \fi
+}
+
 \newcommand{\GCKTateOn}{\gcknbn@tdirtrue}
 \newcommand{\GCKTateOff}{\gcknbn@tdirfalse}
 \newdimen\gckenv@skip \setlength{\gckenv@skip}{\zw}
@@ -115,6 +126,26 @@
 \newdimen\gcknbn@intr@post
 \define@key{gcknbn@ruby}{intrusion}{\edef\gcknbn@ruby@intr@mark{#1}}
 
+\NewDocumentCommand{\gckanbun@intrusioncal}{}{%
+  \ifdim\wd\@ne>\wd\tw@%侵入量計算
+    \ifdim\wd\@ne>\zw%
+      \global\gcknbn@intr@pre=\dimexpr(\wd\@ne-\zw)/2\relax%再読なし前方
+      \global\gcknbn@intr@post=\dimexpr(\wd\@ne-\zw)/2\relax%再読なし後方
+    \else%
+      \global\gcknbn@intr@pre=0em\relax%
+      \global\gcknbn@intr@post=0em\relax%
+    \fi%
+  \else%
+    \ifdim\wd\tw@>\zw%
+      \global\gcknbn@intr@pre=\dimexpr(\wd\tw@-\zw)/2\relax%再読あり前方
+      \global\gcknbn@intr@post=\dimexpr(\wd\tw@-\zw)/2\relax%再読あり後方
+    \else%
+      \global\gcknbn@intr@pre=0em\relax%
+      \global\gcknbn@intr@post=0em\relax%
+    \fi%
+  \fi%
+}
+
 \DeclareDocumentCommand{\gcknbn@ruby}{ O{} m m O{\gckanbun@phantom}}{% normal
   \gcknbn@adjust@yokotate@use%
   \global\gcknbn@furigana@width\z@%
@@ -128,23 +159,7 @@
     \setbox\z@=\hbox{#2}% 親文字
     \setbox\@ne=\hbox{\tiny#3}% 振り仮名
     \setbox\tw@=\hbox{\tiny#4}% 再読振り仮名（通常はvphantomを入れている）
-    \ifdim\wd\@ne>\wd\tw@%侵入量計算
-      \ifdim\wd\@ne>\zw%
-        \global\gcknbn@intr@pre=\dimexpr(\wd\@ne-\zw)/2\relax%再読なし前方
-        \global\gcknbn@intr@post=\dimexpr(\wd\@ne-\zw)/2\relax%再読なし後方
-      \else%
-        \global\gcknbn@intr@pre=0em\relax%
-        \global\gcknbn@intr@post=0em\relax%
-      \fi%
-    \else%
-      \ifdim\wd\tw@>\zw%
-        \global\gcknbn@intr@pre=\dimexpr(\wd\tw@-\zw)/2\relax%再読あり前方
-        \global\gcknbn@intr@post=\dimexpr(\wd\tw@-\zw)/2\relax%再読あり後方
-      \else%
-        \global\gcknbn@intr@pre=0em\relax%
-        \global\gcknbn@intr@post=0em\relax%
-      \fi%
-    \fi%
+    \gckanbun@intrusioncal% 侵入量を計算
     \ifdefstring{\gcknbn@ruby@intr@mark}{pre}{%
       \kern-\gcknbn@intr@pre%
     }{%
@@ -159,6 +174,7 @@
   \gcknbn@furigana@okurigana%
 }
 \DeclareDocumentCommand{\gcknbn@ruby@smashed}{ O{} m m O{\gckanbun@phantom}}{% smashed
+  \kanjiskip@gckanbun@env%
   \gcknbn@adjust@yokotate@use%
   \global\gcknbn@furigana@width\z@%
   \global\gcknbn@furigana@width@s\z@%
@@ -171,23 +187,7 @@
     \setbox\z@=\hbox{#2}% 親文字
     \setbox\@ne=\hbox{\tiny#3}% 振り仮名
     \setbox\tw@=\hbox{\tiny#4}% 再読振り仮名（通常はvphantomを入れている）
-    \ifdim\wd\@ne>\wd\tw@%侵入量計算
-      \ifdim\wd\@ne>\zw%
-        \global\gcknbn@intr@pre=\dimexpr(\wd\@ne-\zw)/2\relax%再読なし前方
-        \global\gcknbn@intr@post=\dimexpr(\wd\@ne-\zw)/2\relax%再読なし後方
-      \else%
-        \global\gcknbn@intr@pre=0em\relax%
-        \global\gcknbn@intr@post=0em\relax%
-      \fi%
-    \else%
-      \ifdim\wd\tw@>\zw%
-        \global\gcknbn@intr@pre=\dimexpr(\wd\tw@-\zw)/2\relax%再読あり前方
-        \global\gcknbn@intr@post=\dimexpr(\wd\tw@-\zw)/2\relax%再読あり後方
-      \else%
-        \global\gcknbn@intr@pre=0em\relax%
-        \global\gcknbn@intr@post=0em\relax%
-      \fi%
-    \fi%
+    \gckanbun@intrusioncal% 侵入量を計算
     \ifdefstring{\gcknbn@ruby@intr@mark}{pre}{%
       \kern-\gcknbn@intr@pre%
     }{%
@@ -209,31 +209,56 @@
   \futurelet\@let@token\gcknbn@@furigana@okurigana@smashed%
 }
 
-\def\gcknbn@@furigana@okurigana{% normal
-  \ifx\@let@token\gcknbn@okurigana% 次が送り仮名の時
-    \global\gcknbn@furigana@width=\wd\@ne\relax%
-    \global\gcknbn@furigana@width@s=\wd\tw@\relax%
+\NewDocumentCommand{\gckanbun@furigana@boxcal}{}{%
+  \ifdim\wd\z@>\wd\@ne% \dimen\z@=max{\wd\z@,\wd\@ne,\wd\tw@}
     \dimen\z@=\wd\z@%
+  \else%
+    \dimen\z@=\wd\@ne%
+  \fi%
+  \ifdim\dimen\z@<\wd\tw@%
+    \dimen\z@=\wd\tw@%
+  \fi%
+}
+\NewDocumentCommand{\gckanbun@furigana@boxing@nextokuri}{s}{%
+  \IfBooleanTF{#1}{%
+    \raisebox{\gcknbn@adjust@yokotate}{\smash{\hbox{%
+      \vbox{\hbox to \dimen\z@{\box\@ne\hss}%
+        \nointerlineskip\hbox to \dimen\z@{\hss\box\z@\hss}%
+        \nointerlineskip\hbox to \dimen\z@{\box\tw@\hss}%
+    }}}}%
+  }{%
     \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
       \vbox{\hbox to \dimen\z@{\box\@ne\hss}%
         \nointerlineskip\hbox to \dimen\z@{\hss\box\z@\hss}%
         \nointerlineskip\hbox to \dimen\z@{\box\tw@\hss}%
     }}}%
-  \else% 次が送り仮名ではない時
-    \ifdim\wd\z@>\wd\@ne% \dimen\z@=max{\wd\z@,\wd\@ne,\wd\tw@}
-      \dimen\z@=\wd\z@%
-    \else%
-      \dimen\z@=\wd\@ne%
-    \fi%
-    \ifdim\dimen\z@<\wd\tw@%
-      \dimen\z@=\wd\tw@%
-    \fi%
-    \penalty\@lowpenalty%
+  }%
+}
+\NewDocumentCommand{\gckanbun@furigana@boxing@nextsonota}{s}{%
+  \IfBooleanTF{#1}{%
+    \raisebox{\gcknbn@adjust@yokotate}{\smash{\hbox{%
+      \vbox{\hbox to \dimen\z@{\tiny\hss\gcknbn@rubybox@text\hss}%
+        \nointerlineskip\hbox to \dimen\z@{\hss\box\z@\hss}%
+        \nointerlineskip\hbox to \dimen\z@{\hss\box\tw@\hss}%
+    }}}}%
+  }{%
     \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
       \vbox{\hbox to \dimen\z@{\tiny\hss\gcknbn@rubybox@text\hss}%
         \nointerlineskip\hbox to \dimen\z@{\hss\box\z@\hss}%
         \nointerlineskip\hbox to \dimen\z@{\hss\box\tw@\hss}%
     }}}%
+  }%
+}
+\def\gcknbn@@furigana@okurigana{% normal
+  \ifx\@let@token\gcknbn@okurigana% 次が送り仮名の時
+    \global\gcknbn@furigana@width=\wd\@ne\relax%
+    \global\gcknbn@furigana@width@s=\wd\tw@\relax%
+    \dimen\z@=\wd\z@%
+    \gckanbun@furigana@boxing@nextokuri%
+  \else% 次が送り仮名ではない時
+    \gckanbun@furigana@boxcal%
+    \penalty\@lowpenalty%
+    \gckanbun@furigana@boxing@nextsonota%
   \fi%
   \ifdefstring{\gcknbn@ruby@intr@mark}{post}{%
     \kern-\gcknbn@intr@post%
@@ -249,27 +274,17 @@
     \global\gcknbn@furigana@width=\wd\@ne\relax%
     \global\gcknbn@furigana@width@s=\wd\tw@\relax%
     \dimen\z@=\wd\z@%
-    \raisebox{\gcknbn@adjust@yokotate}{\smash{\hbox{%
-      \vbox{\hbox to \dimen\z@{\box\@ne\hss}%
-        \nointerlineskip\hbox to \dimen\z@{\hss\box\z@\hss}%
-        \nointerlineskip\hbox to \dimen\z@{\box\tw@\hss}%
-    }}}}%
-  \else% 次が送り仮名ではない時
-    \ifdim\wd\z@>\wd\@ne% \dimen\z@=max{\wd\z@,\wd\@ne,\wd\tw@}
-      \dimen\z@=\wd\z@%
-    \else%
-      \dimen\z@=\wd\@ne%
-    \fi%
-    \ifdim\dimen\z@<\wd\tw@%
-      \dimen\z@=\wd\tw@%
-    \fi%
+    \gckanbun@furigana@boxing@nextokuri*%
+  \else\ifx\@let@token\gcknbn@kaeriten@smashed% 次が送り仮名ではない時
+    \gckanbun@furigana@boxcal%
     \penalty\@lowpenalty%
-    \raisebox{\gcknbn@adjust@yokotate}{\smash{\hbox{%
-      \vbox{\hbox to \dimen\z@{\tiny\hss\gcknbn@rubybox@text\hss}%
-        \nointerlineskip\hbox to \dimen\z@{\hss\box\z@\hss}%
-        \nointerlineskip\hbox to \dimen\z@{\hss\box\tw@\hss}%
-    }}}}%
-  \fi%
+    \gckanbun@furigana@boxing@nextsonota*%
+  \else%
+    \gckanbun@furigana@boxcal%
+    \penalty\@lowpenalty%
+    \gckanbun@furigana@boxing@nextsonota*%
+    \kanjiskip@gckanbun@env%
+  \fi\fi%
   \ifdefstring{\gcknbn@ruby@intr@mark}{post}{%
     \kern-\gcknbn@intr@post%
   }{%
@@ -415,15 +430,18 @@
     \fi\fi\fi
   \endgroup}
 \def\gcknbn@@okurigana@kaeriten@smashed{%
-    \ifx\@let@token、
-      \gcknbn@okurigana@kutoten@skip
-      \global\gcknbn@okurigana@width=\z@
-    \else\ifx\@let@token。
-      \gcknbn@okurigana@kutoten@skip
-      \global\gcknbn@okurigana@width=\z@
-    \else\ifx\@let@token\gcknbn@kaeriten@smashed
-      \gcknbn@okurigana@kaeriten@skip
+    \ifx\@let@token、%
+      \gcknbn@okurigana@kutoten@skip%
+      \kanjiskip@gckanbun@env%
+      \global\gcknbn@okurigana@width=\z@%
+    \else\ifx\@let@token。%
+      \gcknbn@okurigana@kutoten@skip%
+      \kanjiskip@gckanbun@env%
+      \global\gcknbn@okurigana@width=\z@%
+    \else\ifx\@let@token\gcknbn@kaeriten@smashed%
+      \gcknbn@okurigana@kaeriten@skip%
     \else%
+      \kanjiskip@gckanbun@env%
       \ifdefstring{\gcknbn@okuri@intr@mark}{post}{%
         \kern-\gcknbn@intr@post%
       }{%
@@ -492,10 +510,11 @@
     \fi%
     \smash{\lower\gcknbn@adjust@kaeri\hbox{\box\z@\hss}}%
   \endgroup%
-  \gcknbn@kaeriten@kutoten%
+  \gcknbn@kaeriten@kutoten@smashed%
 }
 
 \def\gcknbn@kaeriten@kutoten{\futurelet\@let@token\gcknbn@@kaeriten@kutoten}
+\def\gcknbn@kaeriten@kutoten@smashed{\futurelet\@let@token\gcknbn@@kaeriten@kutoten@smashed}
 
 \def\gcknbn@@kaeriten@kutoten{%
   \ifx\@let@token、%
@@ -505,6 +524,25 @@
     \gcknbn@kaeriten@kutoten@skip%
     \global\gcknbn@kaeriten@width=\z@%
   \else%
+    \ifdefstring{\gcknbn@kaeri@intr@mark}{post}{%
+      \kern-\gcknbn@intr@post%
+    }{%
+    \ifdefstring{\gcknbn@kaeri@intr@mark}{both}{%
+        \kern-\gcknbn@intr@post%
+      }{%
+        \gcknbn@kaeriten@okurigana@skip%
+    }}%
+  \fi\fi%
+}
+\def\gcknbn@@kaeriten@kutoten@smashed{%
+  \ifx\@let@token、%
+    \gcknbn@kaeriten@kutoten@skip%
+    \global\gcknbn@kaeriten@width=\z@%
+  \else\ifx\@let@token。%
+    \gcknbn@kaeriten@kutoten@skip%
+    \global\gcknbn@kaeriten@width=\z@%
+  \else%
+    \kanjiskip@gckanbun@env%
     \ifdefstring{\gcknbn@kaeri@intr@mark}{post}{%
       \kern-\gcknbn@intr@post%
     }{%
@@ -577,7 +615,8 @@
 
 
 %% GCKEnv
-\NewDocumentEnvironment{GCKEnv}{ O{2\zw} }{%
+\NewDocumentEnvironment{GCKEnv}{ O{2\zw} O{0.3\zw plus 0.15\zw minus 0.2\zw} }{%
+  \ltjsetparameter{kanjiskip=#2}% ここもLuaのみの書き方になっているので注意。
   \setlength{\baselineskip}{#1}%
   \expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby@smashed
   \expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana@smashed
