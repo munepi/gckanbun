@@ -578,9 +578,10 @@
 
 %% GCKEnv
 \NewDocumentEnvironment{GCKEnv}{ O{2\zw} }{%
-  % --- \begin{GCKEnv} 時の処理 ---
   \setlength{\baselineskip}{#1}%
-  % 環境内だけで有効な \let (自動で元に戻る)
+  \expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby@smashed
+  \expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana@smashed
+  \expandafter\let\csname\gcknbn@prefix kaeriten\endcsname\gcknbn@kaeriten@smashed
   \expandafter\let\csname 振り\endcsname\gcknbn@ruby@smashed
   \expandafter\let\csname 送り\endcsname\gcknbn@okurigana@smashed
   \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten@smashed
