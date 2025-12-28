@@ -191,15 +191,23 @@ gckanbunパッケージはそのルビや返り点の制御構造において非
 これらの２種類のコマンドは全く同一のコマンドです。
 
 \begin{SourceCode}{Input}{TeX}
-  雖\返り{レ}\\
   雖\返り{\IchiRe}鬼
+
+  雖\返り{\JyouRe}鬼
+
+  雖\返り{\KouRe}鬼
+
+  雖\返り{\TenRe}鬼
 \end{SourceCode}
 
 \begin{OutPut}{Output}[横書き]
-
-  雖\返り{レ}鬼\\
   雖\返り{\IchiRe}鬼
 
+  雖\返り{\JyouRe}鬼
+
+  雖\返り{\KouRe}鬼
+
+  雖\返り{\TenRe}鬼
 \end{OutPut}
 
 のような出力になります。
@@ -749,35 +757,36 @@ gckanbunパッケージはそのルビや返り点の制御構造において非
   %% 特殊返り点
   \NewDocumentCommand{\IchiRe}{}{%
     \ifgcknbn@tdir
-      \hspace{-0.2153\zw}一\hspace{-0.8180\zw}レ%
+      \hspace{-0.21\zw}一\hspace{-0.72\zw}レ%
     \else%
-      \raisebox{0.2153\zw}{一}\llap{レ}%
+      \raisebox{0.29\zw}{一}\llap{レ}%
     \fi%
   }
   \NewDocumentCommand{\JyouRe}{}{%
     \ifgcknbn@tdir
-      上\hspace{-0.3014\zw}レ%
+      上\hspace{-0.3\zw}レ%
     \else%
-      \raisebox{0.7319\zw}{上}\llap{レ}%
+      \raisebox{0.71\zw}{上}\llap{レ}%
     \fi%
   }
   \NewDocumentCommand{\KouRe}{}{%
     \ifgcknbn@tdir
-      甲\hspace{-0.1722\zw}レ%
+      甲\hspace{-0.17\zw}レ%
     \else%
-      \raisebox{0.8180\zw}{甲}\llap{レ}%
+      \raisebox{0.82\zw}{甲}\llap{レ}%
     \fi%
   }
   \NewDocumentCommand{\TenRe}{}{%
     \ifgcknbn@tdir
-      天\hspace{-0.1722\zw}レ%
+      天\hspace{-0.17\zw}レ%
     \else%
-      \raisebox{0.8180\zw}{天}\llap{レ}%
+      \raisebox{0.82\zw}{天}\llap{レ}%
     \fi%
   }
   \NewDocumentCommand{\KanHyphen}{}{\symbol{"2015}}
 
   \endinput
+
 \end{lstlisting}
 
 \end{document}
