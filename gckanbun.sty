@@ -304,28 +304,45 @@
 \define@key{gcknbn@okurigana}{intrusion}{\edef\gcknbn@okuri@intr@mark{#1}}
 
 %%訓点送り仮名
-\DeclareDocumentCommand{\gcknbn@okurigana}{ O{} m O{\gckanbun@phantom} }{% normal
-  \nobreak\leavevmode%
-  \gcknbn@adjust@yokotate@use%
-  \global\gcknbn@okurigana@width\z@%
-  \global\gcknbn@okurigana@width@s\z@%
-  \global\def\gcknbn@okuri@intr@mark{}%
-  \begingroup%
-    \setkeys{gcknbn@okurigana}{#1}%
-    \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@%
-    \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
-    \setbox\z@=\hbox{\tiny #2}% 通常送り仮名
-    \setbox\@ne=\hbox{\tiny #3}% 再読送り仮名（通常はvphantomを入れている）
-    \ifdim\gcknbn@furigana@width>0.9999\zw\relax%
-      \global\gcknbn@okurigana@width=\dimexpr\gcknbn@furigana@width + \wd\z@ - 1\zw\relax%
-    \else%
-      \global\gcknbn@okurigana@width=\dimexpr\wd\z@ - .5\zw\relax%
-    \fi%
-    \ifdim\gcknbn@furigana@width@s>0.9999\zw\relax%
-      \global\gcknbn@okurigana@width@s=\dimexpr\gcknbn@furigana@width@s + \wd\@ne - 1\zw\relax%
-    \else%
-      \global\gcknbn@okurigana@width@s=\dimexpr\wd\@ne - .5\zw\relax%
-    \fi%
+\NewDocumentCommand{\gckanbun@okurigana@boxcal}{}{%
+  \ifdim\gcknbn@furigana@width>0.9999\zw\relax%
+    \global\gcknbn@okurigana@width=\dimexpr\gcknbn@furigana@width + \wd\z@ - 1\zw\relax%
+  \else%
+    \global\gcknbn@okurigana@width=\dimexpr\wd\z@ - .5\zw\relax%
+  \fi%
+  \ifdim\gcknbn@furigana@width@s>0.9999\zw\relax%
+    \global\gcknbn@okurigana@width@s=\dimexpr\gcknbn@furigana@width@s + \wd\@ne - 1\zw\relax%
+  \else%
+    \global\gcknbn@okurigana@width@s=\dimexpr\wd\@ne - .5\zw\relax%
+  \fi%
+}
+\NewDocumentCommand{\gckanbun@okurigana@boxing}{s}{%
+  \IfBooleanTF{#1}{%
+    \smash{\hbox{%
+        \raisebox{\gcknbn@adjust@yokotate}{\vbox{%
+          \hbox to \gcknbn@okurigana@width{%
+            \ifdim\gcknbn@furigana@width>0.9999\zw\relax%
+              \hspace*{\dimexpr\gcknbn@furigana@width - 1\zw\relax}%
+            \else%
+              \hspace*{-.5\zw}%
+            \fi%
+            \box\z@}%
+            \nointerlineskip%
+            \hbox to \gcknbn@okurigana@width{%
+              \hss%
+              \vphantom{\char\euc"A1A1}%
+              \hss%
+            }%
+            \nointerlineskip%
+            \hbox to \gcknbn@okurigana@width@s{%
+              \ifdim\gcknbn@furigana@width@s>0.9999\zw\relax%
+                \hspace*{\dimexpr\gcknbn@furigana@width@s - 1\zw\relax}%
+              \else%
+                \hspace*{-.5\zw}%
+              \fi%
+              \box\@ne%
+    }}}}}%
+  }{%
     \hbox{%
       \raisebox{\gcknbn@adjust@yokotate}{%
         \vbox{\hbox to \gcknbn@okurigana@width{%
@@ -350,6 +367,22 @@
             \fi%
             \box\@ne%
     }}}}%
+  }%
+}
+\DeclareDocumentCommand{\gcknbn@okurigana}{ O{} m O{\gckanbun@phantom} }{% normal
+  \nobreak\leavevmode%
+  \gcknbn@adjust@yokotate@use%
+  \global\gcknbn@okurigana@width\z@%
+  \global\gcknbn@okurigana@width@s\z@%
+  \global\def\gcknbn@okuri@intr@mark{}%
+  \begingroup%
+    \setkeys{gcknbn@okurigana}{#1}%
+    \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@%
+    \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
+    \setbox\z@=\hbox{\tiny #2}% 通常送り仮名
+    \setbox\@ne=\hbox{\tiny #3}% 再読送り仮名（通常はvphantomを入れている）
+    \gckanbun@okurigana@boxcal%
+    \gckanbun@okurigana@boxing%
   \global\gcknbn@furigana@width=\z@\relax%
   \gcknbn@okurigana@intr%
   \gcknbn@okurigana@kaeriten%
@@ -366,41 +399,8 @@
     \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
     \setbox\z@=\hbox{\tiny #2}% 通常送り仮名
     \setbox\@ne=\hbox{\tiny #3}% 再読送り仮名（通常はvphantomを入れている）
-    \ifdim\gcknbn@furigana@width>0.9999\zw\relax%
-      \global\gcknbn@okurigana@width=\dimexpr\gcknbn@furigana@width + \wd\z@ - 1\zw\relax%
-    \else%
-      \global\gcknbn@okurigana@width=\dimexpr\wd\z@ - .5\zw\relax%
-    \fi%
-    \ifdim\gcknbn@furigana@width@s>0.9999\zw\relax%
-      \global\gcknbn@okurigana@width@s=\dimexpr\gcknbn@furigana@width@s + \wd\@ne - 1\zw\relax%
-    \else%
-      \global\gcknbn@okurigana@width@s=\dimexpr\wd\@ne - .5\zw\relax%
-    \fi%
-    \smash{%
-      \hbox{%
-        \raisebox{\gcknbn@adjust@yokotate}{\vbox{%
-          \hbox to \gcknbn@okurigana@width{%
-            \ifdim\gcknbn@furigana@width>0.9999\zw\relax%
-              \hspace*{\dimexpr\gcknbn@furigana@width - 1\zw\relax}%
-            \else%
-              \hspace*{-.5\zw}%
-            \fi%
-            \box\z@}%
-            \nointerlineskip%
-            \hbox to \gcknbn@okurigana@width{%
-              \hss%
-              \vphantom{\char\euc"A1A1}%
-              \hss%
-            }%
-            \nointerlineskip%
-            \hbox to \gcknbn@okurigana@width@s{%
-              \ifdim\gcknbn@furigana@width@s>0.9999\zw\relax%
-                \hspace*{\dimexpr\gcknbn@furigana@width@s - 1\zw\relax}%
-              \else%
-                \hspace*{-.5\zw}%
-              \fi%
-              \box\@ne%
-    }}}}}%
+    \gckanbun@okurigana@boxcal%
+    \gckanbun@okurigana@boxing*%
   \global\gcknbn@furigana@width=\z@\relax%
   \gcknbn@okurigana@intr%
   \gcknbn@okurigana@kaeriten@smashed%
