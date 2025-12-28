@@ -67,6 +67,7 @@
 
 \newcommand{\GCKTateOn}{\gcknbn@tdirtrue}
 \newcommand{\GCKTateOff}{\gcknbn@tdirfalse}
+\newdimen\gckenv@skip \setlength{\gckenv@skip}{\zw}
 
 \newcommand*\gcknbn@kanjiskip@fill{%
   \ifluatex
@@ -244,7 +245,7 @@
   }}%
 \endgroup}
 \def\gcknbn@@furigana@okurigana@smashed{% smashed
-  \ifx\@let@token\gcknbn@okurigana% 次が送り仮名の時
+  \ifx\@let@token\gcknbn@okurigana@smashed% 次が送り仮名の時
     \global\gcknbn@furigana@width=\wd\@ne\relax%
     \global\gcknbn@furigana@width@s=\wd\tw@\relax%
     \dimen\z@=\wd\z@%
@@ -278,7 +279,6 @@
       % それ以外は何もなし
   }}%
 \endgroup}
-
 
 %% 訓点
 \newdimen\gcknbn@okurigana@width \gcknbn@okurigana@width\z@
@@ -388,10 +388,11 @@
     }}}}}%
   \global\gcknbn@furigana@width=\z@\relax%
   \gcknbn@okurigana@intr%
-  \gcknbn@okurigana@kaeriten%
+  \gcknbn@okurigana@kaeriten@smashed%
 }
 
 \def\gcknbn@okurigana@kaeriten{\futurelet\@let@token\gcknbn@@okurigana@kaeriten}
+\def\gcknbn@okurigana@kaeriten@smashed{\futurelet\@let@token\gcknbn@@okurigana@kaeriten@smashed}
 
 \def\gcknbn@@okurigana@kaeriten{%
     \ifx\@let@token、
@@ -401,6 +402,26 @@
       \gcknbn@okurigana@kutoten@skip
       \global\gcknbn@okurigana@width=\z@
     \else\ifx\@let@token\gcknbn@kaeriten
+      \gcknbn@okurigana@kaeriten@skip
+    \else%
+      \ifdefstring{\gcknbn@okuri@intr@mark}{post}{%
+        \kern-\gcknbn@intr@post%
+      }{%
+      \ifdefstring{\gcknbn@okuri@intr@mark}{both}{%
+          \kern-\gcknbn@intr@post%
+        }{%
+          % それ以外は何もなし
+      }}%
+    \fi\fi\fi
+  \endgroup}
+\def\gcknbn@@okurigana@kaeriten@smashed{%
+    \ifx\@let@token、
+      \gcknbn@okurigana@kutoten@skip
+      \global\gcknbn@okurigana@width=\z@
+    \else\ifx\@let@token。
+      \gcknbn@okurigana@kutoten@skip
+      \global\gcknbn@okurigana@width=\z@
+    \else\ifx\@let@token\gcknbn@kaeriten@smashed
       \gcknbn@okurigana@kaeriten@skip
     \else%
       \ifdefstring{\gcknbn@okuri@intr@mark}{post}{%
