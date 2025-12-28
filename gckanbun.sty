@@ -15,7 +15,7 @@
 % グループルビ v2.3.0で実装？
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{gckanbun}[2025/12/26, Version 2.2.0]
+\ProvidesPackage{gckanbun}[2025/12/28, Version 2.2.1]
 
 %% declare package errors
 \def\gcknbn@error{\PackageError{gckanbun}}
@@ -371,30 +371,30 @@
 %% 特殊返り点
 \NewDocumentCommand{\IchiRe}{}{%
   \ifgcknbn@tdir
-    \hspace{-.5ex}一\hspace{-1.9ex}レ%
+    \hspace{-0.2153\zw}一\hspace{-0.8180\zw}レ%
   \else%
-    \raisebox{.5ex}{一}\llap{レ}%
+    \raisebox{0.2153\zw}{一}\llap{レ}%
   \fi%
 }
 \NewDocumentCommand{\JyouRe}{}{%
   \ifgcknbn@tdir
-    上\hspace{-.7ex}レ%
+    上\hspace{-0.3014\zw}レ%
   \else%
-    \raisebox{1.7ex}{上}\llap{レ}%
+    \raisebox{0.7319\zw}{上}\llap{レ}%
   \fi%
 }
 \NewDocumentCommand{\KouRe}{}{%
   \ifgcknbn@tdir
-    甲\hspace{-.4ex}レ%
+    甲\hspace{-0.1722\zw}レ%
   \else%
-    \raisebox{1.9ex}{甲}\llap{レ}%
+    \raisebox{0.8180\zw}{甲}\llap{レ}%
   \fi%
 }
 \NewDocumentCommand{\TenRe}{}{%
   \ifgcknbn@tdir
-    天\hspace{-.4ex}レ%
+    天\hspace{-0.1722\zw}レ%
   \else%
-    \raisebox{1.9ex}{天}\llap{レ}%
+    \raisebox{0.8180\zw}{天}\llap{レ}%
   \fi%
 }
 \NewDocumentCommand{\KanHyphen}{}{\symbol{"2015}}
