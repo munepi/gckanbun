@@ -113,7 +113,7 @@ fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hs
   Original ver. : Munehiro Yamamoto\\
   Modified ver. : Kosei Kawaguchi a.k.a. KKTeX
 }}
-\date{Version 2.2.5 (2025/12/29)}
+\date{Version 2.2.6 (2025/12/29)}
 
 
 \begin{document}
@@ -324,7 +324,7 @@ v2.1.0以前では、各コマンドにはスターオプションがありま�
 
 しかし、漢文はほとんどの文字に何らかのルビが振られるため、普段から侵入を許可する仕様にするとかえって読みづらいです。したがって、本当に必要な時にだけこのオプションを使うべきです。
 
-漢詩において、各句の最初と最後の字が水平方向に揃っていないと見栄えを損なってしまいます。そこで、gckanbunパッケージでは\verb|\makebox|と\verb|intrusion|オプションの組み合わせによって漢詩を組版することを推奨します。
+漢詩において、各句の最初と最後の字が水平方向に揃っていないと見栄えを損なってしまいます。そこで、gckanbunパッケージでは\verb|\GCKanshiBox|と\verb|intrusion|オプションを用意しています。
 
 \begin{description}
   \item[\texttt{\textbackslash 振り}] \verb|intrusion=pre/post/both| の３種類
@@ -335,81 +335,84 @@ v2.1.0以前では、各コマンドにはスターオプションがありま�
 \noindent が各コマンドで提供されるオプションであることに注意し、
 
 \begin{SourceCode}{Input}{TeX}
-  \makebox[9\zw][t]{%
-    \振り[intrusion=pre]{春}{しゅん}\hfill%
-    \振り{眠}{みん}\hfill%
-    不\返り{レ}\hfill%
-    \振り{覚}{おぼ}\送り{エ}\返り{レ}\hfill%
+  % 構文
+  \GCKanshiBox{<１句の長さ>}{<句>}
+
+  % 使用例
+  \GCKanshiBox{10\zw}{%
+    \振り[intrusion=both]{春}{しゅん}\hfill%
+    \振り[intrusion=both]{眠}{みん}\hfill%
+    不\返り[intrusion=both]{レ}\hfill%
+    \振り{覚}{おぼ}\送り{エ}\返り[intrusion=both]{レ}\hfill%
     \振り{暁}{あかつき}\送り[intrusion=post]{ヲ}%
   }
 
-  \makebox[9\zw][t]{%
-    \振り{処}{しょ}\hfill%
-    \振り{処}{しょ}\hfill%
-    聞\送り{ク}\返り{二}\hfill%
-    \underLineKKAuto{\振り{啼}{てい}\hfill%
+  \GCKanshiBox{10\zw}{%
+    \振り[intrusion=both]{処}{しょ}\hfill%
+    \振り[intrusion=both]{処}{しょ}\hfill%
+    聞\送り{ク}\返り[intrusion=both]{二}\hfill%
+    \underLineKKAuto{\振り[intrusion=both]{啼}{てい}\hfill%
     鳥\送り{ヲ}\返り[intrusion=post]{一}}%
   }
 
-  \makebox[9\zw][t]{%
-    \振り{夜}{や}\hfill%
-    \振り{来}{らい}\hfill%
+  \GCKanshiBox{10\zw}{%
+    \振り[intrusion=both]{夜}{や}\hfill%
+    \振り[intrusion=both]{来}{らい}\hfill%
     風\hfill%
-    雨\送り{ノ}\hfill%
+    雨\送り[intrusion=both]{ノ}\hfill%
     声%
   }
 
-  \makebox[9\zw][t]{%
+  \GCKanshiBox{10\zw}{%
     花\hfill%
-    \振り{落}{お}\送り{ツルコト}\hfill%
-    知\送り{ル}\hfill%
-    \振り{多}{た}\hfill%
-    \振り[intrusion=post]{少}{しょう}%
+    \振り{落}{お}\送り[intrusion=both]{ツルコト}\hfill%
+    知\送り[intrusion=both]{ル}\hfill%
+    \振り[intrusion=both]{多}{た}\hfill%
+    \振り[intrusion=both]{少}{しょう}%
   }
-
-  \end{document}
 \end{SourceCode}
 
 \begin{OutPut}{Output}[縦書き（漢詩）]
   \parbox<t>{12\zw}{\GCKTateOn%
-    \makebox[9\zw][t]{%
-      \振り[intrusion=pre]{春}{しゅん}\hfill%
-      \振り{眠}{みん}\hfill%
-      不\返り{レ}\hfill%
-      \振り{覚}{おぼ}\送り{エ}\返り{レ}\hfill%
+    \GCKanshiBox{10\zw}{%
+      \振り[intrusion=both]{春}{しゅん}\hfill%
+      \振り[intrusion=both]{眠}{みん}\hfill%
+      不\返り[intrusion=both]{レ}\hfill%
+      \振り{覚}{おぼ}\送り{エ}\返り[intrusion=both]{レ}\hfill%
       \振り{暁}{あかつき}\送り[intrusion=post]{ヲ}%
     }
 
-    \makebox[9\zw][t]{%
-      \振り{処}{しょ}\hfill%
-      \振り{処}{しょ}\hfill%
-      聞\送り{ク}\返り{二}\hfill%
-      \underLineKKAuto{\振り{啼}{てい}\hfill%
+    \GCKanshiBox{10\zw}{%
+      \振り[intrusion=both]{処}{しょ}\hfill%
+      \振り[intrusion=both]{処}{しょ}\hfill%
+      聞\送り{ク}\返り[intrusion=both]{二}\hfill%
+      \underLineKKAuto{\振り[intrusion=both]{啼}{てい}\hfill%
       鳥\送り{ヲ}\返り[intrusion=post]{一}}%
     }
 
-    \makebox[9\zw][t]{%
-      \振り{夜}{や}\hfill%
-      \振り{来}{らい}\hfill%
+    \GCKanshiBox{10\zw}{%
+      \振り[intrusion=both]{夜}{や}\hfill%
+      \振り[intrusion=both]{来}{らい}\hfill%
       風\hfill%
-      雨\送り{ノ}\hfill%
+      雨\送り[intrusion=both]{ノ}\hfill%
       声%
     }
 
-    \makebox[9\zw][t]{%
+    \GCKanshiBox{10\zw}{%
       花\hfill%
-      \振り{落}{お}\送り{ツルコト}\hfill%
-      知\送り{ル}\hfill%
-      \振り{多}{た}\hfill%
-      \振り[intrusion=post]{少}{しょう}%
-    }%
+      \振り{落}{お}\送り[intrusion=both]{ツルコト}\hfill%
+      知\送り[intrusion=both]{ル}\hfill%
+      \振り[intrusion=both]{多}{た}\hfill%
+      \振り[intrusion=both]{少}{しょう}%
+    }
   }
 \end{OutPut}
 
-以上のように「漢字１文字ごとに\verb|\hfill|を挿入」することによって適切な空きを確保し、その上で句の最初の文字に（必要ならば）\verb|intrusion=pre|、最後の文字に\verb|intrusion=post|とします。ただし、たとえば「\verb|鳥\送り{ヲ}\返り{一}|」のような１まとまりにおいて、\verb|\送り|と\verb|\返り|の両方に対して\verb|intrusion=post|をつける必要はありません。「一番最後の」要素に対してのみ\verb|intrusion=post|をつければ十分です。
+以上のように「漢字１文字ごとに\verb|\hfill|を挿入」することによって適切な空きを確保します。
+そして、基本的には、\verb|intrusion|オプションを\verb|both|でつけます。そうすることによって、字と字が水平に揃ってれ、整然とした組版が実現されます。
 
 \section{GCKEnv}
-v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。この環境は、本パッケージを用いて漢文を、完全に統一された行間、より広い字間のもとに組版するために設けられたものです。
+v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。この環境は、本パッケージを用いて漢文を、完全に統一された行間、より広い字間のもとに組版するために設けられたものです。
 
 この環境を使うか否かは、
 
@@ -448,44 +451,44 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
 \begin{SourceCode}{Input}{TeX}
   \LARGE
   \begin{GCKEnv}{2\zw}
-    今夫\送り{レ}江戸\振り{者}{は}、之所\送り{ノ}\返り{レ}称\送り{スル}名都\振り{大}{だい}\振り{邑}{いふ}、冠蓋之所\返り{レ}集\送り{マル}\LineNumbering*{\kakko{2}}\dashKKAuto[bottom=.5\zw]{舟車之\振り{所}{ところ}\送り{ニシテ}\返り{レ}\振り{湊}{あつ}\送り[intrusion=post]{マル}}、実\送り{ニ}\振り{為}{た}\送り{ル}\返り{二}天下之大都会\返り{一}也。
-    而\送り{レドモ}\LineNumbering{C}\nolinebreak\underLineKKAuto{其地之為名、訪之於古、未之聞}。
-    豈\送り{二}非\送り{ズ}\返り{三}古今相\送り{ヒ}去\送り{ルコト}\振り{日}{ひび}\送り{ニ}遠\送り{ク}、事之相\送り{ヒ}変\送り{ズルコト}愈多\送り{ク}、求\送り{ムルモ}\返り{二}其\送り{ノ}所\送り{ヲ}\返り{\IchiRe}欲\送り{スル}\返り{レ}聞\送り{カント}而不\送り{ルコト}可\送り{カラ}\返り{レ}得、亦\送り{タ}\振り{猶}{な}[ごと]\送り{ホ}[キヲ]\返り{二}今之於\送り{ケルガ}\返り{\JyouRe}古\送り{ニ}也。
+    今夫\送り{レ}江戸\fbox{\振り{者}{は}}、世之所\送り{ノ}\返り{レ}称\送り{スル}名都\振り{大}{だい}\振り{邑}{いふ}、冠蓋之所\返り{レ}集\送り{マル}\LineNumbering*{\kakko{2}}\dashKKAuto{舟車之\振り{所}{ところ}\送り{ニシテ}\返り{レ}\振り{湊}{あつ}\送り[intrusion=post]{マル}}、実\送り{ニ}\振り{為}{た}\送り{ル}\返り{二}天下之大都会\返り{一}也。
+    而\送り{レドモ}\LineNumbering{C}\underLineKKAuto{其地之為名、訪之於古、未之聞}。
+    豈\送り{ニ}非\送り{ズ}\返り{三}古今相\送り{ヒ}去\送り{ルコト}\振り{日}{ひび}\送り{ニ}遠\送り{ク}、事之相\送り{ヒ}変\送り{ズルコト}愈多\送り{ク}、求\送り{ムルモ}\返り{二}其\送り{ノ}所\送り{ヲ}\返り{\IchiRe}欲\送り{スル}\返り{レ}聞\送り{カント}而不\送り{ルコト}可\送り{カラ}\返り{レ}得、亦\送り{タ}\振り{猶}{な}[ごと]\送り{ホ}[キヲ]\返り{二}今之於\送り{ケルガ}\返り{\JyouRe}古\送り{ニ}也。
   \end{GCKEnv}
 
   \bigskip
 
-  \begin{GCKEnv*}{3\zw}
-    \makebox[9\zw][t]{%
-      \振り[intrusion=pre]{春}{しゅん}\hfill%
-      \振り{眠}{みん}\hfill%
-      不\返り{レ}\hfill%
-      \振り{覚}{おぼ}\送り{エ}\返り{レ}\hfill%
+  \begin{GCKEnv*}{2\zw}
+    \fbox{\GCKanshiBox{10\zw}{%
+      \振り[intrusion=both]{春}{しゅん}\hfill%
+      \振り[intrusion=both]{眠}{みん}\hfill%
+      不\返り[intrusion=both]{レ}\hfill%
+      \振り{覚}{おぼ}\送り{エ}\返り[intrusion=both]{レ}\hfill%
       \振り{暁}{あかつき}\送り[intrusion=post]{ヲ}%
-    }
+    }}
 
-    \makebox[9\zw][t]{%
-      \振り{処}{しょ}\hfill%
-      \振り{処}{しょ}\hfill%
-      聞\送り{ク}\返り{二}\hfill%
-      \underLineKKAuto{\振り{啼}{てい}\hfill%
+    \GCKanshiBox{10\zw}{%
+      \振り[intrusion=both]{処}{しょ}\hfill%
+      \振り[intrusion=both]{処}{しょ}\hfill%
+      聞\送り{ク}\返り[intrusion=both]{二}\hfill%
+      \underLineKKAuto{\振り[intrusion=both]{啼}{てい}\hfill%
       鳥\送り{ヲ}\返り[intrusion=post]{一}}%
     }
 
-    \makebox[9\zw][t]{%
-      \fbox{\振り{夜}{や}}\hfill%
-      \振り{来}{らい}\hfill%
+    \GCKanshiBox{10\zw}{%
+      \振り[intrusion=both]{夜}{や}\hfill%
+      \振り[intrusion=both]{来}{らい}\hfill%
       風\hfill%
-      雨\送り{ノ}\hfill%
+      雨\送り[intrusion=both]{ノ}\hfill%
       声%
     }
 
-    \makebox[9\zw][t]{%
-      \fbox{花}\hfill%
-      \振り{落}{お}\送り{ツルコト}\hfill%
-      知\送り{ル}\hfill%
-      \振り{多}{た}\hfill%
-      \振り{少}{しょう}%
+    \GCKanshiBox{10\zw}{%
+      花\hfill%
+      \振り{落}{お}\送り[intrusion=both]{ツルコト}\hfill%
+      知\送り[intrusion=both]{ル}\hfill%
+      \振り[intrusion=both]{多}{た}\hfill%
+      \振り[intrusion=both]{少}{しょう}%
     }
   \end{GCKEnv*}
 \end{SourceCode}
@@ -493,7 +496,7 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
 \begin{OutPut}{Output}[縦書き]
   \begin{center}
     \includegraphics[width=.8\linewidth]{
-      whole-vert-sample.pdf
+      test.pdf
     }
   \end{center}
 \end{OutPut}
@@ -520,14 +523,13 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   \item \textbf{v2.0.0 (2025/11/04)} --- Initial public release as a reworked version.
   \item \textbf{v2.1.0 (2025/11/12)} --- Modefied package documentation. Also, KKTeX added some options for KANSHI typesetting.
   \item \textbf{v2.2.0 (2025/12/26)} --- Fixed a problem in which a previous \verb|\送り| has an effect on the next \verb|\返り[intrusion=post]{arg}|. Also, make every commands can be used in partly-vertical-mode with the new \verb|\GCKTateOn|.
-  \item \textbf{v2.2.1 (2025/12/28)} --- Eliminated every ex scale from .sty file.
-  \item \textbf{v2.2.5 (2025/12/29)} --- Added \verb|GCKEnv| in order to typeset in more sophisticated way.
+  \item \textbf{v2.2.6 (2025/12/29)} --- Added \verb|GCKEnv| in order to typeset in more sophisticated way.
 \end{itemize}
 
 \section{Source Code}
 \begin{lstlisting}
   \NeedsTeXFormat{LaTeX2e}
-  \ProvidesPackage{gckanbun}[2025/12/29, Version 2.2.5]
+  \ProvidesPackage{gckanbun}[2025/12/29, Version 2.2.6]
 
   %% package errors
   \def\gcknbn@error{\PackageError{gckanbun}}
@@ -564,27 +566,43 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   \newif\ifgcknbn@tdir 
   \gcknbn@tdirfalse
   \@ifundefined{iftdir}{\let\iftdir\iffalse}{}%
-  \ifluatex
+  \ifluatex%
     \@ifundefined{ltjgetparameter}{}{%
       \ifnum\ltjgetparameter{direction}=3 %
-        \gcknbn@tdirtrue
+        \gcknbn@tdirtrue%
       \fi}%
-  \else
-    \iftdir
-      \gcknbn@tdirtrue
+  \else%
+    \iftdir%
+      \gcknbn@tdirtrue%
   \fi\fi
 
   %% kanjiskipの挿入
-  \newcommand{\kanjiskip@gckanbun@env@post}{%
-    \ifhmode
+  \newcommand{\kanjiskip@gckanbun@env@pre}{%
+    \ifluatex%
+      \edef\spacefactor@gckanbun@env{\ltjgetparameter{kanjiskip}}%
+    \else\edef\spacefactor@gckanbun@env{\kanjiskip}\fi%
+    \ifhmode%
       % 1. 行頭（直前に何もノードがない状態）では何もしない
       % 2. または直前の空き(lastskip)が0より大きい場合のみ処理する
-      \ifdim\lastskip > -1pt\relax % 行頭や特定の条件下では lastskip は 0 か特殊な値
-        \unskip
-        \hspace{\ltjgetparameter{kanjiskip}}\relax 
-      \fi
-    \fi
+      \ifdim\lastskip > -1pt\relax% 行頭や特定の条件下では lastskip は 0 か特殊な値
+        \unskip%
+        \hspace{\spacefactor@gckanbun@env}\relax%
+      \fi%
+    \fi%
   }
+  \newcommand{\kanjiskip@gckanbun@env@post}{%
+    \ifluatex%
+      \edef\spacefactor@gckanbun@env{\ltjgetparameter{kanjiskip}}%
+    \else\edef\spacefactor@gckanbun@env{\kanjiskip}\fi%
+    \ifhmode%
+      \ifdim\lastskip > -1pt\relax% 行頭や特定の条件下では lastskip は 0 か特殊な値
+        \unskip%
+        \hspace{\spacefactor@gckanbun@env}\relax%
+      \fi%
+    \fi%
+  }
+  \newcommand{\kanjiskip@gckanbun@env@pre@kanshi}{\relax}
+  \newcommand{\kanjiskip@gckanbun@env@post@kanshi}{\relax}
 
   %% 縦書き補正、横書き補正を切り替える
   \newcommand{\GCKTateOn}{\gcknbn@tdirtrue}
@@ -628,17 +646,17 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   \define@key{gcknbn@ruby}{intrusion}{\edef\gcknbn@ruby@intr@mark{#1}}
   \NewDocumentCommand{\gckanbun@intrusioncal}{}{%
     \ifdim\wd\@ne>\wd\tw@%侵入量計算
-      \ifdim\wd\@ne>\zw%
-        \global\gcknbn@intr@pre=\dimexpr(\wd\@ne-\zw)/2\relax%再読なし前方
-        \global\gcknbn@intr@post=\dimexpr(\wd\@ne-\zw)/2\relax%再読なし後方
+      \ifdim\wd\@ne>1\zw%
+        \global\gcknbn@intr@pre=\dimexpr(\wd\@ne-1\zw)/2\relax%再読なし前方
+        \global\gcknbn@intr@post=\dimexpr(\wd\@ne-1\zw)/2\relax%再読なし後方
       \else%
         \global\gcknbn@intr@pre=0em\relax%
         \global\gcknbn@intr@post=0em\relax%
       \fi%
     \else%
-      \ifdim\wd\tw@>\zw%
-        \global\gcknbn@intr@pre=\dimexpr(\wd\tw@-\zw)/2\relax%再読あり前方
-        \global\gcknbn@intr@post=\dimexpr(\wd\tw@-\zw)/2\relax%再読あり後方
+      \ifdim\wd\tw@>1\zw%
+        \global\gcknbn@intr@pre=\dimexpr(\wd\tw@-1\zw)/2\relax%再読あり前方
+        \global\gcknbn@intr@post=\dimexpr(\wd\tw@-1\zw)/2\relax%再読あり後方
       \else%
         \global\gcknbn@intr@pre=0em\relax%
         \global\gcknbn@intr@post=0em\relax%
@@ -678,7 +696,7 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
     \gcknbn@furigana@okurigana%
   }
   \DeclareDocumentCommand{\gcknbn@ruby@smashed}{ O{} m m O{\gckanbun@phantom}}{% smashed
-    \kanjiskip@gckanbun@env@post%
+    \kanjiskip@gckanbun@env@pre%
     \gcknbn@adjust@yokotate@use%
     \global\gcknbn@furigana@width\z@%
     \global\gcknbn@furigana@width@s\z@%
@@ -728,14 +746,26 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   }
 
   % ボックスの配置
+  \newbox\gck@smashed@base
+  \newbox\gck@smashed@furi
+  \newdimen\gck@temp@h
+  \newdimen\gck@temp@d
+
   % 次が送り仮名の時
   \NewDocumentCommand{\gckanbun@furigana@boxing@nextokuri}{s}{%
     \IfBooleanTF{#1}{%
-      \raisebox{\gcknbn@adjust@yokotate}{\smash{\hbox{%
+      \setbox\gck@smashed@base\hbox{あ}%
+      \edef\gck@temp@h{\the\ht\gck@smashed@base}%
+      \edef\gck@temp@d{\the\dp\gck@smashed@base}%
+      \setbox\gck@smashed@furi\hbox{%
+        \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
         \vbox{\hbox to \dimen\z@{\box\@ne\hss}%
           \nointerlineskip\hbox to \dimen\z@{\hss\box\z@\hss}%
           \nointerlineskip\hbox to \dimen\z@{\box\tw@\hss}%
       }}}}%
+      \ht\gck@smashed@furi=\gck@temp@h%
+      \dp\gck@smashed@furi=\gck@temp@d%
+      \box\gck@smashed@furi%
     }{%
       \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
         \vbox{\hbox to \dimen\z@{\box\@ne\hss}%
@@ -744,11 +774,6 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
       }}}%
     }%
   }
-
-  \newbox\gck@smashed@base
-  \newbox\gck@smashed@furi
-  \newdimen\gck@temp@h
-  \newdimen\gck@temp@d
   % 次が送り仮名以外の時
   \NewDocumentCommand{\gckanbun@furigana@boxing@nextsonota}{s}{%
     \IfBooleanTF{#1}{%
@@ -899,7 +924,7 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   % ボックスの配置
   \NewDocumentCommand{\gckanbun@okurigana@boxing}{s}{%
     \IfBooleanTF{#1}{%
-      \smash{\hbox{%
+      \hbox{%
           \raisebox{\gcknbn@adjust@yokotate}{\vbox{%
             \hbox to \gcknbn@okurigana@width{%
               \ifdim\gcknbn@furigana@width>0.9999\zw\relax%
@@ -922,7 +947,7 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
                   \hspace*{-.5\zw}%
                 \fi%
                 \box\@ne%
-      }}}}}%
+      }}}}%
     }{%
       \hbox{%
         \raisebox{\gcknbn@adjust@yokotate}{%
@@ -1096,7 +1121,7 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
       \ifdim\wd\z@>\gcknbn@intr@post%
         \global\gcknbn@intr@post=\wd\z@%
       \fi%
-      \smash{\lower\gcknbn@adjust@kaeri\hbox{\box\z@\hss}}%
+      \lower\gcknbn@adjust@kaeri\hbox{\box\z@\hss}%
     \endgroup%
     \gcknbn@kaeriten@kutoten@smashed%
   }
@@ -1152,10 +1177,10 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   }
   \def\gcknbn@kaeriten@okurigana@skip{%
     \ifdim\gcknbn@okurigana@width>\gcknbn@kaeriten@width%
-      \hspace*{\dimexpr\gcknbn@okurigana@width - \gcknbn@kaeriten@width}%
+      \hspace*{\dimexpr\gcknbn@okurigana@width - \gcknbn@kaeriten@width\relax}%
     \fi%
     \ifdim\gcknbn@okurigana@width<\gcknbn@okurigana@width@s%
-      \hspace*{\gcknbn@okurigana@width@s - \gcknbn@kaeriten@width}%
+      \hspace*{\dimexpr\gcknbn@okurigana@width@s - \gcknbn@kaeriten@width\relax}%
     \else%
     \fi%
   }
@@ -1203,8 +1228,13 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
 
 
   %% GCKEnv
-  \NewDocumentEnvironment{GCKEnv}{ m O{0.3\zw plus 0.15\zw minus 0.2\zw} }{%
-    \ltjsetparameter{kanjiskip=#2}% ここもLuaのみの書き方になっているので注意。
+  \edef\gckanbn@skip@default{0.3\zw plus 0.15\zw minus 0.2\zw}
+  \NewDocumentEnvironment{GCKEnv}{ m O{\gckanbn@skip@default} }{%
+    \ifluatex%
+      \ltjsetparameter{kanjiskip=#2}% ここもLuaのみの書き方になっているので注意。
+    \else%
+      \kanjiskip=#2%
+    \fi%
     \setlength{\baselineskip}{#1}%
     \expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby@smashed%
     \expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana@smashed%
@@ -1213,9 +1243,24 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
     \expandafter\let\csname 送り\endcsname\gcknbn@okurigana@smashed%
     \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten@smashed%
   }{\par}
-  \NewDocumentEnvironment{GCKEnv*}{ m O{0.3\zw plus 0.15\zw minus 0.2\zw} }{%
-    \ltjsetparameter{kanjiskip=#2}% ここもLuaのみの書き方になっているので注意。
+  \NewDocumentCommand{\GCKanshiBox}{ m m }{%
+    \makebox[#1][t]{\vphantom{\gcknbn@ruby{あ}{あ}[あ]}#2}%
+  }
+  \NewDocumentEnvironment{GCKEnv*}{ m }{%
+    \ifluatex%
+      \ltjsetparameter{kanjiskip=0pt}% ここもLuaのみの書き方になっているので注意。
+    \else%
+      \kanjiskip=0pt%
+    \fi%
     \setlength{\baselineskip}{#1}%
+    \expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby@smashed%
+    \expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana@smashed%
+    \expandafter\let\csname\gcknbn@prefix kaeriten\endcsname\gcknbn@kaeriten@smashed%
+    \expandafter\let\csname 振り\endcsname\gcknbn@ruby@smashed%
+    \expandafter\let\csname 送り\endcsname\gcknbn@okurigana@smashed%
+    \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten@smashed%
+    \let\kanjiskip@gckanbun@env@pre\kanjiskip@gckanbun@env@pre@kanshi%
+    \let\kanjiskip@gckanbun@env@post\kanjiskip@gckanbun@env@post@kanshi%
   }{\par}
 
   \endinput
