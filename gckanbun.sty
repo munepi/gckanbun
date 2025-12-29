@@ -83,7 +83,7 @@
 \fi\fi
 
 %% kanjiskipの挿入
-\newcommand{\kanjiskip@gckanbun@env}{%
+\newcommand{\kanjiskip@gckanbun@env@pre}{%
   \edef\spacefactor@gckanbun@env{\ltjgetparameter{kanjiskip}}%
   \ifhmode%
     % 1. 行頭（直前に何もノードがない状態）では何もしない
@@ -94,6 +94,17 @@
     \fi%
   \fi%
 }
+\newcommand{\kanjiskip@gckanbun@env@post}{%
+  \edef\spacefactor@gckanbun@env{\ltjgetparameter{kanjiskip}}%
+  \ifhmode%
+    \ifdim\lastskip > -1pt\relax% 行頭や特定の条件下では lastskip は 0 か特殊な値
+      \unskip%
+      \hspace{\spacefactor@gckanbun@env}\relax%
+    \fi%
+  \fi%
+}
+\newcommand{\kanjiskip@gckanbun@env@pre@kanshi}{\relax}
+\newcommand{\kanjiskip@gckanbun@env@post@kanshi}{\relax}
 
 %% 縦書き補正、横書き補正を切り替える
 \newcommand{\GCKTateOn}{\gcknbn@tdirtrue}
@@ -187,7 +198,7 @@
   \gcknbn@furigana@okurigana%
 }
 \DeclareDocumentCommand{\gcknbn@ruby@smashed}{ O{} m m O{\gckanbun@phantom}}{% smashed
-  \kanjiskip@gckanbun@env%
+  \kanjiskip@gckanbun@env@pre%
   \gcknbn@adjust@yokotate@use%
   \global\gcknbn@furigana@width\z@%
   \global\gcknbn@furigana@width@s\z@%
@@ -364,21 +375,21 @@
     \gckanbun@furigana@boxcal%
     \penalty\@lowpenalty%
     \gckanbun@furigana@boxing@nextsonota*%
-    \kanjiskip@gckanbun@env%
+    \kanjiskip@gckanbun@env@post%
     \gcknbn@furigana@kutoten@skip%
   \else\ifx\@let@token。%
     \gckanbun@furigana@lenset%
     \gckanbun@furigana@boxcal%
     \penalty\@lowpenalty%
     \gckanbun@furigana@boxing@nextsonota*%
-    \kanjiskip@gckanbun@env%
+    \kanjiskip@gckanbun@env@post%
     \gcknbn@furigana@kutoten@skip%
   \else%
     \gckanbun@furigana@lenset%
     \gckanbun@furigana@boxcal%
     \penalty\@lowpenalty%
     \gckanbun@furigana@boxing@nextsonota*%
-    \kanjiskip@gckanbun@env%
+    \kanjiskip@gckanbun@env@post%
   \fi\fi\fi\fi%
   \ifdefstring{\gcknbn@ruby@intr@mark}{post}{%
     \kern-\gcknbn@intr@post%
@@ -533,16 +544,16 @@
 \def\gcknbn@@okurigana@kaeriten@smashed{%
   \ifx\@let@token、%
     \gcknbn@okurigana@kutoten@skip%
-    \kanjiskip@gckanbun@env%
+    \kanjiskip@gckanbun@env@post%
     \global\gcknbn@okurigana@width=\z@%
   \else\ifx\@let@token。%
     \gcknbn@okurigana@kutoten@skip%
-    \kanjiskip@gckanbun@env%
+    \kanjiskip@gckanbun@env@post%
     \global\gcknbn@okurigana@width=\z@%
   \else\ifx\@let@token\gcknbn@kaeriten@smashed%
     \gcknbn@okurigana@kaeriten@skip%
   \else%
-    \kanjiskip@gckanbun@env%
+    \kanjiskip@gckanbun@env@post%
     \ifdefstring{\gcknbn@okuri@intr@mark}{post}{%
       \kern-\gcknbn@intr@post%
     }{%
@@ -648,7 +659,7 @@
     \gcknbn@kaeriten@kutoten@skip%
     \global\gcknbn@kaeriten@width=\z@%
   \else%
-    \kanjiskip@gckanbun@env%
+    \kanjiskip@gckanbun@env@post%
     \ifdefstring{\gcknbn@kaeri@intr@mark}{post}{%
       \kern-\gcknbn@intr@post%
     }{%
@@ -735,6 +746,14 @@
 \NewDocumentEnvironment{GCKEnv*}{ m }{%
   \ltjsetparameter{kanjiskip=0pt}% ここもLuaのみの書き方になっているので注意。
   \setlength{\baselineskip}{#1}%
+  \expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby@smashed%
+  \expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana@smashed%
+  \expandafter\let\csname\gcknbn@prefix kaeriten\endcsname\gcknbn@kaeriten@smashed%
+  \expandafter\let\csname 振り\endcsname\gcknbn@ruby@smashed%
+  \expandafter\let\csname 送り\endcsname\gcknbn@okurigana@smashed%
+  \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten@smashed%
+  \let\kanjiskip@gckanbun@env@pre\kanjiskip@gckanbun@env@pre@kanshi%
+  \let\kanjiskip@gckanbun@env@post\kanjiskip@gckanbun@env@post@kanshi%
 }{\par}
 
 \endinput

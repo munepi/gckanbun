@@ -575,7 +575,7 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   \fi\fi
 
   %% kanjiskipの挿入
-  \newcommand{\kanjiskip@gckanbun@env}{%
+  \newcommand{\kanjiskip@gckanbun@env@post}{%
     \ifhmode
       % 1. 行頭（直前に何もノードがない状態）では何もしない
       % 2. または直前の空き(lastskip)が0より大きい場合のみ処理する
@@ -678,7 +678,7 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
     \gcknbn@furigana@okurigana%
   }
   \DeclareDocumentCommand{\gcknbn@ruby@smashed}{ O{} m m O{\gckanbun@phantom}}{% smashed
-    \kanjiskip@gckanbun@env%
+    \kanjiskip@gckanbun@env@post%
     \gcknbn@adjust@yokotate@use%
     \global\gcknbn@furigana@width\z@%
     \global\gcknbn@furigana@width@s\z@%
@@ -848,21 +848,21 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
       \gckanbun@furigana@boxcal%
       \penalty\@lowpenalty%
       \gckanbun@furigana@boxing@nextsonota*%
-      \kanjiskip@gckanbun@env%
+      \kanjiskip@gckanbun@env@post%
       \gcknbn@furigana@kutoten@skip%
     \else\ifx\@let@token。%
       \gckanbun@furigana@lenset%
       \gckanbun@furigana@boxcal%
       \penalty\@lowpenalty%
       \gckanbun@furigana@boxing@nextsonota*%
-      \kanjiskip@gckanbun@env%
+      \kanjiskip@gckanbun@env@post%
       \gcknbn@furigana@kutoten@skip%
     \else%
       \gckanbun@furigana@lenset%
       \gckanbun@furigana@boxcal%
       \penalty\@lowpenalty%
       \gckanbun@furigana@boxing@nextsonota*%
-      \kanjiskip@gckanbun@env%
+      \kanjiskip@gckanbun@env@post%
     \fi\fi\fi\fi%
     \ifdefstring{\gcknbn@ruby@intr@mark}{post}{%
       \kern-\gcknbn@intr@post%
@@ -1017,16 +1017,16 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   \def\gcknbn@@okurigana@kaeriten@smashed{%
     \ifx\@let@token、%
       \gcknbn@okurigana@kutoten@skip%
-      \kanjiskip@gckanbun@env%
+      \kanjiskip@gckanbun@env@post%
       \global\gcknbn@okurigana@width=\z@%
     \else\ifx\@let@token。%
       \gcknbn@okurigana@kutoten@skip%
-      \kanjiskip@gckanbun@env%
+      \kanjiskip@gckanbun@env@post%
       \global\gcknbn@okurigana@width=\z@%
     \else\ifx\@let@token\gcknbn@kaeriten@smashed%
       \gcknbn@okurigana@kaeriten@skip%
     \else%
-      \kanjiskip@gckanbun@env%
+      \kanjiskip@gckanbun@env@post%
       \ifdefstring{\gcknbn@okuri@intr@mark}{post}{%
         \kern-\gcknbn@intr@post%
       }{%
@@ -1132,7 +1132,7 @@ v2.2.5以降、\verb|GCKEnv|という環境が新規追加されました。こ�
       \gcknbn@kaeriten@kutoten@skip%
       \global\gcknbn@kaeriten@width=\z@%
     \else%
-      \kanjiskip@gckanbun@env%
+      \kanjiskip@gckanbun@env@post%
       \ifdefstring{\gcknbn@kaeri@intr@mark}{post}{%
         \kern-\gcknbn@intr@post%
       }{%
