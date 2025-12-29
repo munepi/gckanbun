@@ -27,17 +27,15 @@
 % 未実装
 % グループルビ v2.3.0で実装？
 
-% v2.2.5
-% あとはLua以外への対応。
-
 
 % 注意
 % デフォルトで\kanjiskipが「。」ないし「、」の前に挿入される
 % 以上、各コマンドの後のskipもそうせざるを得ない。
 
 
+% Lua以外への対応！！！
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{gckanbun}[2025/12/29, Version 2.2.5]
+\ProvidesPackage{gckanbun}[2025/12/29, Version 2.2.6--undev]
 
 %% package errors
 \def\gcknbn@error{\PackageError{gckanbun}}
@@ -86,14 +84,15 @@
 
 %% kanjiskipの挿入
 \newcommand{\kanjiskip@gckanbun@env}{%
-  \ifhmode
+  \edef\spacefactor@gckanbun@env{\ltjgetparameter{kanjiskip}}%
+  \ifhmode%
     % 1. 行頭（直前に何もノードがない状態）では何もしない
     % 2. または直前の空き(lastskip)が0より大きい場合のみ処理する
-    \ifdim\lastskip > -1pt\relax % 行頭や特定の条件下では lastskip は 0 か特殊な値
-      \unskip
-      \hspace{\ltjgetparameter{kanjiskip}}\relax 
-    \fi
-  \fi
+    \ifdim\lastskip > -1pt\relax% 行頭や特定の条件下では lastskip は 0 か特殊な値
+      \unskip%
+      \hspace{\spacefactor@gckanbun@env}\relax%
+    \fi%
+  \fi%
 }
 
 %% 縦書き補正、横書き補正を切り替える
@@ -238,14 +237,26 @@
 }
 
 % ボックスの配置
+\newbox\gck@smashed@base
+\newbox\gck@smashed@furi
+\newdimen\gck@temp@h
+\newdimen\gck@temp@d
+
 % 次が送り仮名の時
 \NewDocumentCommand{\gckanbun@furigana@boxing@nextokuri}{s}{%
   \IfBooleanTF{#1}{%
-    \raisebox{\gcknbn@adjust@yokotate}{\smash{\hbox{%
+    \setbox\gck@smashed@base\hbox{あ}%
+    \edef\gck@temp@h{\the\ht\gck@smashed@base}%
+    \edef\gck@temp@d{\the\dp\gck@smashed@base}%
+    \setbox\gck@smashed@furi\hbox{%
+      \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
       \vbox{\hbox to \dimen\z@{\box\@ne\hss}%
         \nointerlineskip\hbox to \dimen\z@{\hss\box\z@\hss}%
         \nointerlineskip\hbox to \dimen\z@{\box\tw@\hss}%
     }}}}%
+    \ht\gck@smashed@furi=\gck@temp@h%
+    \dp\gck@smashed@furi=\gck@temp@d%
+    \box\gck@smashed@furi%
   }{%
     \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
       \vbox{\hbox to \dimen\z@{\box\@ne\hss}%
@@ -254,11 +265,6 @@
     }}}%
   }%
 }
-
-\newbox\gck@smashed@base
-\newbox\gck@smashed@furi
-\newdimen\gck@temp@h
-\newdimen\gck@temp@d
 % 次が送り仮名以外の時
 \NewDocumentCommand{\gckanbun@furigana@boxing@nextsonota}{s}{%
   \IfBooleanTF{#1}{%
@@ -409,7 +415,7 @@
 % ボックスの配置
 \NewDocumentCommand{\gckanbun@okurigana@boxing}{s}{%
   \IfBooleanTF{#1}{%
-    \smash{\hbox{%
+    \hbox{%
         \raisebox{\gcknbn@adjust@yokotate}{\vbox{%
           \hbox to \gcknbn@okurigana@width{%
             \ifdim\gcknbn@furigana@width>0.9999\zw\relax%
@@ -432,7 +438,7 @@
                 \hspace*{-.5\zw}%
               \fi%
               \box\@ne%
-    }}}}}%
+    }}}}%
   }{%
     \hbox{%
       \raisebox{\gcknbn@adjust@yokotate}{%
@@ -606,7 +612,7 @@
     \ifdim\wd\z@>\gcknbn@intr@post%
       \global\gcknbn@intr@post=\wd\z@%
     \fi%
-    \smash{\lower\gcknbn@adjust@kaeri\hbox{\box\z@\hss}}%
+    \lower\gcknbn@adjust@kaeri\hbox{\box\z@\hss}%
   \endgroup%
   \gcknbn@kaeriten@kutoten@smashed%
 }
@@ -723,8 +729,11 @@
   \expandafter\let\csname 送り\endcsname\gcknbn@okurigana@smashed%
   \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten@smashed%
 }{\par}
-\NewDocumentEnvironment{GCKEnv*}{ m O{0.3\zw plus 0.15\zw minus 0.2\zw} }{%
-  \ltjsetparameter{kanjiskip=#2}% ここもLuaのみの書き方になっているので注意。
+\NewDocumentCommand{\GCKanshiBox}{ m m }{%
+  \makebox[#1][t]{\vphantom{\gcknbn@ruby{あ}{あ}[あ]}#2}%
+}
+\NewDocumentEnvironment{GCKEnv*}{ m }{%
+  \ltjsetparameter{kanjiskip=0pt}% ここもLuaのみの書き方になっているので注意。
   \setlength{\baselineskip}{#1}%
 }{\par}
 
