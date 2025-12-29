@@ -4,25 +4,40 @@
 % Copyright (c) 2017-2025 Munehiro Yamamoto <munepixyz@gmail.com>
 % Copyright (c) 2025 Kosei Kawaguchi
 
-% Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+% Permission is hereby granted, free of charge, 
+% to any person obtaining a copy of this software and associated documentation files 
+% (the "Software"), to deal in the Software without restriction, 
+% including without limitation the rights to use, copy, modify, merge, publish, 
+% distribute, sublicense, and/or sell copies of the Software, 
+% and to permit persons to whom the Software is furnished to do so, 
+% subject to the following conditions:
 
-% The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+% The above copyright notice and this permission notice 
+% shall be included in all copies or substantial portions of the Software.
 
-% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+% THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
+% EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+% FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+% IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
+% DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
+% ARISING FROM, 
+% OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % 未実装
 % グループルビ v2.3.0で実装？
 
-% 2.2.5
+% v2.2.5
 % あとはLua以外への対応。
-% 鉄緑の教材にもう少し近づけるか否か。
+
+
+% 注意
 % デフォルトで\kanjiskipが「。」ないし「、」の前に挿入される
 % 以上、各コマンドの後のskipもそうせざるを得ない。
 
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{gckanbun}[2025/12/28, Version 2.2.5--undev]
+\ProvidesPackage{gckanbun}[2025/12/29, Version 2.2.5]
 
 %% package errors
 \def\gcknbn@error{\PackageError{gckanbun}}
@@ -30,6 +45,7 @@
 \def\gcknbn@warningnoline{\PackageWarningNoLine{gckanbun}}
 \def\gcknbn@info{\PackageInfo{gckanbun}}
 
+%% package options
 \RequirePackage{keyval,etoolbox}
 \DeclareOption*{\gcknbn@setkey}
 \def\gcknbn@setkey{\expandafter\@gcknbn@setkey\expandafter{\CurrentOption}}
@@ -238,14 +254,26 @@
     }}}%
   }%
 }
+
+\newbox\gck@smashed@base
+\newbox\gck@smashed@furi
+\newdimen\gck@temp@h
+\newdimen\gck@temp@d
 % 次が送り仮名以外の時
 \NewDocumentCommand{\gckanbun@furigana@boxing@nextsonota}{s}{%
   \IfBooleanTF{#1}{%
-    \raisebox{\gcknbn@adjust@yokotate}{\smash{\hbox{%
+  \setbox\gck@smashed@base\hbox{あ}%
+  \edef\gck@temp@h{\the\ht\gck@smashed@base}%
+  \edef\gck@temp@d{\the\dp\gck@smashed@base}%
+  \setbox\gck@smashed@furi\hbox{%
+    \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
       \vbox{\hbox to \dimen\z@{\tiny\hss\gcknbn@rubybox@text\hss}%
         \nointerlineskip\hbox to \dimen\z@{\hss\box\z@\hss}%
         \nointerlineskip\hbox to \dimen\z@{\hss\box\tw@\hss}%
     }}}}%
+  \ht\gck@smashed@furi=\gck@temp@h%
+  \dp\gck@smashed@furi=\gck@temp@d%
+  \box\gck@smashed@furi%
   }{%
     \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
       \vbox{\hbox to \dimen\z@{\tiny\hss\gcknbn@rubybox@text\hss}%
@@ -685,7 +713,7 @@
 
 
 %% GCKEnv
-\NewDocumentEnvironment{GCKEnv}{ O{2\zw} O{0.3\zw plus 0.15\zw minus 0.2\zw} }{%
+\NewDocumentEnvironment{GCKEnv}{ m O{0.3\zw plus 0.15\zw minus 0.2\zw} }{%
   \ltjsetparameter{kanjiskip=#2}% ここもLuaのみの書き方になっているので注意。
   \setlength{\baselineskip}{#1}%
   \expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby@smashed%
@@ -694,6 +722,10 @@
   \expandafter\let\csname 振り\endcsname\gcknbn@ruby@smashed%
   \expandafter\let\csname 送り\endcsname\gcknbn@okurigana@smashed%
   \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten@smashed%
+}{\par}
+\NewDocumentEnvironment{GCKEnv*}{ m O{0.3\zw plus 0.15\zw minus 0.2\zw} }{%
+  \ltjsetparameter{kanjiskip=#2}% ここもLuaのみの書き方になっているので注意。
+  \setlength{\baselineskip}{#1}%
 }{\par}
 
 \endinput
