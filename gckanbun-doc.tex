@@ -727,10 +727,10 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   % 次に来る文字を判定
   % 呼び出しを通常とsmashで変えている。
   \def\gcknbn@furigana@okurigana{% normal
-    \futurelet\@let@token\gcknbn@@furigana@okurigana%
+    \futurelet\gckanbun@let@token\gcknbn@@furigana@okurigana%
   }
   \def\gcknbn@furigana@okurigana@smashed{% smashed
-    \futurelet\@let@token\gcknbn@@furigana@okurigana@smashed%
+    \futurelet\gckanbun@let@token\gcknbn@@furigana@okurigana@smashed%
   }
 
   % 各種ボックスの長さを計算
@@ -824,20 +824,20 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
     \hspace*{-\gcknbn@furigana@kutouten@kern}%
   }
 
-  % 次のトークン（\@let@token）に応じて
+  % 次のトークン（\gckanbun@let@token）に応じて
   % 処理を切り替えている機構
   \def\gcknbn@@furigana@okurigana{% normal
-    \ifx\@let@token\gcknbn@okurigana% 次が送り仮名の時
+    \ifx\gckanbun@let@token\gcknbn@okurigana% 次が送り仮名の時
       \gckanbun@furigana@lenset%
       \dimen\z@=\wd\z@%
       \gckanbun@furigana@boxing@nextokuri%
-    \else\ifx\@let@token、% 次が送り仮名ではない時
+    \else\ifx\gckanbun@let@token、% 次が送り仮名ではない時
       \gckanbun@furigana@lenset%
       \gckanbun@furigana@boxcal%
       \penalty\@lowpenalty%
       \gckanbun@furigana@boxing@nextsonota%
       \gcknbn@furigana@kutoten@skip%
-    \else\ifx\@let@token。%
+    \else\ifx\gckanbun@let@token。%
       \gckanbun@furigana@lenset%
       \gckanbun@furigana@boxcal%
       \penalty\@lowpenalty%
@@ -859,23 +859,23 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
     }}%
   \endgroup}
   \def\gcknbn@@furigana@okurigana@smashed{% smashed
-    \ifx\@let@token\gcknbn@okurigana@smashed% 次が送り仮名の時
+    \ifx\gckanbun@let@token\gcknbn@okurigana@smashed% 次が送り仮名の時
       \gckanbun@furigana@lenset%
       \dimen\z@=\wd\z@%
       \gckanbun@furigana@boxing@nextokuri*%
-    \else\ifx\@let@token\gcknbn@kaeriten@smashed% 次が送り仮名ではない時
+    \else\ifx\gckanbun@let@token\gcknbn@kaeriten@smashed% 次が送り仮名ではない時
       \gckanbun@furigana@lenset%
       \gckanbun@furigana@boxcal%
       \penalty\@lowpenalty%
       \gckanbun@furigana@boxing@nextsonota*%
-    \else\ifx\@let@token、%
+    \else\ifx\gckanbun@let@token、%
       \gckanbun@furigana@lenset%
       \gckanbun@furigana@boxcal%
       \penalty\@lowpenalty%
       \gckanbun@furigana@boxing@nextsonota*%
       \kanjiskip@gckanbun@env@post%
       \gcknbn@furigana@kutoten@skip%
-    \else\ifx\@let@token。%
+    \else\ifx\gckanbun@let@token。%
       \gckanbun@furigana@lenset%
       \gckanbun@furigana@boxcal%
       \penalty\@lowpenalty%
@@ -1015,18 +1015,18 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   }
 
   % 次に来る文字をセット
-  \def\gcknbn@okurigana@kaeriten{\futurelet\@let@token\gcknbn@@okurigana@kaeriten}
-  \def\gcknbn@okurigana@kaeriten@smashed{\futurelet\@let@token\gcknbn@@okurigana@kaeriten@smashed}
+  \def\gcknbn@okurigana@kaeriten{\futurelet\gckanbun@let@token\gcknbn@@okurigana@kaeriten}
+  \def\gcknbn@okurigana@kaeriten@smashed{\futurelet\gckanbun@let@token\gcknbn@@okurigana@kaeriten@smashed}
 
   % 次に来るトークン毎に処理を変更
   \def\gcknbn@@okurigana@kaeriten{%
-    \ifx\@let@token、
+    \ifx\gckanbun@let@token、
       \gcknbn@okurigana@kutoten@skip
       \global\gcknbn@okurigana@width=\z@
-    \else\ifx\@let@token。
+    \else\ifx\gckanbun@let@token。
       \gcknbn@okurigana@kutoten@skip
       \global\gcknbn@okurigana@width=\z@
-    \else\ifx\@let@token\gcknbn@kaeriten
+    \else\ifx\gckanbun@let@token\gcknbn@kaeriten
       \gcknbn@okurigana@kaeriten@skip
     \else%
       \ifdefstring{\gcknbn@okuri@intr@mark}{post}{%
@@ -1040,15 +1040,15 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
     \fi\fi\fi
   \endgroup}
   \def\gcknbn@@okurigana@kaeriten@smashed{%
-    \ifx\@let@token、%
+    \ifx\gckanbun@let@token、%
       \gcknbn@okurigana@kutoten@skip%
       \kanjiskip@gckanbun@env@post%
       \global\gcknbn@okurigana@width=\z@%
-    \else\ifx\@let@token。%
+    \else\ifx\gckanbun@let@token。%
       \gcknbn@okurigana@kutoten@skip%
       \kanjiskip@gckanbun@env@post%
       \global\gcknbn@okurigana@width=\z@%
-    \else\ifx\@let@token\gcknbn@kaeriten@smashed%
+    \else\ifx\gckanbun@let@token\gcknbn@kaeriten@smashed%
       \gcknbn@okurigana@kaeriten@skip%
     \else%
       \kanjiskip@gckanbun@env@post%
@@ -1127,15 +1127,15 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   }
 
   % 次に来る文字をセット
-  \def\gcknbn@kaeriten@kutoten{\futurelet\@let@token\gcknbn@@kaeriten@kutoten}
-  \def\gcknbn@kaeriten@kutoten@smashed{\futurelet\@let@token\gcknbn@@kaeriten@kutoten@smashed}
+  \def\gcknbn@kaeriten@kutoten{\futurelet\gckanbun@let@token\gcknbn@@kaeriten@kutoten}
+  \def\gcknbn@kaeriten@kutoten@smashed{\futurelet\gckanbun@let@token\gcknbn@@kaeriten@kutoten@smashed}
 
   % 次に来る文字毎に処理を変更
   \def\gcknbn@@kaeriten@kutoten{%
-    \ifx\@let@token、%
+    \ifx\gckanbun@let@token、%
       \gcknbn@kaeriten@kutoten@skip%
       \global\gcknbn@kaeriten@width=\z@%
-    \else\ifx\@let@token。%
+    \else\ifx\gckanbun@let@token。%
       \gcknbn@kaeriten@kutoten@skip%
       \global\gcknbn@kaeriten@width=\z@%
     \else%
@@ -1150,10 +1150,10 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
     \fi\fi%
   }
   \def\gcknbn@@kaeriten@kutoten@smashed{%
-    \ifx\@let@token、%
+    \ifx\gckanbun@let@token、%
       \gcknbn@kaeriten@kutoten@skip%
       \global\gcknbn@kaeriten@width=\z@%
-    \else\ifx\@let@token。%
+    \else\ifx\gckanbun@let@token。%
       \gcknbn@kaeriten@kutoten@skip%
       \global\gcknbn@kaeriten@width=\z@%
     \else%
