@@ -1,32 +1,10 @@
-\documentclass[luatex,fontsize=8pt,paper=b5,fleqn]{jlreq}
-\usepackage{hyperref}
-\usepackage{gckanbun}
+\documentclass[luatex,fontsize=8pt,paper=b5,twoside]{jlreq}%
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,caption}
 \usepackage{luwa-ul}
-\usepackage{caption}
-\usepackage[most]{tcolorbox}
-\usepackage{fp}
-\usepackage{lltjext}
-\usepackage{luatexja-ruby}
 \usepackage{KKsymbols}
-
-% You can omit these font settings.
-\RequirePackage[no-math]{fontspec}
-\RequirePackage[no-math,match,scale=1]{luatexja-fontspec}
-\RequirePackage[hiragino-pro,deluxe,expert]{luatexja-preset}
-\setmainfont{HiraMinPro-W3}[BoldFont=HiraMinPro-W6]\setmainjfont{HiraMinPro-W3}[BoldFont=HiraMinPro-W6]
-\renewfontfamily{\sffamily}{HiraKakuPro-W3}[BoldFont=HiraKakuPro-W6]
-\renewfontfamily{\mcfamily}{HiraMinPro-W3}[BoldFont=HiraMinPro-W6]
-\renewfontfamily{\gtfamily}{HiraKakuPro-W3}[BoldFont=HiraKakuPro-W6]
-\providefontfamily{\mgfamily}{HiraMaruPro-W4}
-\newfontfamily{\sfhira}{HiraKakuPro-W3}[BoldFont=HiraKakuPro-W6]\newjfontfamily{\sfhiraj}{HiraKakuPro-W3}[BoldFont=HiraKakuPro-W6]
-\newfontfamily{\mchira}{HiraMinPro-W3}[BoldFont=HiraMinPro-W6]\newjfontfamily{\mchiraj}{HiraMinPro-W3}[BoldFont=HiraMinPro-W6]
-\newfontfamily{\gthira}{HiraKakuPro-W3}[BoldFont=HiraKakuPro-W6,FontFace={eb}{\shapedefault}{HiraKakuStd-W8}]\newjfontfamily{\gthiraj}{HiraKakuPro-W3}[BoldFont=HiraKakuPro-W6,FontFace={eb}{\shapedefault}{HiraKakuStd-W8}]
-\newfontfamily{\mghira}{HiraMaruPro-W4}\newjfontfamily{\mghiraj}{HiraMaruPro-W4}
-\renewcommand{\sffamily}{\sfhira\sfhiraj}
-\renewcommand{\mcfamily}{\mchira\mchiraj}
-\renewcommand{\gtfamily}{\gthira\gthiraj}
-\renewcommand{\mgfamily}{\mghira\mghiraj}
-%%%
+\usepackage[most]{tcolorbox}
+\usepackage{gckanbun,lltjext}
 
 \usepackage{listings}
 \lstset{
@@ -38,6 +16,28 @@
     breakatwhitespace=false,  
     columns=flexible           
 }
+
+% You can omit these font settings.
+\makeatletter
+\RequirePackage[no-math]{fontspec}
+\RequirePackage[no-math,match,scale=1]{luatexja-fontspec}
+\RequirePackage[hiragino-pro,deluxe,expert]{luatexja-preset}
+\setmainfont{HiraMinPro-W3}[BoldFont=HiraMinPro-W6]
+\setmainjfont{HiraMinPro-W3}[BoldFont=HiraMinPro-W6]
+\newfontfamily{\sfhira@pre}{HiraKakuPro-W3}[BoldFont=HiraKakuPro-W6]
+\newjfontfamily{\sfhiraj@pre}{HiraKakuPro-W3}[BoldFont=HiraKakuPro-W6]
+\newfontfamily{\mchira@pre}{HiraMinPro-W3}[BoldFont=HiraMinPro-W6]
+\newjfontfamily{\mchiraj@pre}{HiraMinPro-W3}[BoldFont=HiraMinPro-W6]
+\newfontfamily{\gthira@pre}{HiraKakuPro-W3}[BoldFont=HiraKakuPro-W6,FontFace={eb}{\shapedefault}{HiraKakuStd-W8}]
+\newjfontfamily{\gthiraj@pre}{HiraKakuPro-W3}[BoldFont=HiraKakuPro-W6,FontFace={eb}{\shapedefault}{HiraKakuStd-W8}]
+\newfontfamily{\mghira@pre}{HiraMaruPro-W4}
+\newjfontfamily{\mghiraj@pre}{HiraMaruPro-W4}
+\renewcommand{\sffamily}{\sfhira@pre\sfhiraj@pre}
+\renewcommand{\mcfamily}{\mchira@pre\mchiraj@pre}
+\renewcommand{\gtfamily}{\gthira@pre\gthiraj@pre}
+\renewcommand{\mgfamily}{\mghira@pre\mghiraj@pre}
+\makeatother
+%%%
 
 
 \usepackage{hyperref} 
@@ -82,30 +82,10 @@
   toptitle=-1mm, bottomtitle=-1mm,
   righttitle=-1mm, lefttitle=-1mm,
   arc=.5mm, colback=white, 
-  fontupper=\normalsize,
   title={\tcbox[on line, arc=.5mm, boxsep=0pt, boxrule=0pt, top=1mm, bottom=0.8mm, left=2mm, right=2.2mm, colback=gray!40, coltext=DeepSkyBlue3]{\raisebox{-0.1ex}{\vphantom{羅}\vphantom{j}#1}}},fonttitle=\gtfamily\footnotesize,boxrule=0.8pt,
   breakable,top=-0.5mm,bottom=-0.5mm,
   after title=\IfNoValueTF{#2}{}{{\hfill\tcbox[on line, arc=.5mm, boxsep=0pt, boxrule=0pt, top=1mm, bottom=0.8mm, left=2mm, right=2.2mm, colback=white!80!black, coltext=#3]{\raisebox{-0.1ex}{\vphantom{羅}\vphantom{j}#2}}}}, bottom=2mm, top=2mm, 
 }
-
-
-\makeatletter
-\RequirePackage{luatexja}
-\def\ascb@textgt#1{\textgt{#1}}
-\def\ascb@gtfamily{\gtfamily}
-\def\ascb@zw#1#2{#1\zw}
-
-\DeclareTColorBox{simple}{ o m O{.5} O{} }% 
-{empty, left=2mm, right=2mm, top=-1mm, attach boxed title to top left={xshift=\ascb@zw{1.2}{11pt}}, boxed title style={empty,left=-2mm,right=-2mm}, colframe=black, coltitle=black, coltext=black, breakable, 
-before upper={\setlength{\parindent}{1em}\relax},
-underlay unbroken={\draw[black,line width=#3pt](title.east) -- (title.east-|frame.east) -- (frame.south east) -- (frame.south west) -- (title.west-|frame.west) -- (title.west); },
-underlay first={\draw[black,line width=#3pt](title.east) -- (title.east-|frame.east) -- (frame.south east) ;
-\draw[black,line width=#3pt] (frame.south west) -- (title.west-|frame.west) -- (title.west); },
-underlay middle={\draw[black,line width=#3pt](frame.north east) -- (frame.south east) ;
-\draw[black,line width=#3pt](frame.south west) -- (frame.north west) ;},
-underlay last={\draw[black,line width=#3pt](frame.north east) -- (frame.south east) -- (frame.south west) -- (frame.north west) ;},
-fonttitle=\ascb@gtfamily, IfValueTF={#1}{title=\hspace*{.1em}【#2】〈#1〉\hspace*{.1em}}{title=\hspace*{.1em}【#2】\hspace*{.1em}},#4}
-\makeatother
 
 \title{\texttt{gckanbun} Package Documentation (Reworked)}
 \author{%
@@ -416,12 +396,10 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
 
 この環境を使うか否かは、
 
-\begin{simple}{GCKEnvの使い分け}
-  \begin{description}
-    \item[漢文以外の文章中に漢文を入れたい] この場合は環境を使うと逆に行間が壊れる可能性があり、絶対に使用してはいけません。
-    \item[漢文だけを綺麗に組版したい時] 使うことが推奨されます。  
-  \end{description}
-\end{simple}
+\begin{description}
+  \item[漢文以外の文章中に漢文を入れたい] この場合は環境を使うと逆に行間が壊れる可能性があり、絶対に使用してはいけません。
+  \item[漢文だけを綺麗に組版したい時] 使うことが推奨されます。  
+\end{description}
 
 \noindent に従ってください。
 
@@ -504,18 +482,16 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
 \section{ライセンス}
 本パッケージをMITライセンスで配布します。条件なども全て以下のライセンス表記に準拠します。
 
-\begin{simple}[gckanbun package]{ライセンス全文}\setlength{\parindent}{0em}%
-  This package is licensed under the terms of the MIT License.
+\noindent This package is licensed under the terms of the MIT License.
 
-  Copyright (c) 2017-2025 Munehiro Yamamoto <munepixyz@gmail.com>\\
-  Copyright (c) 2025 Kosei Kawaguchi
+\noindent Copyright (c) 2017-2025 Munehiro Yamamoto <munepixyz@gmail.com>\\
+\noindent Copyright (c) 2025 Kosei Kawaguchi
 
-  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+\noindent Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
-  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+\noindent The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-\end{simple}
+\noindent THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
 \section{Version History}
@@ -665,9 +641,9 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   }
 
   % ルビ本体
-  % 通常はsmashなしを使用。
-  % Env内部のみsmashedに切り替わる。
-  % 通常より行間を広く取れば、smashがあった方が行間が等しくなる。
+  % 通常はspaceなしを使用。
+  % Env内部のみspaceedに切り替わる。
+  % 通常より行間を広く取れば、spaceがあった方が行間が等しくなる。
   \DeclareDocumentCommand{\gcknbn@ruby}{ O{} m m O{\gckanbun@phantom}}{% normal
     \gcknbn@adjust@yokotate@use%
     \global\gcknbn@furigana@width\z@%
@@ -695,7 +671,7 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
     \global\gcknbn@rubybox@width=\wd\z@\relax%
     \gcknbn@furigana@okurigana%
   }
-  \DeclareDocumentCommand{\gcknbn@ruby@smashed}{ O{} m m O{\gckanbun@phantom}}{% smashed
+  \DeclareDocumentCommand{\gcknbn@ruby@spaceed}{ O{} m m O{\gckanbun@phantom}}{% spaceed
     \kanjiskip@gckanbun@env@pre%
     \gcknbn@adjust@yokotate@use%
     \global\gcknbn@furigana@width\z@%
@@ -721,16 +697,16 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
     \gdef\gcknbn@rubybox@text{#3}%
     \gdef\gcknbn@rubybox@text@s{#4}%
     \global\gcknbn@rubybox@width=\wd\z@\relax%
-    \gcknbn@furigana@okurigana@smashed%
+    \gcknbn@furigana@okurigana@spaceed%
   }
 
   % 次に来る文字を判定
-  % 呼び出しを通常とsmashで変えている。
+  % 呼び出しを通常とspaceで変えている。
   \def\gcknbn@furigana@okurigana{% normal
     \futurelet\gckanbun@let@token\gcknbn@@furigana@okurigana%
   }
-  \def\gcknbn@furigana@okurigana@smashed{% smashed
-    \futurelet\gckanbun@let@token\gcknbn@@furigana@okurigana@smashed%
+  \def\gcknbn@furigana@okurigana@spaceed{% spaceed
+    \futurelet\gckanbun@let@token\gcknbn@@furigana@okurigana@spaceed%
   }
 
   % 各種ボックスの長さを計算
@@ -746,26 +722,26 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   }
 
   % ボックスの配置
-  \newbox\gck@smashed@base
-  \newbox\gck@smashed@furi
+  \newbox\gck@spaceed@base
+  \newbox\gck@spaceed@furi
   \newdimen\gck@temp@h
   \newdimen\gck@temp@d
 
   % 次が送り仮名の時
   \NewDocumentCommand{\gckanbun@furigana@boxing@nextokuri}{s}{%
     \IfBooleanTF{#1}{%
-      \setbox\gck@smashed@base\hbox{あ}%
-      \edef\gck@temp@h{\the\ht\gck@smashed@base}%
-      \edef\gck@temp@d{\the\dp\gck@smashed@base}%
-      \setbox\gck@smashed@furi\hbox{%
+      \setbox\gck@spaceed@base\hbox{あ}%
+      \edef\gck@temp@h{\the\ht\gck@spaceed@base}%
+      \edef\gck@temp@d{\the\dp\gck@spaceed@base}%
+      \setbox\gck@spaceed@furi\hbox{%
         \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
         \vbox{\hbox to \dimen\z@{\box\@ne\hss}%
           \nointerlineskip\hbox to \dimen\z@{\hss\box\z@\hss}%
           \nointerlineskip\hbox to \dimen\z@{\box\tw@\hss}%
       }}}}%
-      \ht\gck@smashed@furi=\gck@temp@h%
-      \dp\gck@smashed@furi=\gck@temp@d%
-      \box\gck@smashed@furi%
+      \ht\gck@spaceed@furi=\gck@temp@h%
+      \dp\gck@spaceed@furi=\gck@temp@d%
+      \box\gck@spaceed@furi%
     }{%
       \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
         \vbox{\hbox to \dimen\z@{\box\@ne\hss}%
@@ -777,18 +753,18 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   % 次が送り仮名以外の時
   \NewDocumentCommand{\gckanbun@furigana@boxing@nextsonota}{s}{%
     \IfBooleanTF{#1}{%
-    \setbox\gck@smashed@base\hbox{あ}%
-    \edef\gck@temp@h{\the\ht\gck@smashed@base}%
-    \edef\gck@temp@d{\the\dp\gck@smashed@base}%
-    \setbox\gck@smashed@furi\hbox{%
+    \setbox\gck@spaceed@base\hbox{あ}%
+    \edef\gck@temp@h{\the\ht\gck@spaceed@base}%
+    \edef\gck@temp@d{\the\dp\gck@spaceed@base}%
+    \setbox\gck@spaceed@furi\hbox{%
       \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
         \vbox{\hbox to \dimen\z@{\tiny\hss\gcknbn@rubybox@text\hss}%
           \nointerlineskip\hbox to \dimen\z@{\hss\box\z@\hss}%
           \nointerlineskip\hbox to \dimen\z@{\hss\box\tw@\hss}%
       }}}}%
-    \ht\gck@smashed@furi=\gck@temp@h%
-    \dp\gck@smashed@furi=\gck@temp@d%
-    \box\gck@smashed@furi%
+    \ht\gck@spaceed@furi=\gck@temp@h%
+    \dp\gck@spaceed@furi=\gck@temp@d%
+    \box\gck@spaceed@furi%
     }{%
       \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
         \vbox{\hbox to \dimen\z@{\tiny\hss\gcknbn@rubybox@text\hss}%
@@ -858,12 +834,12 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
         % それ以外は何もなし
     }}%
   \endgroup}
-  \def\gcknbn@@furigana@okurigana@smashed{% smashed
-    \ifx\gckanbun@let@token\gcknbn@okurigana@smashed% 次が送り仮名の時
+  \def\gcknbn@@furigana@okurigana@spaceed{% spaceed
+    \ifx\gckanbun@let@token\gcknbn@okurigana@spaceed% 次が送り仮名の時
       \gckanbun@furigana@lenset%
       \dimen\z@=\wd\z@%
       \gckanbun@furigana@boxing@nextokuri*%
-    \else\ifx\gckanbun@let@token\gcknbn@kaeriten@smashed% 次が送り仮名ではない時
+    \else\ifx\gckanbun@let@token\gcknbn@kaeriten@spaceed% 次が送り仮名ではない時
       \gckanbun@furigana@lenset%
       \gckanbun@furigana@boxcal%
       \penalty\@lowpenalty%
@@ -995,7 +971,7 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
     \gcknbn@okurigana@intr%
     \gcknbn@okurigana@kaeriten%
   }
-  \DeclareDocumentCommand{\gcknbn@okurigana@smashed}{ O{} m O{\gckanbun@phantom} }{% smashed
+  \DeclareDocumentCommand{\gcknbn@okurigana@spaceed}{ O{} m O{\gckanbun@phantom} }{% spaceed
     \nobreak\leavevmode%
     \gcknbn@adjust@yokotate@use%
     \global\gcknbn@okurigana@width\z@%
@@ -1011,12 +987,12 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
       \gckanbun@okurigana@boxing*%
     \global\gcknbn@furigana@width=\z@\relax%
     \gcknbn@okurigana@intr%
-    \gcknbn@okurigana@kaeriten@smashed%
+    \gcknbn@okurigana@kaeriten@spaceed%
   }
 
   % 次に来る文字をセット
   \def\gcknbn@okurigana@kaeriten{\futurelet\gckanbun@let@token\gcknbn@@okurigana@kaeriten}
-  \def\gcknbn@okurigana@kaeriten@smashed{\futurelet\gckanbun@let@token\gcknbn@@okurigana@kaeriten@smashed}
+  \def\gcknbn@okurigana@kaeriten@spaceed{\futurelet\gckanbun@let@token\gcknbn@@okurigana@kaeriten@spaceed}
 
   % 次に来るトークン毎に処理を変更
   \def\gcknbn@@okurigana@kaeriten{%
@@ -1039,7 +1015,7 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
       }}%
     \fi\fi\fi
   \endgroup}
-  \def\gcknbn@@okurigana@kaeriten@smashed{%
+  \def\gcknbn@@okurigana@kaeriten@spaceed{%
     \ifx\gckanbun@let@token、%
       \gcknbn@okurigana@kutoten@skip%
       \kanjiskip@gckanbun@env@post%
@@ -1048,7 +1024,7 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
       \gcknbn@okurigana@kutoten@skip%
       \kanjiskip@gckanbun@env@post%
       \global\gcknbn@okurigana@width=\z@%
-    \else\ifx\gckanbun@let@token\gcknbn@kaeriten@smashed%
+    \else\ifx\gckanbun@let@token\gcknbn@kaeriten@spaceed%
       \gcknbn@okurigana@kaeriten@skip%
     \else%
       \kanjiskip@gckanbun@env@post%
@@ -1108,7 +1084,7 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
     \endgroup%
     \gcknbn@kaeriten@kutoten%
   }
-  \DeclareDocumentCommand{\gcknbn@kaeriten@smashed}{ O{} m }{% smashed
+  \DeclareDocumentCommand{\gcknbn@kaeriten@spaceed}{ O{} m }{% spaceed
     \nobreak\leavevmode%
     \gcknbn@adjust@kaeri@use%
     \global\def\gcknbn@kaeri@intr@mark{}%
@@ -1123,12 +1099,12 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
       \fi%
       \lower\gcknbn@adjust@kaeri\hbox{\box\z@\hss}%
     \endgroup%
-    \gcknbn@kaeriten@kutoten@smashed%
+    \gcknbn@kaeriten@kutoten@spaceed%
   }
 
   % 次に来る文字をセット
   \def\gcknbn@kaeriten@kutoten{\futurelet\gckanbun@let@token\gcknbn@@kaeriten@kutoten}
-  \def\gcknbn@kaeriten@kutoten@smashed{\futurelet\gckanbun@let@token\gcknbn@@kaeriten@kutoten@smashed}
+  \def\gcknbn@kaeriten@kutoten@spaceed{\futurelet\gckanbun@let@token\gcknbn@@kaeriten@kutoten@spaceed}
 
   % 次に来る文字毎に処理を変更
   \def\gcknbn@@kaeriten@kutoten{%
@@ -1149,7 +1125,7 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
       }}%
     \fi\fi%
   }
-  \def\gcknbn@@kaeriten@kutoten@smashed{%
+  \def\gcknbn@@kaeriten@kutoten@spaceed{%
     \ifx\gckanbun@let@token、%
       \gcknbn@kaeriten@kutoten@skip%
       \global\gcknbn@kaeriten@width=\z@%
@@ -1236,12 +1212,12 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
       \kanjiskip=#2%
     \fi%
     \setlength{\baselineskip}{#1}%
-    \expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby@smashed%
-    \expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana@smashed%
-    \expandafter\let\csname\gcknbn@prefix kaeriten\endcsname\gcknbn@kaeriten@smashed%
-    \expandafter\let\csname 振り\endcsname\gcknbn@ruby@smashed%
-    \expandafter\let\csname 送り\endcsname\gcknbn@okurigana@smashed%
-    \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten@smashed%
+    \expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby@spaceed%
+    \expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana@spaceed%
+    \expandafter\let\csname\gcknbn@prefix kaeriten\endcsname\gcknbn@kaeriten@spaceed%
+    \expandafter\let\csname 振り\endcsname\gcknbn@ruby@spaceed%
+    \expandafter\let\csname 送り\endcsname\gcknbn@okurigana@spaceed%
+    \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten@spaceed%
   }{\par}
   \NewDocumentCommand{\GCKanshiBox}{ m m }{%
     \makebox[#1][t]{\vphantom{\gcknbn@ruby{あ}{あ}[あ]}#2}%
@@ -1253,12 +1229,12 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
       \kanjiskip=0pt%
     \fi%
     \setlength{\baselineskip}{#1}%
-    \expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby@smashed%
-    \expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana@smashed%
-    \expandafter\let\csname\gcknbn@prefix kaeriten\endcsname\gcknbn@kaeriten@smashed%
-    \expandafter\let\csname 振り\endcsname\gcknbn@ruby@smashed%
-    \expandafter\let\csname 送り\endcsname\gcknbn@okurigana@smashed%
-    \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten@smashed%
+    \expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby@spaceed%
+    \expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana@spaceed%
+    \expandafter\let\csname\gcknbn@prefix kaeriten\endcsname\gcknbn@kaeriten@spaceed%
+    \expandafter\let\csname 振り\endcsname\gcknbn@ruby@spaceed%
+    \expandafter\let\csname 送り\endcsname\gcknbn@okurigana@spaceed%
+    \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten@spaceed%
     \let\kanjiskip@gckanbun@env@pre\kanjiskip@gckanbun@env@pre@kanshi%
     \let\kanjiskip@gckanbun@env@post\kanjiskip@gckanbun@env@post@kanshi%
   }{\par}

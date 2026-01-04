@@ -169,9 +169,9 @@
 }
 
 % ルビ本体
-% 通常はsmashなしを使用。
-% Env内部のみsmashedに切り替わる。
-% 通常より行間を広く取れば、smashがあった方が行間が等しくなる。
+% 通常はspaceなしを使用。
+% Env内部のみspaceedに切り替わる。
+% 通常より行間を広く取れば、spaceがあった方が行間が等しくなる。
 \DeclareDocumentCommand{\gcknbn@ruby}{ O{} m m O{\gckanbun@phantom}}{% normal
   \gcknbn@adjust@yokotate@use%
   \global\gcknbn@furigana@width\z@%
@@ -199,7 +199,7 @@
   \global\gcknbn@rubybox@width=\wd\z@\relax%
   \gcknbn@furigana@okurigana%
 }
-\DeclareDocumentCommand{\gcknbn@ruby@smashed}{ O{} m m O{\gckanbun@phantom}}{% smashed
+\DeclareDocumentCommand{\gcknbn@ruby@spaceed}{ O{} m m O{\gckanbun@phantom}}{% spaceed
   \kanjiskip@gckanbun@env@pre%
   \gcknbn@adjust@yokotate@use%
   \global\gcknbn@furigana@width\z@%
@@ -225,16 +225,16 @@
   \gdef\gcknbn@rubybox@text{#3}%
   \gdef\gcknbn@rubybox@text@s{#4}%
   \global\gcknbn@rubybox@width=\wd\z@\relax%
-  \gcknbn@furigana@okurigana@smashed%
+  \gcknbn@furigana@okurigana@spaceed%
 }
 
 % 次に来る文字を判定
-% 呼び出しを通常とsmashで変えている。
+% 呼び出しを通常とspaceで変えている。
 \def\gcknbn@furigana@okurigana{% normal
   \futurelet\gckanbun@let@token\gcknbn@@furigana@okurigana%
 }
-\def\gcknbn@furigana@okurigana@smashed{% smashed
-  \futurelet\gckanbun@let@token\gcknbn@@furigana@okurigana@smashed%
+\def\gcknbn@furigana@okurigana@spaceed{% spaceed
+  \futurelet\gckanbun@let@token\gcknbn@@furigana@okurigana@spaceed%
 }
 
 % 各種ボックスの長さを計算
@@ -250,26 +250,26 @@
 }
 
 % ボックスの配置
-\newbox\gck@smashed@base
-\newbox\gck@smashed@furi
+\newbox\gck@spaceed@base
+\newbox\gck@spaceed@furi
 \newdimen\gck@temp@h
 \newdimen\gck@temp@d
 
 % 次が送り仮名の時
 \NewDocumentCommand{\gckanbun@furigana@boxing@nextokuri}{s}{%
   \IfBooleanTF{#1}{%
-    \setbox\gck@smashed@base\hbox{あ}%
-    \edef\gck@temp@h{\the\ht\gck@smashed@base}%
-    \edef\gck@temp@d{\the\dp\gck@smashed@base}%
-    \setbox\gck@smashed@furi\hbox{%
+    \setbox\gck@spaceed@base\hbox{あ}%
+    \edef\gck@temp@h{\the\ht\gck@spaceed@base}%
+    \edef\gck@temp@d{\the\dp\gck@spaceed@base}%
+    \setbox\gck@spaceed@furi\hbox{%
       \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
       \vbox{\hbox to \dimen\z@{\box\@ne\hss}%
         \nointerlineskip\hbox to \dimen\z@{\hss\box\z@\hss}%
         \nointerlineskip\hbox to \dimen\z@{\box\tw@\hss}%
     }}}}%
-    \ht\gck@smashed@furi=\gck@temp@h%
-    \dp\gck@smashed@furi=\gck@temp@d%
-    \box\gck@smashed@furi%
+    \ht\gck@spaceed@furi=\gck@temp@h%
+    \dp\gck@spaceed@furi=\gck@temp@d%
+    \box\gck@spaceed@furi%
   }{%
     \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
       \vbox{\hbox to \dimen\z@{\box\@ne\hss}%
@@ -281,18 +281,18 @@
 % 次が送り仮名以外の時
 \NewDocumentCommand{\gckanbun@furigana@boxing@nextsonota}{s}{%
   \IfBooleanTF{#1}{%
-  \setbox\gck@smashed@base\hbox{あ}%
-  \edef\gck@temp@h{\the\ht\gck@smashed@base}%
-  \edef\gck@temp@d{\the\dp\gck@smashed@base}%
-  \setbox\gck@smashed@furi\hbox{%
+  \setbox\gck@spaceed@base\hbox{あ}%
+  \edef\gck@temp@h{\the\ht\gck@spaceed@base}%
+  \edef\gck@temp@d{\the\dp\gck@spaceed@base}%
+  \setbox\gck@spaceed@furi\hbox{%
     \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
       \vbox{\hbox to \dimen\z@{\tiny\hss\gcknbn@rubybox@text\hss}%
         \nointerlineskip\hbox to \dimen\z@{\hss\box\z@\hss}%
         \nointerlineskip\hbox to \dimen\z@{\hss\box\tw@\hss}%
     }}}}%
-  \ht\gck@smashed@furi=\gck@temp@h%
-  \dp\gck@smashed@furi=\gck@temp@d%
-  \box\gck@smashed@furi%
+  \ht\gck@spaceed@furi=\gck@temp@h%
+  \dp\gck@spaceed@furi=\gck@temp@d%
+  \box\gck@spaceed@furi%
   }{%
     \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
       \vbox{\hbox to \dimen\z@{\tiny\hss\gcknbn@rubybox@text\hss}%
@@ -362,12 +362,12 @@
       % それ以外は何もなし
   }}%
 \endgroup}
-\def\gcknbn@@furigana@okurigana@smashed{% smashed
-  \ifx\gckanbun@let@token\gcknbn@okurigana@smashed% 次が送り仮名の時
+\def\gcknbn@@furigana@okurigana@spaceed{% spaceed
+  \ifx\gckanbun@let@token\gcknbn@okurigana@spaceed% 次が送り仮名の時
     \gckanbun@furigana@lenset%
     \dimen\z@=\wd\z@%
     \gckanbun@furigana@boxing@nextokuri*%
-  \else\ifx\gckanbun@let@token\gcknbn@kaeriten@smashed% 次が送り仮名ではない時
+  \else\ifx\gckanbun@let@token\gcknbn@kaeriten@spaceed% 次が送り仮名ではない時
     \gckanbun@furigana@lenset%
     \gckanbun@furigana@boxcal%
     \penalty\@lowpenalty%
@@ -499,7 +499,7 @@
   \gcknbn@okurigana@intr%
   \gcknbn@okurigana@kaeriten%
 }
-\DeclareDocumentCommand{\gcknbn@okurigana@smashed}{ O{} m O{\gckanbun@phantom} }{% smashed
+\DeclareDocumentCommand{\gcknbn@okurigana@spaceed}{ O{} m O{\gckanbun@phantom} }{% spaceed
   \nobreak\leavevmode%
   \gcknbn@adjust@yokotate@use%
   \global\gcknbn@okurigana@width\z@%
@@ -515,12 +515,12 @@
     \gckanbun@okurigana@boxing*%
   \global\gcknbn@furigana@width=\z@\relax%
   \gcknbn@okurigana@intr%
-  \gcknbn@okurigana@kaeriten@smashed%
+  \gcknbn@okurigana@kaeriten@spaceed%
 }
 
 % 次に来る文字をセット
 \def\gcknbn@okurigana@kaeriten{\futurelet\gckanbun@let@token\gcknbn@@okurigana@kaeriten}
-\def\gcknbn@okurigana@kaeriten@smashed{\futurelet\gckanbun@let@token\gcknbn@@okurigana@kaeriten@smashed}
+\def\gcknbn@okurigana@kaeriten@spaceed{\futurelet\gckanbun@let@token\gcknbn@@okurigana@kaeriten@spaceed}
 
 % 次に来るトークン毎に処理を変更
 \def\gcknbn@@okurigana@kaeriten{%
@@ -543,7 +543,7 @@
     }}%
   \fi\fi\fi
 \endgroup}
-\def\gcknbn@@okurigana@kaeriten@smashed{%
+\def\gcknbn@@okurigana@kaeriten@spaceed{%
   \ifx\gckanbun@let@token、%
     \gcknbn@okurigana@kutoten@skip%
     \kanjiskip@gckanbun@env@post%
@@ -552,7 +552,7 @@
     \gcknbn@okurigana@kutoten@skip%
     \kanjiskip@gckanbun@env@post%
     \global\gcknbn@okurigana@width=\z@%
-  \else\ifx\gckanbun@let@token\gcknbn@kaeriten@smashed%
+  \else\ifx\gckanbun@let@token\gcknbn@kaeriten@spaceed%
     \gcknbn@okurigana@kaeriten@skip%
   \else%
     \kanjiskip@gckanbun@env@post%
@@ -612,7 +612,7 @@
   \endgroup%
   \gcknbn@kaeriten@kutoten%
 }
-\DeclareDocumentCommand{\gcknbn@kaeriten@smashed}{ O{} m }{% smashed
+\DeclareDocumentCommand{\gcknbn@kaeriten@spaceed}{ O{} m }{% spaceed
   \nobreak\leavevmode%
   \gcknbn@adjust@kaeri@use%
   \global\def\gcknbn@kaeri@intr@mark{}%
@@ -627,12 +627,12 @@
     \fi%
     \lower\gcknbn@adjust@kaeri\hbox{\box\z@\hss}%
   \endgroup%
-  \gcknbn@kaeriten@kutoten@smashed%
+  \gcknbn@kaeriten@kutoten@spaceed%
 }
 
 % 次に来る文字をセット
 \def\gcknbn@kaeriten@kutoten{\futurelet\gckanbun@let@token\gcknbn@@kaeriten@kutoten}
-\def\gcknbn@kaeriten@kutoten@smashed{\futurelet\gckanbun@let@token\gcknbn@@kaeriten@kutoten@smashed}
+\def\gcknbn@kaeriten@kutoten@spaceed{\futurelet\gckanbun@let@token\gcknbn@@kaeriten@kutoten@spaceed}
 
 % 次に来る文字毎に処理を変更
 \def\gcknbn@@kaeriten@kutoten{%
@@ -653,7 +653,7 @@
     }}%
   \fi\fi%
 }
-\def\gcknbn@@kaeriten@kutoten@smashed{%
+\def\gcknbn@@kaeriten@kutoten@spaceed{%
   \ifx\gckanbun@let@token、%
     \gcknbn@kaeriten@kutoten@skip%
     \global\gcknbn@kaeriten@width=\z@%
@@ -740,12 +740,12 @@
     \kanjiskip=#2%
   \fi%
   \setlength{\baselineskip}{#1}%
-  \expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby@smashed%
-  \expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana@smashed%
-  \expandafter\let\csname\gcknbn@prefix kaeriten\endcsname\gcknbn@kaeriten@smashed%
-  \expandafter\let\csname 振り\endcsname\gcknbn@ruby@smashed%
-  \expandafter\let\csname 送り\endcsname\gcknbn@okurigana@smashed%
-  \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten@smashed%
+  \expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby@spaceed%
+  \expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana@spaceed%
+  \expandafter\let\csname\gcknbn@prefix kaeriten\endcsname\gcknbn@kaeriten@spaceed%
+  \expandafter\let\csname 振り\endcsname\gcknbn@ruby@spaceed%
+  \expandafter\let\csname 送り\endcsname\gcknbn@okurigana@spaceed%
+  \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten@spaceed%
 }{\par}
 \NewDocumentCommand{\GCKanshiBox}{ m m }{%
   \makebox[#1][t]{\vphantom{\gcknbn@ruby{あ}{あ}[あ]}#2}%
@@ -757,12 +757,12 @@
     \kanjiskip=0pt%
   \fi%
   \setlength{\baselineskip}{#1}%
-  \expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby@smashed%
-  \expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana@smashed%
-  \expandafter\let\csname\gcknbn@prefix kaeriten\endcsname\gcknbn@kaeriten@smashed%
-  \expandafter\let\csname 振り\endcsname\gcknbn@ruby@smashed%
-  \expandafter\let\csname 送り\endcsname\gcknbn@okurigana@smashed%
-  \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten@smashed%
+  \expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby@spaceed%
+  \expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana@spaceed%
+  \expandafter\let\csname\gcknbn@prefix kaeriten\endcsname\gcknbn@kaeriten@spaceed%
+  \expandafter\let\csname 振り\endcsname\gcknbn@ruby@spaceed%
+  \expandafter\let\csname 送り\endcsname\gcknbn@okurigana@spaceed%
+  \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten@spaceed%
   \let\kanjiskip@gckanbun@env@pre\kanjiskip@gckanbun@env@pre@kanshi%
   \let\kanjiskip@gckanbun@env@post\kanjiskip@gckanbun@env@post@kanshi%
 }{\par}
