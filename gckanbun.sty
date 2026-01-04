@@ -33,7 +33,7 @@
 % 以上、各コマンドの後のskipもそうせざるを得ない。
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{gckanbun}[2025/12/29, Version 2.2.6]
+\ProvidesPackage{gckanbun}[2025/12/29, Version 2.2.7--undev]
 
 %% package errors
 \def\gcknbn@error{\PackageError{gckanbun}}
@@ -81,6 +81,23 @@
 \fi\fi
 
 %% kanjiskipの挿入
+
+% 新規実装
+% \newif\ifgck@after@ruby
+% \gck@after@rubyfalse
+% \newtoks\gck@everyhbox
+% \gck@everyhbox=\everyhbox
+
+% \everyhbox{%
+%   \the\gck@everyhbox
+%   \global\gck@after@rubyfalse
+% }
+% \newcommand\gck@maybe@kanjiskip{%
+%   \ifgck@after@ruby%
+%     \hspace{\ltjgetparameter{kanjiskip}}%
+%   \fi%
+% }
+
 \newcommand{\kanjiskip@gckanbun@env@pre}{%
   \ifluatex%
     \edef\spacefactor@gckanbun@env{\ltjgetparameter{kanjiskip}}%
@@ -428,7 +445,7 @@
 % ボックスの配置
 \NewDocumentCommand{\gckanbun@okurigana@boxing}{s}{%
   \IfBooleanTF{#1}{%
-    \hbox{%
+    \smash{\hbox{%
         \raisebox{\gcknbn@adjust@yokotate}{\vbox{%
           \hbox to \gcknbn@okurigana@width{%
             \ifdim\gcknbn@furigana@width>0.9999\zw\relax%
@@ -451,7 +468,7 @@
                 \hspace*{-.5\zw}%
               \fi%
               \box\@ne%
-    }}}}%
+    }}}}}%
   }{%
     \hbox{%
       \raisebox{\gcknbn@adjust@yokotate}{%
