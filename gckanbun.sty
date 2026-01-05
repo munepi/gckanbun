@@ -113,10 +113,6 @@
 
 
 \def\gck@ghost@char@post{%
-  \futurelet\gck@nexttok\gck@ghost@post@use
-}
-
-\def\gck@ghost@post@use{%
   \ifgck@after@ruby@notinboxhead
     \global\gck@after@ruby@notinboxheadtrue
     \ltjghostafterjachar
@@ -124,7 +120,6 @@
     \global\gck@after@ruby@notinboxheadtrue
   \fi
 }
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\kanjiskip@gckanbun@env@pre}{%
