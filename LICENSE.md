@@ -1,7 +1,7 @@
 # MIT License
 
-**Copyright (c) 2017-2025 Munehiro Yamamoto <munepixyz@gmail.com>**<br>
-**Copyright (c) 2025 Kosei Kawaguchi**
+**Copyright (c) 2017-2026 Munehiro Yamamoto <munepixyz@gmail.com>**<br>
+**Copyright (c) 2025-2026 Kosei Kawaguchi**
 
 ---
 

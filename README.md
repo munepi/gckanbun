@@ -11,8 +11,8 @@
 `gckanbun` provides a comprehensive set of commands for typesetting classical Chinese texts (Kanbun) in the traditional Japanese style.
 `gckanbun` は、漢文を日本式の表記法（返り点、送り仮名など）で組版するための包括的なコマンドを提供するパッケージです。
 
-- **Version**: 2.2.6
-- **Date**: 2025-12-29
+- **Version**: 2.2.7
+- **Date**: 2026-01-05
 - **Original Author**: Munehiro Yamamoto
 - **Modified Author**: Kosei Kawaguchi (a.k.a. KKTeX)
 - **Repository**: [https://github.com/munepi/gckanbun](https://github.com/munepi/gckanbun)
@@ -63,8 +63,8 @@ This package is licensed under the **MIT License**.
 本パッケージは **MITライセンス** のもとで公開されています。
 
 ```text
-Copyright (c) 2017-2025 Munehiro Yamamoto <munepixyz@gmail.com>
-Copyright (c) 2025 Kosei Kawaguchi
+Copyright (c) 2017-2026 Munehiro Yamamoto <munepixyz@gmail.com>
+Copyright (c) 2025-2026 Kosei Kawaguchi
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
