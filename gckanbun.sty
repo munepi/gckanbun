@@ -82,21 +82,50 @@
 
 %% kanjiskipの挿入
 
-% 新規実装
-% \newif\ifgck@after@ruby
-% \gck@after@rubyfalse
-% \newtoks\gck@everyhbox
-% \gck@everyhbox=\everyhbox
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newif\ifgck@after@ruby
+\gck@after@rubytrue
+\newif\ifgck@after@ruby@notinboxhead
+\gck@after@ruby@notinboxheadtrue
 
-% \everyhbox{%
-%   \the\gck@everyhbox
-%   \global\gck@after@rubyfalse
-% }
-% \newcommand\gck@maybe@kanjiskip{%
-%   \ifgck@after@ruby%
-%     \hspace{\ltjgetparameter{kanjiskip}}%
-%   \fi%
-% }
+% \makebox の開始時に実行
+\AddToHook{cmd/makebox/before}{\global\gck@after@rubyfalse}
+\AddToHook{cmd/mbox/before}{\global\gck@after@rubyfalse}
+\AddToHook{cmd/fbox/before}{\global\gck@after@rubyfalse}
+\AddToHook{cmd/framebox/before}{\global\gck@after@rubyfalse}
+
+\chardef\zenkakuSpace=\jis"2121\relax
+
+\RequirePackage{bxghost}
+\def\gck@ghost@char@pre{%
+  \ifgck@after@ruby\ifgck@after@ruby@notinboxhead
+    \global\gck@after@ruby@notinboxheadtrue
+    \zenkakuSpace
+    \hspace{-1\zw}\relax
+    % luatexjaの修正まち
+    % \ltjghostbeforejacharにできないと本来おかしい。
+    \fi
+  \else
+    \global\gck@after@ruby@notinboxheadtrue
+    \global\gck@after@rubytrue
+  \fi
+}
+
+
+\def\gck@ghost@char@post{%
+  \futurelet\gck@nexttok\gck@ghost@post@use
+}
+
+\def\gck@ghost@post@use{%
+  \ifgck@after@ruby@notinboxhead
+    \global\gck@after@ruby@notinboxheadtrue
+    \ltjghostafterjachar
+  \else
+    \global\gck@after@ruby@notinboxheadtrue
+  \fi
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\kanjiskip@gckanbun@env@pre}{%
   \ifluatex%
@@ -195,6 +224,7 @@
   \global\gcknbn@furigana@width@s\z@%
   \global\def\gcknbn@ruby@intr@mark{}%
   \leavevmode%
+  \gck@ghost@char@pre%%%
   \begingroup%
     \setkeys{gcknbn@ruby}{#1}%
     \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@%
@@ -352,6 +382,11 @@
     \gckanbun@furigana@lenset%
     \dimen\z@=\wd\z@%
     \gckanbun@furigana@boxing@nextokuri%
+  \else\ifx\gckanbun@let@token\gcknbn@kaeriten% 次が返り点の時
+    \gckanbun@furigana@lenset%
+    \gckanbun@furigana@boxcal%
+    \penalty\@lowpenalty%
+    \gckanbun@furigana@boxing@nextsonota%
   \else\ifx\gckanbun@let@token、% 次が送り仮名ではない時
     \gckanbun@furigana@lenset%
     \gckanbun@furigana@boxcal%
@@ -369,7 +404,7 @@
     \gckanbun@furigana@boxcal%
     \penalty\@lowpenalty%
     \gckanbun@furigana@boxing@nextsonota%
-  \fi\fi\fi%
+  \fi\fi\fi\fi%
   \ifdefstring{\gcknbn@ruby@intr@mark}{post}{%
     \kern-\gcknbn@intr@post%
   }{%
@@ -378,7 +413,14 @@
     }{%
       % それ以外は何もなし
   }}%
-\endgroup}
+  \ifx\gckanbun@let@token、%
+    \gck@ghost@char@post%%%
+  \else\ifx\gckanbun@let@token。%
+  \else%
+    \gck@ghost@char@post%%%
+  \fi\fi%
+\endgroup%
+}
 \def\gcknbn@@furigana@okurigana@spaceed{% spaceed
   \ifx\gckanbun@let@token\gcknbn@okurigana@spaceed% 次が送り仮名の時
     \gckanbun@furigana@lenset%
@@ -409,6 +451,7 @@
     \penalty\@lowpenalty%
     \gckanbun@furigana@boxing@nextsonota*%
     \kanjiskip@gckanbun@env@post%
+    \hspace{\ltjgetparameter{kanjiskip}}%
   \fi\fi\fi\fi%
   \ifdefstring{\gcknbn@ruby@intr@mark}{post}{%
     \kern-\gcknbn@intr@post%
@@ -544,12 +587,16 @@
   \ifx\gckanbun@let@token、
     \gcknbn@okurigana@kutoten@skip
     \global\gcknbn@okurigana@width=\z@
+    \gck@ghost@char@post%%%
   \else\ifx\gckanbun@let@token。
     \gcknbn@okurigana@kutoten@skip
     \global\gcknbn@okurigana@width=\z@
+    \gck@ghost@char@post%%%
   \else\ifx\gckanbun@let@token\gcknbn@kaeriten
     \gcknbn@okurigana@kaeriten@skip
+    \gck@ghost@char@post%%%
   \else%
+  \gck@ghost@char@post%%%
     \ifdefstring{\gcknbn@okuri@intr@mark}{post}{%
       \kern-\gcknbn@intr@post%
     }{%
@@ -660,6 +707,7 @@
     \gcknbn@kaeriten@kutoten@skip%
     \global\gcknbn@kaeriten@width=\z@%
   \else%
+    \gck@ghost@char@post%%%
     \ifdefstring{\gcknbn@kaeri@intr@mark}{post}{%
       \kern-\gcknbn@intr@post%
     }{%
@@ -756,13 +804,13 @@
   \else%
     \kanjiskip=#2%
   \fi%
-  \setlength{\baselineskip}{#1}%
-  \expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby@spaceed%
-  \expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana@spaceed%
-  \expandafter\let\csname\gcknbn@prefix kaeriten\endcsname\gcknbn@kaeriten@spaceed%
-  \expandafter\let\csname 振り\endcsname\gcknbn@ruby@spaceed%
-  \expandafter\let\csname 送り\endcsname\gcknbn@okurigana@spaceed%
-  \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten@spaceed%
+  % \setlength{\baselineskip}{#1}%
+  % \expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby@spaceed%
+  % \expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana@spaceed%
+  % \expandafter\let\csname\gcknbn@prefix kaeriten\endcsname\gcknbn@kaeriten@spaceed%
+  % \expandafter\let\csname 振り\endcsname\gcknbn@ruby@spaceed%
+  % \expandafter\let\csname 送り\endcsname\gcknbn@okurigana@spaceed%
+  % \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten@spaceed%
 }{\par}
 \NewDocumentCommand{\GCKanshiBox}{ m m }{%
   \makebox[#1][t]{\vphantom{\gcknbn@ruby{あ}{あ}[あ]}#2}%
