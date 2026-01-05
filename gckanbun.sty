@@ -87,7 +87,7 @@
   \ltjghostbeforejachar%
 }
 \def\gck@ghost@char@post{%%%
-  \ltjghostafterjachar%z
+  \ltjghostafterjachar%
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -521,7 +521,7 @@
 \edef\gckanbn@skip@default{0.3\zw plus 0.15\zw minus 0.2\zw}
 \NewDocumentEnvironment{GCKEnv}{ m O{\gckanbn@skip@default} }{%
   \ifluatex%
-    \ltjsetparameter{kanjiskip=#2}% ここもLuaのみの書き方になっているので注意。
+    \ltjsetparameter{kanjiskip=#2}%
   \else%
     \kanjiskip=#2%
   \fi%
