@@ -130,6 +130,8 @@ gckanbunパッケージはそのルビや返り点の制御構造において非
 
 本パッケージはLuaLaTeXでも(u)pLaTeXでも使用が可能です。
 
+ただし、\namiKK{推奨はLuaLaTeX+jlreq}です。LuaLaTeX以外で扱う場合、内部で使用している\verb|\ltjghostbeforejachar|と\verb|\ltjghostafterjachar|の恩恵を受けることができず、bxghostパッケージを用いた和文ゴーストの挿入に切り替わります。その際に出力が劣化し得るため、LuaLaTeXが望ましいのです。
+
 \subsection{オプション}
 パッケージオプションは\verb|prefix=<prefix>|（デフォルト値：\verb|gckanbun|）となっていて、\texttt{gckanbun}パッケージが提供する3つのコマンド\verb|\gckanbunruby|、\verb|\gckanbunokurigana|、\verb|\gckanbunkaeriten| をそれぞれ\verb|<prefix>ruby|、\verb|<prefix>okurigana|、\verb|<prefix>kaeriten| として提供します。このオプションにより、他のパッケージで提供されるルビ振りコマンド \verb|\ruby| との衝突を避けられます。
 
@@ -299,7 +301,7 @@ v2.1.0以前では、各コマンドにはスターオプションがありま�
 \end{OutPut}
 
 \section{漢詩}
-
+\subsection{基本の打ち方}
 漢詩を打つ場合には、\verb|\makebox|と\verb|intrusion|オプションを使います。\verb|intrusion|オプションを指定すると、ルビ文字が親文字の幅を超えた時に前後の領域に「侵入」する形で配置されます。
 
 しかし、漢文はほとんどの文字に何らかのルビが振られるため、普段から侵入を許可する仕様にするとかえって読みづらいです。したがって、本当に必要な時にだけこのオプションを使うべきです。
@@ -320,34 +322,34 @@ v2.1.0以前では、各コマンドにはスターオプションがありま�
 
   % 使用例
   \GCKanshiBox{10\zw}{%
-    \振り[intrusion=both]{春}{しゅん}\hfill%
-    \振り[intrusion=both]{眠}{みん}\hfill%
-    不\返り[intrusion=both]{レ}\hfill%
-    \振り{覚}{おぼ}\送り{エ}\返り[intrusion=both]{レ}\hfill%
+    \振り[intrusion=both]{春}{しゅん}%
+    \振り[intrusion=both]{眠}{みん}%
+    不\返り[intrusion=both]{レ}%
+    \振り{覚}{おぼ}\送り{エ}\返り[intrusion=both]{レ}%
     \振り{暁}{あかつき}\送り[intrusion=post]{ヲ}%
   }
 
   \GCKanshiBox{10\zw}{%
-    \振り[intrusion=both]{処}{しょ}\hfill%
-    \振り[intrusion=both]{処}{しょ}\hfill%
-    聞\送り{ク}\返り[intrusion=both]{二}\hfill%
-    \underLineKKAuto{\振り[intrusion=both]{啼}{てい}\hfill%
+    \振り[intrusion=both]{処}{しょ}%
+    \振り[intrusion=both]{処}{しょ}%
+    聞\送り{ク}\返り[intrusion=both]{二}%
+    \underLineKKAuto{\振り[intrusion=both]{啼}{てい}%
     鳥\送り{ヲ}\返り[intrusion=post]{一}}%
   }
 
   \GCKanshiBox{10\zw}{%
-    \振り[intrusion=both]{夜}{や}\hfill%
-    \振り[intrusion=both]{来}{らい}\hfill%
-    風\hfill%
-    雨\送り[intrusion=both]{ノ}\hfill%
+    \振り[intrusion=both]{夜}{や}%
+    \振り[intrusion=both]{来}{らい}%
+    風%
+    雨\送り[intrusion=both]{ノ}%
     声%
   }
 
   \GCKanshiBox{10\zw}{%
-    花\hfill%
-    \振り{落}{お}\送り[intrusion=both]{ツルコト}\hfill%
-    知\送り[intrusion=both]{ル}\hfill%
-    \振り[intrusion=both]{多}{た}\hfill%
+    花%
+    \振り{落}{お}\送り[intrusion=both]{ツルコト}%
+    知\送り[intrusion=both]{ル}%
+    \振り[intrusion=both]{多}{た}%
     \振り[intrusion=both]{少}{しょう}%
   }
 \end{SourceCode}
@@ -355,34 +357,34 @@ v2.1.0以前では、各コマンドにはスターオプションがありま�
 \begin{OutPut}{Output}[縦書き（漢詩）]
   \parbox<t>{12\zw}{\GCKTateOn%
     \GCKanshiBox{10\zw}{%
-      \振り[intrusion=both]{春}{しゅん}\hfill%
-      \振り[intrusion=both]{眠}{みん}\hfill%
-      不\返り[intrusion=both]{レ}\hfill%
-      \振り{覚}{おぼ}\送り{エ}\返り[intrusion=both]{レ}\hfill%
+      \振り[intrusion=both]{春}{しゅん}%
+      \振り[intrusion=both]{眠}{みん}%
+      不\返り[intrusion=both]{レ}%
+      \振り{覚}{おぼ}\送り{エ}\返り[intrusion=both]{レ}%
       \振り{暁}{あかつき}\送り[intrusion=post]{ヲ}%
     }
 
     \GCKanshiBox{10\zw}{%
-      \振り[intrusion=both]{処}{しょ}\hfill%
-      \振り[intrusion=both]{処}{しょ}\hfill%
-      聞\送り{ク}\返り[intrusion=both]{二}\hfill%
-      \underLineKKAuto{\振り[intrusion=both]{啼}{てい}\hfill%
+      \振り[intrusion=both]{処}{しょ}%
+      \振り[intrusion=both]{処}{しょ}%
+      聞\送り{ク}\返り[intrusion=both]{二}%
+      \underLineKKAuto{\振り[intrusion=both]{啼}{てい}%
       鳥\送り{ヲ}\返り[intrusion=post]{一}}%
     }
 
     \GCKanshiBox{10\zw}{%
-      \振り[intrusion=both]{夜}{や}\hfill%
-      \振り[intrusion=both]{来}{らい}\hfill%
-      風\hfill%
-      雨\送り[intrusion=both]{ノ}\hfill%
+      \振り[intrusion=both]{夜}{や}%
+      \振り[intrusion=both]{来}{らい}%
+      風%
+      雨\送り[intrusion=both]{ノ}%
       声%
     }
 
     \GCKanshiBox{10\zw}{%
-      花\hfill%
-      \振り{落}{お}\送り[intrusion=both]{ツルコト}\hfill%
-      知\送り[intrusion=both]{ル}\hfill%
-      \振り[intrusion=both]{多}{た}\hfill%
+      花%
+      \振り{落}{お}\送り[intrusion=both]{ツルコト}%
+      知\送り[intrusion=both]{ル}%
+      \振り[intrusion=both]{多}{た}%
       \振り[intrusion=both]{少}{しょう}%
     }
   }
@@ -391,8 +393,17 @@ v2.1.0以前では、各コマンドにはスターオプションがありま�
 以上のように「漢字１文字ごとに\verb|\hfill|を挿入」することによって適切な空きを確保します。
 そして、基本的には、\verb|intrusion|オプションを\verb|both|でつけます。そうすることによって、字と字が水平に揃ってれ、整然とした組版が実現されます。
 
+\subsection{エンジンによる注意}
+この漢詩用のインターフェースは基本的には\namiKK{LuaLaTeX推奨}となっています。uplatexでも動くものの、\verb|\GCKanshiBox|の引数が適切に伸縮しない場合がある\footnote{utarticleクラスとは相性が良いが、uplatexとjlreqの併用は相性が良くない。}ので注意が必要です。
+
+もし、なんらかの原因で適切に漢字の間にアキが入らない場合には、手動で\verb|\hfill|を入力して対処することになります。
+
 \section{GCKEnv}
 v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。この環境は、本パッケージを用いて漢文を、完全に統一された行間、より広い字間のもとに組版するために設けられたものです。
+
+ただし、この環境は\namiKK{jlreqクラスでないと出力が壊れ得る\footnote{%
+  もしどうしてもltjtarticleなどで使用したい場合、第２引数を\texttt{[.0\textbackslash  plus .15\textbackslash zw minus .15\textbackslash zw]}のように小さな値に設定してください。
+}}ことに注意してください。
 
 構文は
 

@@ -56,38 +56,57 @@
 \RequirePackage{ifuptex}
 \RequirePackage{ifluatex}
 \ifluatex
-  \@ifpackageloaded{luatexja}{}{%
-    \gcknbn@error{Please load package 'luatexja' when loading this package.}}
+  \RequirePackage{luatexja-adjust}
 \else\ifuptex
+  \RequirePackage{bxghost}
   \def\zw{zw}\def\zh{zh}
 \else\ifptex
+  \RequirePackage{bxghost}
   \def\zw{zw}\def\zh{zh}
 \else
   \gcknbn@error{Package 'gckanbun' currently supports (u)pLaTeX and LuaLaTeX.}
 \fi\fi\fi
 
-%% 縦書き判定
 \newif\ifgcknbn@tdir 
 \gcknbn@tdirfalse
-\@ifundefined{iftdir}{\let\iftdir\iffalse}{}%
-\ifluatex%
-  \@ifundefined{ltjgetparameter}{}{%
-    \ifnum\ltjgetparameter{direction}=3 %
-      \gcknbn@tdirtrue%
-    \fi}%
-\else%
-  \iftdir%
-    \gcknbn@tdirtrue%
-\fi\fi
+
+% 判定処理をマクロにまとめる
+\def\gcknbn@check@direction{%
+  \@ifundefined{iftdir}{\let\iftdir\iffalse}{}%
+  \ifluatex
+    \@ifundefined{ltjgetparameter}{}{%
+      \ifnum\ltjgetparameter{direction}=3 \gcknbn@tdirtrue \fi
+    }%
+  \else
+    \iftdir \gcknbn@tdirtrue \fi
+  \fi
+}
+
+% 本文が始まる直前に判定を実行する
+\AtBeginDocument{\gcknbn@check@direction}
 
 %% kanjiskipの挿入
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \def\gck@ghost@char@pre{%%%
-  \ltjghostbeforejachar%
+  \ifluatex%
+    \ltjghostbeforejachar%
+  \else%
+    \bgroup%
+      \noexpand\bxqgg@jafont%
+      \bxqgg@fwsp\bxqgg@kern@m@ne@zw%
+    \egroup%
+  \fi%
 }
 \def\gck@ghost@char@post{%%%
-  \ltjghostafterjachar%
+  \ifluatex%
+    \ltjghostafterjachar%
+  \else%
+    \bgroup%
+      \noexpand\bxqgg@jafont%
+      \bxqgg@kern@m@ne@zw\bxqgg@fwsp%
+    \egroup%
+  \fi%
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
