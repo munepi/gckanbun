@@ -180,7 +180,7 @@
   \begingroup%
     \setkeys{gcknbn@ruby}{#1}%
     \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@%
-    \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
+    \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}\gckanbun@gluechange{0pt}}%
     \setbox\z@=\hbox{#2}% 親文字
     \setbox\@ne=\hbox{\tiny#3}% 振り仮名
     \setbox\tw@=\hbox{\tiny#4}% 再読振り仮名（通常はvphantomを入れている）
@@ -368,9 +368,9 @@
   \begingroup%
     \setkeys{gcknbn@okurigana}{#1}%
     \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@%
-    \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
-    \setbox\z@=\hbox{\tiny #2}% 通常送り仮名
-    \setbox\@ne=\hbox{\tiny #3}% 再読送り仮名（通常はvphantomを入れている）
+    \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}\gckanbun@gluechange{0pt}}%
+    \setbox\z@=\hbox{\tiny#2}% 通常送り仮名
+    \setbox\@ne=\hbox{\tiny#3}% 再読送り仮名（通常はvphantomを入れている）
     \gckanbun@okurigana@boxcal%
     \gckanbun@okurigana@boxing%
   \global\gcknbn@furigana@width=\z@\relax%
@@ -536,13 +536,16 @@
 
 
 %% GCKEnv
+\newcommand{\gckanbun@gluechange}[1]{%
+  \ifluatex%
+    \ltjsetparameter{kanjiskip=#1}%
+  \else%
+    \kanjiskip=#1%
+  \fi%
+}
 \edef\gckanbn@skip@default{0.3\zw plus 0.15\zw minus 0.2\zw}
 \NewDocumentEnvironment{GCKEnv}{ m O{\gckanbn@skip@default} }{%
-  \ifluatex%
-    \ltjsetparameter{kanjiskip=#2}%
-  \else%
-    \kanjiskip=#2%
-  \fi%
+  \gckanbun@gluechange{#2}%
 }{\par}
 \NewDocumentCommand{\GCKanshiBox}{ m m }{%
   \makebox[#1][s]{\vphantom{\gcknbn@ruby{あ}{あ}[あ]}#2}%
