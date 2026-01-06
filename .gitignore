@@ -23,9 +23,9 @@ Icon
 *.ltjruby
 *.synctex.*
 
-extras/
+# extras/
 
-test.pdf
-test.tex
+# test.pdf
+# test.tex
 
 Work/*
