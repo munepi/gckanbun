@@ -25,6 +25,7 @@ Icon
 
 extras/
 
-test-*.pdf
+test.pdf
+test.tex
 
 Work/*
