@@ -32,7 +32,7 @@
 % 以上、各コマンドの後のskipもそうせざるを得ない。
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{gckanbun}[2026/01/05, Version 2.2.7--undev]
+\ProvidesPackage{gckanbun}[2026/01/05, Version 2.2.7]
 
 %% package errors
 \def\gcknbn@error{\PackageError{gckanbun}}
@@ -69,7 +69,7 @@
 \newif\ifgcknbn@tdir 
 \gcknbn@tdirfalse
 
-% 判定処理をマクロにまとめる
+%% 判定処理をマクロにまとめる
 \def\gcknbn@check@direction{%
   \@ifundefined{iftdir}{\let\iftdir\iffalse}{}%
   \ifluatex
@@ -85,8 +85,6 @@
 \AtBeginDocument{\gcknbn@check@direction}
 
 %% kanjiskipの挿入
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \def\gck@ghost@char@pre{%%%
   \ifluatex%
     \ltjghostbeforejachar%
@@ -107,7 +105,6 @@
     \egroup%
   \fi%
 }
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% 縦書き補正、横書き補正を切り替える
 \newcommand{\GCKTateOn}{\gcknbn@tdirtrue}
@@ -150,18 +147,18 @@
 \newdimen\gcknbn@intr@post
 \define@key{gcknbn@ruby}{intrusion}{\edef\gcknbn@ruby@intr@mark{#1}}
 \NewDocumentCommand{\gckanbun@intrusioncal}{}{%
-  \ifdim\wd\@ne>\wd\tw@%侵入量計算
+  \ifdim\wd\@ne>\wd\tw@% 侵入量計算
     \ifdim\wd\@ne>1\zw%
-      \global\gcknbn@intr@pre=\dimexpr(\wd\@ne-1\zw)/2\relax%再読なし前方
-      \global\gcknbn@intr@post=\dimexpr(\wd\@ne-1\zw)/2\relax%再読なし後方
+      \global\gcknbn@intr@pre=\dimexpr(\wd\@ne-1\zw)/2\relax% 再読なし前方
+      \global\gcknbn@intr@post=\dimexpr(\wd\@ne-1\zw)/2\relax% 再読なし後方
     \else%
       \global\gcknbn@intr@pre=0em\relax%
       \global\gcknbn@intr@post=0em\relax%
     \fi%
   \else%
     \ifdim\wd\tw@>1\zw%
-      \global\gcknbn@intr@pre=\dimexpr(\wd\tw@-1\zw)/2\relax%再読あり前方
-      \global\gcknbn@intr@post=\dimexpr(\wd\tw@-1\zw)/2\relax%再読あり後方
+      \global\gcknbn@intr@pre=\dimexpr(\wd\tw@-1\zw)/2\relax% 再読あり前方
+      \global\gcknbn@intr@post=\dimexpr(\wd\tw@-1\zw)/2\relax% 再読あり後方
     \else%
       \global\gcknbn@intr@pre=0em\relax%
       \global\gcknbn@intr@post=0em\relax%
@@ -264,28 +261,28 @@
 % 次のトークン（\gckanbun@let@token）に応じて
 % 処理を切り替えている機構
 \def\gcknbn@@furigana@okurigana{% normal
-  \ifx\gckanbun@let@token\gcknbn@okurigana% 次が送り仮名の時
+  \ifx\gckanbun@let@token\gcknbn@okurigana% 次が送り仮名
     \gckanbun@furigana@lenset%
     \dimen\z@=\wd\z@%
     \gckanbun@furigana@boxing@nextokuri%
-  \else\ifx\gckanbun@let@token\gcknbn@kaeriten% 次が返り点の時
+  \else\ifx\gckanbun@let@token\gcknbn@kaeriten% 次が返り点
     \gckanbun@furigana@lenset%
     \gckanbun@furigana@boxcal%
     \penalty\@lowpenalty%
     \gckanbun@furigana@boxing@nextsonota%
-  \else\ifx\gckanbun@let@token、% 次が送り仮名ではない時
-    \gckanbun@furigana@lenset%
-    \gckanbun@furigana@boxcal%
-    \penalty\@lowpenalty%
-    \gckanbun@furigana@boxing@nextsonota%
-    \gcknbn@furigana@kutoten@skip%
-  \else\ifx\gckanbun@let@token。%
+  \else\ifx\gckanbun@let@token、% 次が、
     \gckanbun@furigana@lenset%
     \gckanbun@furigana@boxcal%
     \penalty\@lowpenalty%
     \gckanbun@furigana@boxing@nextsonota%
     \gcknbn@furigana@kutoten@skip%
-  \else%
+  \else\ifx\gckanbun@let@token。% 次が。
+    \gckanbun@furigana@lenset%
+    \gckanbun@furigana@boxcal%
+    \penalty\@lowpenalty%
+    \gckanbun@furigana@boxing@nextsonota%
+    \gcknbn@furigana@kutoten@skip%
+  \else% その他
     \gckanbun@furigana@lenset%
     \gckanbun@furigana@boxcal%
     \penalty\@lowpenalty%

@@ -1,7 +1,7 @@
 \documentclass[luatex,fontsize=8pt,paper=b5,twoside]{jlreq}%
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs,caption}
-\usepackage{/Users/majinkuu/Desktop/luwa-ul/luwa-ul}
+\usepackage{luwa-ul}
 \usepackage{KKsymbols}
 \usepackage[most]{tcolorbox}
 \usepackage{gckanbun,lltjext}
@@ -396,10 +396,10 @@ v2.1.0以前では、各コマンドにはスターオプションがありま�
 \subsection{エンジンによる注意}
 この漢詩用のインターフェースは基本的には\namiKK{LuaLaTeX推奨}となっています。uplatexでも動くものの、\verb|\GCKanshiBox|の引数が適切に伸縮しない場合がある\footnote{utarticleクラスとは相性が良いが、uplatexとjlreqの併用は相性が良くない。}ので注意が必要です。
 
-もし、なんらかの原因で適切に漢字の間にアキが入らない場合には、手動で\verb|\hfill|を入力して対処することになります。
+もし、何らかのの原因で適切に漢字の間にアキが入らない場合には、手動で\verb|\hfill|を入力して対処することになります。
 
 \section{GCKEnv}
-v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。この環境は、本パッケージを用いて漢文を、完全に統一された行間、より広い字間のもとに組版するために設けられたものです。
+v2.2.7以降、\verb|GCKEnv|という環境が新規追加されました。この環境は、本パッケージを用いて漢文を、完全に統一された行間、より広い字間のもとに組版するために設けられたものです。
 
 構文は
 
@@ -477,7 +477,7 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
 \noindent This package is licensed under the terms of the MIT License.
 
 \noindent Copyright (c) 2017-2026 Munehiro Yamamoto <munepixyz@gmail.com>\\
-\noindent Copyright (c) 2025-2026 Kosei Kawaguchi
+\noindent Copyright (c) 2025-2026 Kosei Kawaguchi <p.c.aces1056@gmail.com>
 
 \noindent Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -493,5 +493,526 @@ v2.2.6以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   \item \textbf{v2.2.0 (2025/12/26)} --- Fixed a problem in which a previous \verb|\送り| has an effect on the next \verb|\返り[intrusion=post]{arg}|. Also, make every commands can be used in partly-vertical-mode with the new \verb|\GCKTateOn|.
   \item \textbf{v2.2.7 (2025/12/29)} --- Added \verb|GCKEnv| in order to typeset in more sophisticated way. Also, adjusted kanjiskip to be applied in the same manner as standard Japanese characters. This update also optimizes the layout logic for Chinese poetry (Kanshi), eliminating the need for manual \verb|\hfill| commands.
 \end{itemize}
+
+\section{Source Code}
+\begin{lstlisting}
+  \NeedsTeXFormat{LaTeX2e}
+  \ProvidesPackage{gckanbun}[2026/01/05, Version 2.2.7]
+
+  %% package errors
+  \def\gcknbn@error{\PackageError{gckanbun}}
+  \def\gcknbn@warning{\PackageWarning{gckanbun}}
+  \def\gcknbn@warningnoline{\PackageWarningNoLine{gckanbun}}
+  \def\gcknbn@info{\PackageInfo{gckanbun}}
+
+  %% package options
+  \RequirePackage{keyval,etoolbox}
+  \DeclareOption*{\gcknbn@setkey}
+  \def\gcknbn@setkey{\expandafter\@gcknbn@setkey\expandafter{\CurrentOption}}
+  \def\@gcknbn@setkey{\setkeys{gcknbn}}
+  \def\gcknbn@prefix{gckanbun}% given <prefix> for each commands
+  \define@key{gcknbn}{prefix}{\gdef\gcknbn@prefix{#1}}
+
+  \ExecuteOptions{prefix}
+  \ProcessOptions\relax
+
+  %% auto-detect engine
+  \RequirePackage{ifuptex}
+  \RequirePackage{ifluatex}
+  \ifluatex
+    \RequirePackage{luatexja-adjust}
+  \else\ifuptex
+    \RequirePackage{bxghost}
+    \def\zw{zw}\def\zh{zh}
+  \else\ifptex
+    \RequirePackage{bxghost}
+    \def\zw{zw}\def\zh{zh}
+  \else
+    \gcknbn@error{Package 'gckanbun' currently supports (u)pLaTeX and LuaLaTeX.}
+  \fi\fi\fi
+
+  \newif\ifgcknbn@tdir 
+  \gcknbn@tdirfalse
+
+  %% 判定処理をマクロにまとめる
+  \def\gcknbn@check@direction{%
+    \@ifundefined{iftdir}{\let\iftdir\iffalse}{}%
+    \ifluatex
+      \@ifundefined{ltjgetparameter}{}{%
+        \ifnum\ltjgetparameter{direction}=3 \gcknbn@tdirtrue \fi
+      }%
+    \else
+      \iftdir \gcknbn@tdirtrue \fi
+    \fi
+  }
+
+  % 本文が始まる直前に判定を実行する
+  \AtBeginDocument{\gcknbn@check@direction}
+
+  %% kanjiskipの挿入
+  \def\gck@ghost@char@pre{%%%
+    \ifluatex%
+      \ltjghostbeforejachar%
+    \else%
+      \bgroup%
+        \noexpand\bxqgg@jafont%
+        \bxqgg@fwsp\bxqgg@kern@m@ne@zw%
+      \egroup%
+    \fi%
+  }
+  \def\gck@ghost@char@post{%%%
+    \ifluatex%
+      \ltjghostafterjachar%
+    \else%
+      \bgroup%
+        \noexpand\bxqgg@jafont%
+        \bxqgg@kern@m@ne@zw\bxqgg@fwsp%
+      \egroup%
+    \fi%
+  }
+
+  %% 縦書き補正、横書き補正を切り替える
+  \newcommand{\GCKTateOn}{\gcknbn@tdirtrue}
+  \newcommand{\GCKTateOff}{\gcknbn@tdirfalse}
+
+  % 補正パラメータ
+  \newlength{\gcknbn@adjust@yokotate}
+  \NewDocumentCommand{\gcknbn@adjust@yokotate@use}{}{%
+    \ifgcknbn@tdir
+      \setlength{\gcknbn@adjust@yokotate}{-.7525\zw}%
+    \else%
+      \setlength{\gcknbn@adjust@yokotate}{-.56\zw}%
+    \fi%
+  }
+  \newlength{\gcknbn@adjust@kaeri}
+  \NewDocumentCommand{\gcknbn@adjust@kaeri@use}{}{%
+    \ifgcknbn@tdir
+      \setlength{\gcknbn@adjust@kaeri}{.35\zw}%
+    \else%
+      \setlength{\gcknbn@adjust@kaeri}{.15\zw}%
+    \fi%
+  }
+
+  % phantom（再読文字分の行間を補正する）
+  \def\gckanbun@phantom{\vphantom{あ}}
+
+  %% ルビ
+  %%  * グループルビ
+  %%  * 漢文訓点に対するふりがな（モノルビ）
+  \let\gcknbn@rubybox@text\relax
+  \let\gcknbn@rubybox@text@s\relax
+  \newdimen\gcknbn@rubybox@width
+  \newdimen\gcknbn@furigana@width \gcknbn@furigana@width\z@
+  \newdimen\gcknbn@furigana@width@s \gcknbn@furigana@width@s\z@
+  \newdimen\gcknbn@dima
+
+  % 侵入制御。
+  % pre,post,bothをとれる。
+  \newdimen\gcknbn@intr@pre
+  \newdimen\gcknbn@intr@post
+  \define@key{gcknbn@ruby}{intrusion}{\edef\gcknbn@ruby@intr@mark{#1}}
+  \NewDocumentCommand{\gckanbun@intrusioncal}{}{%
+    \ifdim\wd\@ne>\wd\tw@% 侵入量計算
+      \ifdim\wd\@ne>1\zw%
+        \global\gcknbn@intr@pre=\dimexpr(\wd\@ne-1\zw)/2\relax% 再読なし前方
+        \global\gcknbn@intr@post=\dimexpr(\wd\@ne-1\zw)/2\relax% 再読なし後方
+      \else%
+        \global\gcknbn@intr@pre=0em\relax%
+        \global\gcknbn@intr@post=0em\relax%
+      \fi%
+    \else%
+      \ifdim\wd\tw@>1\zw%
+        \global\gcknbn@intr@pre=\dimexpr(\wd\tw@-1\zw)/2\relax% 再読あり前方
+        \global\gcknbn@intr@post=\dimexpr(\wd\tw@-1\zw)/2\relax% 再読あり後方
+      \else%
+        \global\gcknbn@intr@pre=0em\relax%
+        \global\gcknbn@intr@post=0em\relax%
+      \fi%
+    \fi%
+  }
+
+  % ルビ本体
+  \DeclareDocumentCommand{\gcknbn@ruby}{ O{} m m O{\gckanbun@phantom}}{% normal
+    \gcknbn@adjust@yokotate@use%
+    \global\gcknbn@furigana@width\z@%
+    \global\gcknbn@furigana@width@s\z@%
+    \global\def\gcknbn@ruby@intr@mark{}%
+    \leavevmode%
+    \gck@ghost@char@pre%%%
+    \begingroup%
+      \setkeys{gcknbn@ruby}{#1}%
+      \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@%
+      \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}\gckanbun@gluechange{0pt}}%
+      \setbox\z@=\hbox{#2}% 親文字
+      \setbox\@ne=\hbox{\tiny#3}% 振り仮名
+      \setbox\tw@=\hbox{\tiny#4}% 再読振り仮名（通常はvphantomを入れている）
+      \gckanbun@intrusioncal% 侵入量を計算
+      \ifdefstring{\gcknbn@ruby@intr@mark}{pre}{%
+        \kern-\gcknbn@intr@pre%
+      }{%
+        \ifdefstring{\gcknbn@ruby@intr@mark}{both}{%
+          \kern-\gcknbn@intr@pre%
+        }{%
+          % それ以外は何もなし
+      }}%
+    \gdef\gcknbn@rubybox@text{#3}%
+    \gdef\gcknbn@rubybox@text@s{#4}%
+    \global\gcknbn@rubybox@width=\wd\z@\relax%
+    \gcknbn@furigana@okurigana%
+  }
+
+  % 次に来る文字を判定
+  \def\gcknbn@furigana@okurigana{% normal
+    \futurelet\gckanbun@let@token\gcknbn@@furigana@okurigana%
+  }
+
+  % 各種ボックスの長さを計算
+  \NewDocumentCommand{\gckanbun@furigana@boxcal}{}{%
+    \ifdim\wd\z@>\wd\@ne% \dimen\z@=max{\wd\z@,\wd\@ne,\wd\tw@}
+      \dimen\z@=\wd\z@%
+    \else%
+      \dimen\z@=\wd\@ne%
+    \fi%
+    \ifdim\dimen\z@<\wd\tw@%
+      \dimen\z@=\wd\tw@%
+    \fi%
+  }
+
+  % ボックスの配置
+
+  % 次が送り仮名の時
+  \NewDocumentCommand{\gckanbun@furigana@boxing@nextokuri}{}{%
+    \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
+      \vbox{\hbox to \dimen\z@{\box\@ne\hss}%
+        \nointerlineskip\hbox to \dimen\z@{\hss\box\z@\hss}%
+        \nointerlineskip\hbox to \dimen\z@{\box\tw@\hss}%
+    }}}%
+  }
+  % 次が送り仮名以外の時
+  \NewDocumentCommand{\gckanbun@furigana@boxing@nextsonota}{}{%
+    \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
+      \vbox{\hbox to \dimen\z@{\tiny\hss\gcknbn@rubybox@text\hss}%
+        \nointerlineskip\hbox to \dimen\z@{\hss\box\z@\hss}%
+        \nointerlineskip\hbox to \dimen\z@{\hss\box\tw@\hss}%
+    }}}%
+  }
+
+  % 通常・再読振り仮名の長さをコピー
+  % そして計算。
+  \def\gckanbun@furigana@lenset{%
+    \global\gcknbn@furigana@width=\wd\@ne\relax%
+    \global\gcknbn@furigana@width@s=\wd\tw@\relax%
+  }
+  \newdimen\gcknbn@furigana@kutouten@kern
+  \def\gcknbn@furigana@kutoten@skip{%
+    \gcknbn@furigana@kutouten@kern=0pt\relax % リセット
+    % どちらか一方が1\zwより大きいか
+    \ifnum 0%
+      \ifdim\gcknbn@furigana@width > 1\zw 1\fi%
+      \ifdim\gcknbn@furigana@width@s > 1\zw 1\fi%
+      > 0%
+      %片方が1\zwを超えている場合
+      \ifdim\gcknbn@furigana@width > \gcknbn@furigana@width@s%
+        \gcknbn@furigana@kutouten@kern=\gcknbn@furigana@width%
+      \else%
+        \gcknbn@furigana@kutouten@kern=\gcknbn@furigana@width@s%
+      \fi%
+      \advance\gcknbn@furigana@kutouten@kern by -1\zw%
+      \divide\gcknbn@furigana@kutouten@kern by \tw@%
+    \fi%
+    \hspace*{-\gcknbn@furigana@kutouten@kern}%
+  }
+
+  % 次のトークン（\gckanbun@let@token）に応じて
+  % 処理を切り替えている機構
+  \def\gcknbn@@furigana@okurigana{% normal
+    \ifx\gckanbun@let@token\gcknbn@okurigana% 次が送り仮名
+      \gckanbun@furigana@lenset%
+      \dimen\z@=\wd\z@%
+      \gckanbun@furigana@boxing@nextokuri%
+    \else\ifx\gckanbun@let@token\gcknbn@kaeriten% 次が返り点
+      \gckanbun@furigana@lenset%
+      \gckanbun@furigana@boxcal%
+      \penalty\@lowpenalty%
+      \gckanbun@furigana@boxing@nextsonota%
+    \else\ifx\gckanbun@let@token、% 次が、
+      \gckanbun@furigana@lenset%
+      \gckanbun@furigana@boxcal%
+      \penalty\@lowpenalty%
+      \gckanbun@furigana@boxing@nextsonota%
+      \gcknbn@furigana@kutoten@skip%
+    \else\ifx\gckanbun@let@token。% 次が。
+      \gckanbun@furigana@lenset%
+      \gckanbun@furigana@boxcal%
+      \penalty\@lowpenalty%
+      \gckanbun@furigana@boxing@nextsonota%
+      \gcknbn@furigana@kutoten@skip%
+    \else% その他
+      \gckanbun@furigana@lenset%
+      \gckanbun@furigana@boxcal%
+      \penalty\@lowpenalty%
+      \gckanbun@furigana@boxing@nextsonota%
+    \fi\fi\fi\fi%
+    \ifdefstring{\gcknbn@ruby@intr@mark}{post}{%
+      \kern-\gcknbn@intr@post%
+    }{%
+    \ifdefstring{\gcknbn@ruby@intr@mark}{both}{%
+        \kern-\gcknbn@intr@post%
+      }{%
+        % それ以外は何もなし
+    }}%
+    \ifx\gckanbun@let@token、%
+      \gck@ghost@char@post%%%
+    \else\ifx\gckanbun@let@token。%
+    \else%
+      \gck@ghost@char@post%%%
+    \fi\fi%
+  \endgroup%
+  }
+
+  %% 訓点
+  \newdimen\gcknbn@okurigana@width \gcknbn@okurigana@width\z@
+  \newdimen\gcknbn@okurigana@width@s \gcknbn@okurigana@width@s\z@
+  \newdimen\gcknbn@kaeriten@width \gcknbn@kaeriten@width\z@
+
+  \define@key{gcknbn@okurigana}{intrusion}{\edef\gcknbn@okuri@intr@mark{#1}}
+    % post,bothをとれるが挙動は一緒
+
+  % 送り仮名のボックスを計算
+  \NewDocumentCommand{\gckanbun@okurigana@boxcal}{}{%
+    \ifdim\gcknbn@furigana@width>0.9999\zw\relax%
+      \global\gcknbn@okurigana@width=\dimexpr\gcknbn@furigana@width + \wd\z@ - 1\zw\relax%
+    \else%
+      \global\gcknbn@okurigana@width=\dimexpr\wd\z@ - .5\zw\relax%
+    \fi%
+    \ifdim\gcknbn@furigana@width@s>0.9999\zw\relax%
+      \global\gcknbn@okurigana@width@s=\dimexpr\gcknbn@furigana@width@s + \wd\@ne - 1\zw\relax%
+    \else%
+      \global\gcknbn@okurigana@width@s=\dimexpr\wd\@ne - .5\zw\relax%
+    \fi%
+  }
+
+  % ボックスの配置
+  \NewDocumentCommand{\gckanbun@okurigana@boxing}{}{%
+    \hbox{%
+      \raisebox{\gcknbn@adjust@yokotate}{%
+        \vbox{\hbox to \gcknbn@okurigana@width{%
+          \ifdim\gcknbn@furigana@width>0.9999\zw\relax%
+            \hspace*{\dimexpr\gcknbn@furigana@width - 1\zw\relax}%
+          \else%
+            \hspace*{-.5\zw}%
+          \fi%
+          \box\z@}%
+          \nointerlineskip%
+          \hbox to \gcknbn@okurigana@width{%
+            \hss%
+            \vphantom{\char\euc"A1A1}%
+            \hss%
+          }%
+          \nointerlineskip%
+          \hbox to \gcknbn@okurigana@width@s{%
+            \ifdim\gcknbn@furigana@width@s>0.9999\zw\relax%
+              \hspace*{\dimexpr\gcknbn@furigana@width@s - 1\zw\relax}%
+            \else%
+              \hspace*{-.5\zw}%
+            \fi%
+            \box\@ne%
+    }}}}%
+  }
+
+  % 送り仮名本体
+  \DeclareDocumentCommand{\gcknbn@okurigana}{ O{} m O{\gckanbun@phantom} }{% normal
+    \nobreak\leavevmode%
+    \gcknbn@adjust@yokotate@use%
+    \global\gcknbn@okurigana@width\z@%
+    \global\gcknbn@okurigana@width@s\z@%
+    \global\def\gcknbn@okuri@intr@mark{}%
+    \begingroup%
+      \setkeys{gcknbn@okurigana}{#1}%
+      \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@%
+      \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}\gckanbun@gluechange{0pt}}%
+      \setbox\z@=\hbox{\tiny#2}% 通常送り仮名
+      \setbox\@ne=\hbox{\tiny#3}% 再読送り仮名（通常はvphantomを入れている）
+      \gckanbun@okurigana@boxcal%
+      \gckanbun@okurigana@boxing%
+    \global\gcknbn@furigana@width=\z@\relax%
+    \gcknbn@okurigana@intr%
+    \gcknbn@okurigana@kaeriten%
+  }
+
+  % 次に来る文字をセット
+  \def\gcknbn@okurigana@kaeriten{\futurelet\gckanbun@let@token\gcknbn@@okurigana@kaeriten}
+
+  % 次に来るトークン毎に処理を変更
+  \def\gcknbn@@okurigana@kaeriten{%
+    \ifx\gckanbun@let@token、
+      \gcknbn@okurigana@kutoten@skip
+      \global\gcknbn@okurigana@width=\z@
+      \gck@ghost@char@post%%%
+    \else\ifx\gckanbun@let@token。
+      \gcknbn@okurigana@kutoten@skip
+      \global\gcknbn@okurigana@width=\z@
+      \gck@ghost@char@post%%%
+    \else\ifx\gckanbun@let@token\gcknbn@kaeriten
+      \gcknbn@okurigana@kaeriten@skip
+      \gck@ghost@char@post%%%
+    \else%
+      \ifdefstring{\gcknbn@okuri@intr@mark}{post}{%
+        \kern-\gcknbn@intr@post%
+      }{%
+      \ifdefstring{\gcknbn@okuri@intr@mark}{both}{%
+          \kern-\gcknbn@intr@post%
+        }{%
+          % それ以外は何もなし
+      }}%
+      \gck@ghost@char@post%%%
+    \fi\fi\fi
+  \endgroup}
+
+  % 各場合毎に入れるスペース
+  \def\gcknbn@okurigana@kutoten@skip{%
+    \ifdim\gcknbn@okurigana@width>\gcknbn@okurigana@width@s%
+      \hspace*{-\gcknbn@okurigana@width}%
+    \else%
+      \hspace*{-\gcknbn@okurigana@width@s}%
+    \fi%
+  }
+  \def\gcknbn@okurigana@kaeriten@skip{%
+    \ifdim\gcknbn@okurigana@width>\gcknbn@okurigana@width@s%
+      \hspace*{-\gcknbn@okurigana@width}%
+    \else%
+      \hspace*{-\gcknbn@okurigana@width@s}%
+    \fi
+  }
+  \def\gcknbn@okurigana@intr{%
+    \ifdim\gcknbn@okurigana@width>\gcknbn@okurigana@width@s%
+      \global\gcknbn@intr@post=\gcknbn@okurigana@width%
+    \else%
+      \global\gcknbn@intr@post=\gcknbn@okurigana@width@s%
+    \fi
+  }
+
+  %%訓点返り点
+  \define@key{gcknbn@kaeriten}{intrusion}{\edef\gcknbn@kaeri@intr@mark{#1}}
+    % post,bothをとれるが挙動は一緒
+
+  % 返り点本体
+  \DeclareDocumentCommand{\gcknbn@kaeriten}{ O{} m }{% normal
+    \nobreak\leavevmode%
+    \gcknbn@adjust@kaeri@use%
+    \global\def\gcknbn@kaeri@intr@mark{}%
+    \setkeys{gcknbn@kaeriten}{#1}%
+    \begingroup%
+      \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@
+      \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}}%
+      \setbox\z@=\hbox{\tiny #2}%
+      \global\gcknbn@kaeriten@width=\wd\z@\relax
+      \ifdim\wd\z@>\gcknbn@intr@post%
+        \global\gcknbn@intr@post=\wd\z@%
+      \fi%
+      \lower\gcknbn@adjust@kaeri\hbox{\box\z@\hss}%
+    \endgroup%
+    \gcknbn@kaeriten@kutoten%
+  }
+
+  % 次に来る文字をセット
+  \def\gcknbn@kaeriten@kutoten{\futurelet\gckanbun@let@token\gcknbn@@kaeriten@kutoten}
+
+  % 次に来る文字毎に処理を変更
+  \def\gcknbn@@kaeriten@kutoten{%
+    \ifx\gckanbun@let@token、%
+      \gcknbn@kaeriten@kutoten@skip%
+      \global\gcknbn@kaeriten@width=\z@%
+    \else\ifx\gckanbun@let@token。%
+      \gcknbn@kaeriten@kutoten@skip%
+      \global\gcknbn@kaeriten@width=\z@%
+    \else%
+      \ifdefstring{\gcknbn@kaeri@intr@mark}{post}{%
+        \kern-\gcknbn@intr@post%
+      }{%
+      \ifdefstring{\gcknbn@kaeri@intr@mark}{both}{%
+          \kern-\gcknbn@intr@post%
+        }{%
+          \gcknbn@kaeriten@okurigana@skip%
+      }}%
+      \gck@ghost@char@post%%%
+    \fi\fi%
+  }
+
+  % 各場合分け毎に入れるスペース
+  \def\gcknbn@kaeriten@kutoten@skip{%
+    \ifgcknbn@tdir%
+      \hspace*{-\gcknbn@kaeriten@width}%
+    \fi%
+  }
+  \def\gcknbn@kaeriten@okurigana@skip{%
+    \ifdim\gcknbn@okurigana@width>\gcknbn@kaeriten@width%
+      \hspace*{\dimexpr\gcknbn@okurigana@width - \gcknbn@kaeriten@width\relax}%
+    \fi%
+    \ifdim\gcknbn@okurigana@width<\gcknbn@okurigana@width@s%
+      \hspace*{\dimexpr\gcknbn@okurigana@width@s - \gcknbn@kaeriten@width\relax}%
+    \else%
+    \fi%
+  }
+
+  %% \<prefix>ruby, \<prefix>okurigana, \<prefix>kaeriten
+  \expandafter\let\csname\gcknbn@prefix ruby\endcsname\gcknbn@ruby
+  \expandafter\let\csname\gcknbn@prefix okurigana\endcsname\gcknbn@okurigana
+  \expandafter\let\csname\gcknbn@prefix kaeriten\endcsname\gcknbn@kaeriten
+
+  %% 短縮マクロ
+  \expandafter\let\csname 振り\endcsname\gcknbn@ruby
+  \expandafter\let\csname 送り\endcsname\gcknbn@okurigana
+  \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten
+
+  %% 特殊返り点
+  \NewDocumentCommand{\IchiRe}{}{%
+    \ifgcknbn@tdir%
+      \hspace{-0.21\zw}一\hspace{-0.72\zw}レ%
+    \else%
+      \raisebox{0.29\zw}{一}\llap{レ}%
+    \fi%
+  }
+  \NewDocumentCommand{\JyouRe}{}{%
+    \ifgcknbn@tdir%
+      上\hspace{-0.3\zw}レ%
+    \else%
+      \raisebox{0.71\zw}{上}\llap{レ}%
+    \fi%
+  }
+  \NewDocumentCommand{\KouRe}{}{%
+    \ifgcknbn@tdir%
+      甲\hspace{-0.17\zw}レ%
+    \else%
+      \raisebox{0.82\zw}{甲}\llap{レ}%
+    \fi%
+  }
+  \NewDocumentCommand{\TenRe}{}{%
+    \ifgcknbn@tdir%
+      天\hspace{-0.17\zw}レ%
+    \else%
+      \raisebox{0.82\zw}{天}\llap{レ}%
+    \fi%
+  }
+  \NewDocumentCommand{\KanHyphen}{}{\symbol{"2015}}
+
+
+  %% GCKEnv
+  \newcommand{\gckanbun@gluechange}[1]{%
+    \ifluatex%
+      \ltjsetparameter{kanjiskip=#1}%
+    \else%
+      \kanjiskip=#1%
+    \fi%
+  }
+  \edef\gckanbn@skip@default{0.3\zw plus 0.15\zw minus 0.2\zw}
+  \NewDocumentEnvironment{GCKEnv}{ m O{\gckanbn@skip@default} }{%
+    \gckanbun@gluechange{#2}%
+  }{\par}
+  \NewDocumentCommand{\GCKanshiBox}{ m m }{%
+    \makebox[#1][s]{\vphantom{\gcknbn@ruby{あ}{あ}[あ]}#2}%
+  }
+  \endinput
+\end{lstlisting}
 
 \end{document}

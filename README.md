@@ -8,7 +8,7 @@
 
 ## Overview / 概要
 
-`gckanbun` provides a comprehensive set of commands for typesetting classical Chinese texts (Kanbun) in the traditional Japanese style.
+`gckanbun` provides a comprehensive set of commands for typesetting classical Chinese texts (Kanbun) in the traditional Japanese style.<br>
 `gckanbun` は、漢文を日本式の表記法（返り点、送り仮名など）で組版するための包括的なコマンドを提供するパッケージです。
 
 - **Version**: 2.2.7
@@ -57,9 +57,15 @@ For detailed usage and examples, please refer to the documentation file: `gckanb
 
 ---
 
+## Note / 注意点
+
+Due to limitations of the specification, LuaLaTeX is recommended.
+With (u)pLaTeX—especially (u)pLaTeX + jlreq—some features are not available.<br>
+仕様上の限界により、lualatexを推奨とします。 (u)platex（特に(u)platex+jlreq）では一部の機能が使えません。
+
 ## License / ライセンス
 
-This package is licensed under the **MIT License**.
+This package is licensed under the **MIT License**.<br>
 本パッケージは **MITライセンス** のもとで公開されています。
 
 ```text
