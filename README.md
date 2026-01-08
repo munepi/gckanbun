@@ -52,7 +52,7 @@
 
 ## Usage / 使用方法
 
-For detailed usage and examples, please refer to the documentation file: `gckanbun-doc.pdf`.
+For detailed usage and examples, please refer to the documentation file: `gckanbun-doc.pdf`.<br>
 具体的な使用方法や例については、ドキュメントファイル `gckanbun-doc.pdf` を参照してください。
 
 ---
