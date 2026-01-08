@@ -167,6 +167,9 @@ gckanbunパッケージはそのルビや返り点の制御構造において非
 
 このうち、\texttt{prefix}が適用されるのは\verb|\<prefix>kaeriten|、\verb|\<prefix>furigana|、\verb|\<prefix>okurigana|のみであることに注意が必要です。
 
+\subsection{追記：LuaTeX-ja v20260107.0に伴って}
+gckanbunパッケージは、v2.2.7以降より、\verb|\振り|、\verb|\送り|、\verb|\返り|などの各種コマンドの後に、適切なkanjiskipが挿入されるような設計を導入しました。ただし、この設計の重要な要素である\verb|\ltjghostbeforejachar|と\verb|\ltjghostafterjachar|の仕組みは、LuaTeX-jaにおけるv20260107.0より前のバージョンを使用する場合機能しません。したがって、本パッケージをv2.2.7以降のものにアップデートする場合には、LuaTeX-jaも同時にv20260107.0以後のものにアップデートされている必要があります。
+
 \subsection{使用方法}
 
 \subsubsection{\textbackslash kaeriten、\textbackslash 返り}
