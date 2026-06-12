@@ -29,7 +29,7 @@
 % 以上、各コマンドの後のskipもそうせざるを得ない。
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{gckanbun}[2026/06/12, Version 2.3.0]
+\ProvidesPackage{gckanbun}[2026/06/12, Version 2.3.1]
 
 %% package errors
 \def\gcknbn@error{\PackageError{gckanbun}}
@@ -517,17 +517,17 @@
     \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}\gckanbun@gluechange{0pt}}%
     \setbox\z@=\hbox{#2}%
     \setbox\@ne=\hbox{\tiny #3}%
+    \dimen\@ne=\wd\z@%  % 親文字幅（外側hbox幅として保持）
     \dimen\z@=\wd\z@%
     \ifdim\wd\@ne>\dimen\z@%
       \dimen\z@=\wd\@ne%
     \fi%
     \penalty\@lowpenalty%
-    \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
-      \vbox{%
-        \hbox to \dimen\z@{\hss\box\@ne\hss}%
-        \nointerlineskip%
-        \hbox to \dimen\z@{\hss\box\z@\hss}%
-    }}}%
+    \raisebox{\gcknbn@adjust@yokotate}{\hbox to \dimen\@ne{\hss\vbox{%
+      \hbox to \dimen\z@{\hss\box\@ne\hss}%
+      \nointerlineskip%
+      \hbox to \dimen\z@{\hss\box\z@\hss}%
+    }\hss}}%
   \endgroup%
   \gck@ghost@char@post%
 }
@@ -539,31 +539,31 @@
   \ifgcknbn@tdir%
     \hspace{-0.21\zw}一\hspace{-0.72\zw}レ%
   \else%
-    \raisebox{0.29\zw}{一}\llap{レ}%
+    \raisebox{0.29\zw}{一}\makebox[0pt][r]{レ}%
   \fi%
 }
 \NewDocumentCommand{\JyouRe}{}{%
   \ifgcknbn@tdir%
     上\hspace{-0.3\zw}レ%
   \else%
-    \raisebox{0.71\zw}{上}\llap{レ}%
+    \raisebox{0.71\zw}{上}\makebox[0pt][r]{レ}%
   \fi%
 }
 \NewDocumentCommand{\KouRe}{}{%
   \ifgcknbn@tdir%
     甲\hspace{-0.17\zw}レ%
   \else%
-    \raisebox{0.82\zw}{甲}\llap{レ}%
+    \raisebox{0.82\zw}{甲}\makebox[0pt][r]{レ}%
   \fi%
 }
 \NewDocumentCommand{\TenRe}{}{%
   \ifgcknbn@tdir%
     天\hspace{-0.17\zw}レ%
   \else%
-    \raisebox{0.82\zw}{天}\llap{レ}%
+    \raisebox{0.82\zw}{天}\makebox[0pt][r]{レ}%
   \fi%
 }
-\NewDocumentCommand{\KanHyphen}{}{\symbol{"2015}}
+\NewDocumentCommand{\KanHyphen}{}{\inhibitglue\symbol{"2015}\inhibitglue}
 
 
 %% GCKEnv
