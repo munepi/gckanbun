@@ -29,7 +29,7 @@
 % 以上、各コマンドの後のskipもそうせざるを得ない。
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{gckanbun}[2026/06/12, Version 2.3.1]
+\ProvidesPackage{gckanbun}[2026/06/13, Version 2.3.2]
 
 %% package errors
 \def\gcknbn@error{\PackageError{gckanbun}}
@@ -505,34 +505,6 @@
 \expandafter\let\csname 送り\endcsname\gcknbn@okurigana
 \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten
 
-%% グループルビ（複数の親文字に対し一括でルビを配置する）
-\DeclareDocumentCommand{\gcknbn@gruby}{ O{} m m }{%
-  \gcknbn@autocheck@direction%
-  \gcknbn@adjust@yokotate@use%
-  \leavevmode%
-  \gck@ghost@char@pre%
-  \begingroup%
-    \setkeys{gcknbn@ruby}{#1}%
-    \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@%
-    \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}\gckanbun@gluechange{0pt}}%
-    \setbox\z@=\hbox{#2}%
-    \setbox\@ne=\hbox{\tiny #3}%
-    \dimen\@ne=\wd\z@%  % 親文字幅（外側hbox幅として保持）
-    \dimen\z@=\wd\z@%
-    \ifdim\wd\@ne>\dimen\z@%
-      \dimen\z@=\wd\@ne%
-    \fi%
-    \penalty\@lowpenalty%
-    \raisebox{\gcknbn@adjust@yokotate}{\hbox to \dimen\@ne{\hss\vbox{%
-      \hbox to \dimen\z@{\hss\box\@ne\hss}%
-      \nointerlineskip%
-      \hbox to \dimen\z@{\hss\box\z@\hss}%
-    }\hss}}%
-  \endgroup%
-  \gck@ghost@char@post%
-}
-\expandafter\let\csname\gcknbn@prefix gruby\endcsname\gcknbn@gruby
-\expandafter\let\csname グループ振り\endcsname\gcknbn@gruby
 
 %% 特殊返り点
 \NewDocumentCommand{\IchiRe}{}{%

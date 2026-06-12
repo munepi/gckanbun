@@ -147,7 +147,6 @@ gckanbunパッケージはそのルビや返り点の制御構造において非
   \item 送り仮名
   \item 再読振り仮名
   \item 再読送り仮名
-  \item グループ振り仮名
   \item 一レ点、上レ点、甲レ点、天レ点
   \item ハイフン
 \end{itemize}
@@ -160,14 +159,13 @@ gckanbunパッケージはそのルビや返り点の制御構造において非
   \item \verb|\<prefix>okurigana|、\verb|\送り|
   \item \verb|\<prefix>ruby|、\verb|\振り|のオプショナル引数
   \item \verb|\<prefix>okurigana|、\verb|\送り|のオプショナル引数
-  \item \verb|\<prefix>gruby|、\verb|\グループ振り|
   \item \verb|\IchiRe|、\verb|\JyouRe|、\verb|\KouRe|、\verb|\TenRe|
   \item \verb|\KanHyphen|
 \end{itemize}
 
 \noindent が対応しています。
 
-このうち、\texttt{prefix}が適用されるのは\verb|\<prefix>kaeriten|、\verb|\<prefix>ruby|、\verb|\<prefix>okurigana|、\verb|\<prefix>gruby|のみであることに注意が必要です。
+このうち、\texttt{prefix}が適用されるのは\verb|\<prefix>kaeriten|、\verb|\<prefix>ruby|、\verb|\<prefix>okurigana|のみであることに注意が必要です。
 
 \subsection{追記：LuaTeX-ja v20260107.0に伴って}
 gckanbunパッケージは、v2.2.7以降より、\verb|\振り|、\verb|\送り|、\verb|\返り|などの各種コマンドの後に、適切なkanjiskipが挿入されるような設計を導入しました。ただし、この設計の重要な要素である\verb|\ltjghostbeforejachar|と\verb|\ltjghostafterjachar|の仕組みは、LuaTeX-jaにおけるv20260107.0より前のバージョンを使用する場合機能しません。したがって、本パッケージをv2.2.7以降のものにアップデートする場合には、LuaTeX-jaも同時にv20260107.0以後のものにアップデートされている必要があります。
@@ -218,24 +216,6 @@ gckanbunパッケージは、v2.2.7以降より、\verb|\振り|、\verb|\送り
 v2.1.0以前では、各コマンドにはスターオプションがありましたが、現在では別の仕様に変更されました\footnote{以前は、スターオプションをつけると振り仮名や送り仮名の部分が行間計算に影響を与えなくなるという仕様を設けていましたが、使用されることがほぼないため削除しました。}。
 
 ちなみに、「所以」のようなハイフンを含んだ熟語を打つ場合、\verb|\返り[intrusion=post]{二}|のように\verb|[intrusion=post]|のオプションを入れると出力は綺麗になります。
-
-\subsubsection{\textbackslash gruby、\textbackslash グループ振り}
-
-\verb|\gruby|、\verb|\グループ振り|は同一のコマンドで、複数の親文字に対して一括でルビを配置するグループルビを行います。書式は
-
-\begin{verbatim}
-\グループ振り{親文字列}{ルビ文字列}
-\end{verbatim}
-
-\noindent で、モノルビ（\verb|\振り|）が1文字に1つのルビを対応させるのに対し、グループルビは親文字列全体をひとまとまりとして扱い、ルビ文字列を上方に均等配置します。
-
-\begin{SourceCode}{Input}{TeX}
-  \グループ振り{以心}{いしん}\グループ振り{伝心}{でんしん}
-\end{SourceCode}
-
-\begin{OutPut}{Output}[横書き]
-  \グループ振り{以心}{いしん}\グループ振り{伝心}{でんしん}
-\end{OutPut}
 
 \section{局所縦書き}
 このパッケージによって提供されるコマンドは局所的な縦書きにも対応しています（v2.2.0以降限定ですので、それ以前のものだと出力が壊れることに注意してください。）。
@@ -532,7 +512,8 @@ v2.2.7以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   \item \textbf{v2.1.0 (2025/11/12)} --- Modefied package documentation. Also, KKTeX added some options for KANSHI typesetting.
   \item \textbf{v2.2.0 (2025/12/26)} --- Fixed a problem in which a previous \verb|\送り| has an effect on the next \verb|\返り[intrusion=post]{arg}|. Also, make every commands can be used in partly-vertical-mode with the new \verb|\GCKTateOn|.
   \item \textbf{v2.2.7 (2026/01/05)} --- Added \verb|GCKEnv| in order to typeset in more sophisticated way. Also, adjusted kanjiskip to be applied in the same manner as standard Japanese characters. This update also optimizes the layout logic for Chinese poetry (Kanshi), eliminating the need for manual \verb|\hfill| commands.
-  \item \textbf{v2.3.0 (2026/06/12)} --- Each command now auto-detects writing direction at invocation time, enabling correct behavior in partial-vertical contexts without explicit \verb|\GCKTateOn|. Added \verb|\GCKTateAuto| to resume auto-detection after manual override. Added group ruby command \verb|\gckanbungruby| (\verb|\グループ振り|) for placing ruby over multiple base characters. Internal code cleanup and bug fixes.
+  \item \textbf{v2.3.0 (2026/06/12)} --- Each command now auto-detects writing direction at invocation time, enabling correct behavior in partial-vertical contexts without explicit \verb|\GCKTateOn|. Added \verb|\GCKTateAuto| to resume auto-detection after manual override. Internal code cleanup and bug fixes.
+  \item \textbf{v2.3.2 (2026/06/13)} --- Suppress \verb|\KanHyphen| surrounding kanjiskip via \verb|\inhibitglue|. Replace \verb|\llap| with \verb|\makebox[0pt][r]| in special return-mark commands for clarity.
 \end{itemize}
 
 \section{Source Code}
