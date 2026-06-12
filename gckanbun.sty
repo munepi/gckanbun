@@ -24,15 +24,12 @@
 % OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% 未実装
-% グループルビ
-
 % 注意
 % デフォルトで\kanjiskipが「。」ないし「、」の前に挿入される
 % 以上、各コマンドの後のskipもそうせざるを得ない。
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{gckanbun}[2026/01/05, Version 2.2.7]
+\ProvidesPackage{gckanbun}[2026/06/12, Version 2.3.0]
 
 %% package errors
 \def\gcknbn@error{\PackageError{gckanbun}}
@@ -69,8 +66,9 @@
 \newif\ifgcknbn@tdir 
 \gcknbn@tdirfalse
 
-%% 判定処理をマクロにまとめる
+%% 判定処理をマクロにまとめる（呼び出し毎にリセット後チェック）
 \def\gcknbn@check@direction{%
+  \gcknbn@tdirfalse%
   \@ifundefined{iftdir}{\let\iftdir\iffalse}{}%
   \ifluatex
     \@ifundefined{ltjgetparameter}{}{%
@@ -78,6 +76,15 @@
     }%
   \else
     \iftdir \gcknbn@tdirtrue \fi
+  \fi
+}
+
+% 手動上書きフラグ。\GCKTateOn/Off が有効な間は自動検出を抑制。
+\newif\ifgcknbn@tdir@manual
+\gcknbn@tdir@manualfalse
+\def\gcknbn@autocheck@direction{%
+  \ifgcknbn@tdir@manual\else
+    \gcknbn@check@direction
   \fi
 }
 
@@ -107,8 +114,9 @@
 }
 
 %% 縦書き補正、横書き補正を切り替える
-\newcommand{\GCKTateOn}{\gcknbn@tdirtrue}
-\newcommand{\GCKTateOff}{\gcknbn@tdirfalse}
+\newcommand{\GCKTateOn}{\gcknbn@tdirtrue\gcknbn@tdir@manualtrue}
+\newcommand{\GCKTateOff}{\gcknbn@tdirfalse\gcknbn@tdir@manualtrue}
+\newcommand{\GCKTateAuto}{\gcknbn@tdir@manualfalse}
 
 % 補正パラメータ
 \newlength{\gcknbn@adjust@yokotate}
@@ -168,6 +176,7 @@
 
 % ルビ本体
 \DeclareDocumentCommand{\gcknbn@ruby}{ O{} m m O{\gckanbun@phantom}}{% normal
+  \gcknbn@autocheck@direction%
   \gcknbn@adjust@yokotate@use%
   \global\gcknbn@furigana@width\z@%
   \global\gcknbn@furigana@width@s\z@%
@@ -341,7 +350,7 @@
         \nointerlineskip%
         \hbox to \gcknbn@okurigana@width{%
           \hss%
-          \vphantom{\char\euc"A1A1}%
+          \vphantom{あ}%
           \hss%
         }%
         \nointerlineskip%
@@ -358,6 +367,7 @@
 % 送り仮名本体
 \DeclareDocumentCommand{\gcknbn@okurigana}{ O{} m O{\gckanbun@phantom} }{% normal
   \nobreak\leavevmode%
+  \gcknbn@autocheck@direction%
   \gcknbn@adjust@yokotate@use%
   \global\gcknbn@okurigana@width\z@%
   \global\gcknbn@okurigana@width@s\z@%
@@ -412,13 +422,7 @@
     \hspace*{-\gcknbn@okurigana@width@s}%
   \fi%
 }
-\def\gcknbn@okurigana@kaeriten@skip{%
-  \ifdim\gcknbn@okurigana@width>\gcknbn@okurigana@width@s%
-    \hspace*{-\gcknbn@okurigana@width}%
-  \else%
-    \hspace*{-\gcknbn@okurigana@width@s}%
-  \fi
-}
+\let\gcknbn@okurigana@kaeriten@skip\gcknbn@okurigana@kutoten@skip
 \def\gcknbn@okurigana@intr{%
   \ifdim\gcknbn@okurigana@width>\gcknbn@okurigana@width@s%
     \global\gcknbn@intr@post=\gcknbn@okurigana@width%
@@ -434,6 +438,7 @@
 % 返り点本体
 \DeclareDocumentCommand{\gcknbn@kaeriten}{ O{} m }{% normal
   \nobreak\leavevmode%
+  \gcknbn@autocheck@direction%
   \gcknbn@adjust@kaeri@use%
   \global\def\gcknbn@kaeri@intr@mark{}%
   \setkeys{gcknbn@kaeriten}{#1}%
@@ -481,12 +486,12 @@
   \fi%
 }
 \def\gcknbn@kaeriten@okurigana@skip{%
-  \ifdim\gcknbn@okurigana@width>\gcknbn@kaeriten@width%
-    \hspace*{\dimexpr\gcknbn@okurigana@width - \gcknbn@kaeriten@width\relax}%
+  \dimen\z@=\gcknbn@okurigana@width%
+  \ifdim\gcknbn@okurigana@width@s>\dimen\z@%
+    \dimen\z@=\gcknbn@okurigana@width@s%
   \fi%
-  \ifdim\gcknbn@okurigana@width<\gcknbn@okurigana@width@s%
-    \hspace*{\dimexpr\gcknbn@okurigana@width@s - \gcknbn@kaeriten@width\relax}%
-  \else%
+  \ifdim\dimen\z@>\gcknbn@kaeriten@width%
+    \hspace*{\dimexpr\dimen\z@ - \gcknbn@kaeriten@width\relax}%
   \fi%
 }
 
@@ -499,6 +504,35 @@
 \expandafter\let\csname 振り\endcsname\gcknbn@ruby
 \expandafter\let\csname 送り\endcsname\gcknbn@okurigana
 \expandafter\let\csname 返り\endcsname\gcknbn@kaeriten
+
+%% グループルビ（複数の親文字に対し一括でルビを配置する）
+\DeclareDocumentCommand{\gcknbn@gruby}{ O{} m m }{%
+  \gcknbn@autocheck@direction%
+  \gcknbn@adjust@yokotate@use%
+  \leavevmode%
+  \gck@ghost@char@pre%
+  \begingroup%
+    \setkeys{gcknbn@ruby}{#1}%
+    \gcknbn@dima\f@size\p@\relax \divide\gcknbn@dima by \tw@%
+    \def\tiny{\@setfontsize\tiny{\gcknbn@dima}{\z@}\gckanbun@gluechange{0pt}}%
+    \setbox\z@=\hbox{#2}%
+    \setbox\@ne=\hbox{\tiny #3}%
+    \dimen\z@=\wd\z@%
+    \ifdim\wd\@ne>\dimen\z@%
+      \dimen\z@=\wd\@ne%
+    \fi%
+    \penalty\@lowpenalty%
+    \raisebox{\gcknbn@adjust@yokotate}{\hbox{%
+      \vbox{%
+        \hbox to \dimen\z@{\hss\box\@ne\hss}%
+        \nointerlineskip%
+        \hbox to \dimen\z@{\hss\box\z@\hss}%
+    }}}%
+  \endgroup%
+  \gck@ghost@char@post%
+}
+\expandafter\let\csname\gcknbn@prefix gruby\endcsname\gcknbn@gruby
+\expandafter\let\csname グループ振り\endcsname\gcknbn@gruby
 
 %% 特殊返り点
 \NewDocumentCommand{\IchiRe}{}{%
@@ -540,8 +574,8 @@
     \kanjiskip=#1%
   \fi%
 }
-\edef\gckanbn@skip@default{0.3\zw plus 0.15\zw minus 0.2\zw}
-\NewDocumentEnvironment{GCKEnv}{ m O{\gckanbn@skip@default} }{%
+\edef\gcknbn@skip@default{0.3\zw plus 0.15\zw minus 0.2\zw}
+\NewDocumentEnvironment{GCKEnv}{ m O{\gcknbn@skip@default} }{%
   \gckanbun@gluechange{#2}%
 }{\par}
 \NewDocumentCommand{\GCKanshiBox}{ m m }{%
