@@ -26,13 +26,13 @@ All package logic lives in `gckanbun.sty`. There are no subdirectories.
 
 ### Engine detection and direction tracking
 
-The package auto-detects the TeX engine via `ifuptex`/`ifluatex` at load time and sets up engine-specific shims (`\zw`, `\zh`, ghost character macros). At `\AtBeginDocument`, it detects vertical/horizontal writing direction and sets `\ifgcknbn@tdir`. The `\GCKTateOn` / `\GCKTateOff` commands allow manual override.
+Engine detection uses `\sys_if_engine_luatex:TF` (expl3) at load time to set up engine-specific shims (`\zw`, `\zh`, ghost character macros). At `\AtBeginDocument`, it detects vertical/horizontal writing direction and sets `\l__gckanbun_tdir_bool`. The `\GCKTateOn` / `\GCKTateOff` commands set a manual-override flag (`\l__gckanbun_tdir_manual_bool`) that suppresses auto-detection; `\GCKTateAuto` resumes it. Each command call invokes `\gcknbn@autocheck@direction` to dynamically refresh the direction.
 
-Many layout calculations branch on `\ifgcknbn@tdir` (e.g., the `gcknbn@adjust@yokotate` and `gcknbn@adjust@kaeri` lengths differ between tate and yoko modes).
+Many layout calculations branch on `\l__gckanbun_tdir_bool` (e.g., `\l__gckanbun_adjust_yokotate_dim` and `\l__gckanbun_adjust_kaeri_dim` differ between tate and yoko modes).
 
 ### Command naming and prefix system
 
-Internal commands use the `gcknbn@` prefix. Public commands are exposed in two ways:
+Internal functions use the expl3 `\__gckanbun_...:` convention; internal variables use `\l__gckanbun_..._dim` (local) or `\g__gckanbun_..._dim` (global). Public commands are exposed in two ways:
 1. Via the `prefix=` package option (default `gckanbun`): `\gckanbunruby`, `\gckanbunokurigana`, `\gckanbunkaeriten`
 2. Short Japanese aliases: `\振り`, `\送り`, `\返り`
 
@@ -40,11 +40,11 @@ Internal commands use the `gcknbn@` prefix. Public commands are exposed in two w
 
 **`\gcknbn@ruby` (振り仮名/furigana)** — uses `\futurelet` to peek at the next token after placing the ruby box, adjusting spacing depending on whether what follows is okurigana, kaeriten, 、, 。, or other. Supports `intrusion=pre|post|both` for character intrusion into adjacent spacing.
 
-**`\gcknbn@okurigana` (送り仮名)** — similarly peeks ahead to handle the case where kaeriten or punctuation follows, using negative kern to overlap. Tracks widths in `\gcknbn@okurigana@width` and `@width@s` (for saidoku/re-read variant).
+**`\gcknbn@okurigana` (送り仮名)** — similarly peeks ahead to handle the case where kaeriten or punctuation follows, using negative kern to overlap. Tracks widths in `\g__gckanbun_okurigana_width_dim` and `\g__gckanbun_okurigana_width_s_dim` (for saidoku/re-read variant).
 
 **`\gcknbn@kaeriten` (返り点)** — lowered half-size mark; handles punctuation following via `\futurelet`.
 
-The three commands coordinate through shared dimension registers (`\gcknbn@intr@pre`, `\gcknbn@intr@post`, `\gcknbn@furigana@width`, etc.) that carry state between adjacent commands in the input stream.
+The three commands coordinate through shared global dimension variables (`\g__gckanbun_intr_pre_dim`, `\g__gckanbun_intr_post_dim`, `\g__gckanbun_furigana_width_dim`, etc.) that carry state between adjacent commands in the input stream. The `\futurelet` lookahead mechanism is kept as-is (TeX primitive; no expl3 migration needed).
 
 ### Special commands
 
@@ -61,8 +61,8 @@ The three commands coordinate through shared dimension registers (`\gcknbn@intr@
 | `gckanbun-doc.tex` / `.pdf` | Full documentation with examples |
 | `gckanbun-test.tex` / `.pdf` | Minimal test showcasing key commands |
 
-## Planned enhancements (enhancement1.md)
+## Implementation history
 
-1. **Partial vertical writing auto-detection** — use `\AddToHook` to trigger `\GCKTateOn`/`\GCKTateOff` automatically
-2. **Group ruby** — modeled on `luatexja-ruby`, without breaking the existing command UI
-3. **expl3 migration** — last step; requires careful testing (planning with Fable, testing/git with Sonnet)
+- **v2.3.0** — Per-command direction auto-detection; `\GCKTateAuto`; internal bug fixes
+- **v2.3.2** — `\KanHyphen` kanjiskip suppression; `\llap` → `\makebox[0pt][r]` in special return marks; group ruby removed
+- **v2.4.0** — Full expl3 migration: `\dim_new:N`, `\bool_new:N`, `l3keys2e`, `\dim_compare:nNnTF`, named scratch boxes, load-time engine branching; `\AtBeginDocument` manual-flag bug fix
