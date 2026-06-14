@@ -20,8 +20,12 @@ Icon
 *.out
 *.aux
 *.log
+*.toc
+*.listing
 *.ltjruby
 *.synctex.*
+*.fls
+*.fdb_latexmk
 
 # extras/
 
