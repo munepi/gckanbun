@@ -93,7 +93,7 @@
   Original ver. : Munehiro Yamamoto\\
   Modified ver. : Kosei Kawaguchi a.k.a. KKTeX
 }}
-\date{Version 2.4.0 (2026/06/13)}
+\date{Version 2.4.1 (2026/06/19)}
 
 
 \begin{document}
@@ -215,7 +215,7 @@ gckanbunパッケージは、v2.2.7以降より、\verb|\振り|、\verb|\送り
 
 v2.1.0以前では、各コマンドにはスターオプションがありましたが、現在では別の仕様に変更されました\footnote{以前は、スターオプションをつけると振り仮名や送り仮名の部分が行間計算に影響を与えなくなるという仕様を設けていましたが、使用されることがほぼないため削除しました。}。
 
-ちなみに、「所以」のようなハイフンを含んだ熟語を打つ場合、\verb|\返り[intrusion=post]{二}|のように\verb|[intrusion=post]|のオプションを入れると出力は綺麗になります。
+ちなみに、「所以」のようなハイフンを含んだ熟語を打つ場合、\verb|\返り[intrusion=post]{二}|のように\verb|[intrusion=post]|のオプションを入れると出力は綺麗になります。v2.4.1以降では、通常の縦組と局所縦組のどちらでも、\verb|\KanHyphen|の前後に余分な和文グルーは入りません。
 
 \section{局所縦書き}
 このパッケージによって提供されるコマンドは局所的な縦書きにも対応しています（v2.2.0以降限定ですので、それ以前のものだと出力が壊れることに注意してください。）。
@@ -515,6 +515,7 @@ v2.2.7以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   \item \textbf{v2.3.0 (2026/06/12)} --- Each command now auto-detects writing direction at invocation time, enabling correct behavior in partial-vertical contexts without explicit \verb|\GCKTateOn|. Added \verb|\GCKTateAuto| to resume auto-detection after manual override. Internal code cleanup and bug fixes.
   \item \textbf{v2.3.2 (2026/06/13)} --- Suppress \verb|\KanHyphen| surrounding kanjiskip via \verb|\inhibitglue|. Replace \verb|\llap| with \verb|\makebox[0pt][r]| in special return-mark commands for clarity.
   \item \textbf{v2.4.0 (2026/06/13)} --- Migrated internal implementation to \textsf{expl3}: variable declarations (\verb|\dim_new:N|, \verb|\bool_new:N|), option processing (\verb|l3keys2e|), arithmetic (\verb|\dim_compare:nNnTF|), named scratch boxes, and load-time engine branching (\verb|\sys_if_engine_luatex:TF|). Fixed \verb|\AtBeginDocument| ignoring the manual tdir flag. The \verb|\futurelet| lookahead mechanism is retained.
+  \item \textbf{v2.4.1 (2026/06/19)} --- Suppress Japanese glue around a ruby whose parent is \verb|\KanHyphen| at the outer ruby-box level, so \verb|intrusion=post| remains effective in both full and partial vertical writing.
 \end{itemize}
 
 \section{Source Code}

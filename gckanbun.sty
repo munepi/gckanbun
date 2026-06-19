@@ -34,7 +34,7 @@
 %   * 公開コマンド名（\振り, \送り, \返り, \GCKTateOn 等）は変更なし。
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{gckanbun}[2026/06/13, Version 2.4.0]
+\ProvidesPackage{gckanbun}[2026/06/19, Version 2.4.1]
 
 \RequirePackage{l3keys2e}
 
@@ -69,6 +69,8 @@
 % 縦書きフラグ
 \bool_new:N \l__gckanbun_tdir_bool
 \bool_new:N \l__gckanbun_tdir_manual_bool
+% 親文字が \KanHyphen か
+\bool_new:N \l__gckanbun_ruby_kanhyphen_bool
 % intrusion オプション値
 \tl_new:N \l__gckanbun_prefix_tl
 \tl_new:N \l__gckanbun_ruby_intr_tl
@@ -259,8 +261,15 @@
     \dim_gzero:N \g__gckanbun_furigana_width_dim
     \dim_gzero:N \g__gckanbun_furigana_width_s_dim
     \tl_clear:N \l__gckanbun_ruby_intr_tl
+    \tl_if_eq:nnTF {#2} { \KanHyphen }
+      { \bool_set_true:N \l__gckanbun_ruby_kanhyphen_bool }
+      { \bool_set_false:N \l__gckanbun_ruby_kanhyphen_bool }
     \leavevmode
-    \gck@ghost@char@pre
+    % \KanHyphen 内の \inhibitglue は親文字計測用 hbox の中に閉じる。
+    % 実際に並ぶルビ外箱の前後でも和文グルーを抑止する。
+    \bool_if:NTF \l__gckanbun_ruby_kanhyphen_bool
+      { \inhibitglue }
+      { \gck@ghost@char@pre }
     \begingroup
       \keys_set:nn { gckanbun / ruby } {#1}
       \dim_set:Nn \l__gckanbun_dima_dim { \f@size \p@ / 2 }
@@ -394,12 +403,16 @@
         { \kern -\g__gckanbun_intr_post_dim }
       % それ以外は何もなし
     }
-  \ifx\gckanbun@let@token、%
-    \gck@ghost@char@post
-  \else\ifx\gckanbun@let@token。%
-  \else
-    \gck@ghost@char@post
-  \fi\fi
+  \bool_if:NTF \l__gckanbun_ruby_kanhyphen_bool
+    { \inhibitglue }
+    {
+      \ifx\gckanbun@let@token、%
+        \gck@ghost@char@post
+      \else\ifx\gckanbun@let@token。%
+      \else
+        \gck@ghost@char@post
+      \fi\fi
+    }
 \endgroup}
 
 %% 訓点
