@@ -33,8 +33,8 @@ Many layout calculations branch on `\l__gckanbun_tdir_bool` (e.g., `\l__gckanbun
 ### Command naming and prefix system
 
 Internal functions use the expl3 `\__gckanbun_...:` convention; internal variables use `\l__gckanbun_..._dim` (local) or `\g__gckanbun_..._dim` (global). Public commands are exposed in two ways:
-1. Via the `prefix=` package option (default `gckanbun`): `\gckanbunruby`, `\gckanbunokurigana`, `\gckanbunkaeriten`
-2. Short Japanese aliases: `\振り`, `\送り`, `\返り`
+1. Via the `prefix=` package option (default `gckanbun`): `\gckanbunruby`, `\gckanbungroupruby`, `\gckanbunokurigana`, `\gckanbunkaeriten`
+2. Short Japanese aliases: `\振り`, `\グ振り`, `\送り`, `\返り`
 
 ### Core command internals
 
@@ -60,9 +60,12 @@ The three commands coordinate through shared global dimension variables (`\g__gc
 | `gckanbun.sty` | The package itself |
 | `gckanbun-doc.tex` / `.pdf` | Full documentation with examples |
 | `gckanbun-test.tex` / `.pdf` | Minimal test showcasing key commands |
+| `gckanbun-sample.tex` / `.pdf` | Standalone LuaLaTeX usage example |
 
 ## Implementation history
 
 - **v2.3.0** — Per-command direction auto-detection; `\GCKTateAuto`; internal bug fixes
 - **v2.3.2** — `\KanHyphen` kanjiskip suppression; `\llap` → `\makebox[0pt][r]` in special return marks; group ruby removed
 - **v2.4.0** — Full expl3 migration: `\dim_new:N`, `\bool_new:N`, `l3keys2e`, `\dim_compare:nNnTF`, named scratch boxes, load-time engine branching; `\AtBeginDocument` manual-flag bug fix
+- **v2.4.1** — Suppress glue at the outer ruby-box boundary when `\KanHyphen` is the parent character
+- **v2.5.0** — Restore group ruby as `\gckanbungroupruby` / `\グ振り` with LuaTeX-ja-compatible spacing

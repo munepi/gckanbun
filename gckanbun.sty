@@ -34,7 +34,7 @@
 %   * 公開コマンド名（\振り, \送り, \返り, \GCKTateOn 等）は変更なし。
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{gckanbun}[2026/06/19, Version 2.4.1]
+\ProvidesPackage{gckanbun}[2026/06/19, Version 2.5.0]
 
 \RequirePackage{l3keys2e}
 
@@ -51,6 +51,10 @@
 % スクラッチ（旧 \dimen\z@ / \gcknbn@dima）
 \dim_new:N \l__gckanbun_tmp_dim
 \dim_new:N \l__gckanbun_dima_dim
+\dim_new:N \l__gckanbun_group_base_width_dim
+\dim_new:N \l__gckanbun_group_width_dim
+\dim_new:N \l__gckanbun_group_overhang_dim
+\bool_new:N \l__gckanbun_group_stretch_bool
 % 句読点用カーン
 \dim_new:N \l__gckanbun_kutouten_kern_dim
 % ルビ・訓点間で共有する寸法（グローバル）
@@ -292,6 +296,92 @@
       \tl_gset:Nn \g__gckanbun_rubybox_text_s_tl {#4}
       \dim_gset:Nn \g__gckanbun_rubybox_width_dim { \box_wd:N \l__gckanbun_tmpa_box }
       \gcknbn@furigana@okurigana
+  }
+
+% グループルビ本体
+% 親文字列を不可分な一群として扱う。親文字が長い場合のルビ配置は
+% LuaTeX-ja の既定 stretchruby={1}{2}{1} と同じ前:中:後 = 1:2:1。
+\DeclareDocumentCommand{\gcknbn@groupruby}{ O{} m m }
+  {
+    \gcknbn@autocheck@direction
+    \__gckanbun_adjust_yokotate:
+    \tl_clear:N \l__gckanbun_ruby_intr_tl
+    \leavevmode
+    \gck@ghost@char@pre
+    \begingroup
+      \keys_set:nn { gckanbun / ruby } {#1}
+      \dim_set:Nn \l__gckanbun_dima_dim { \f@size \p@ / 2 }
+      \def\tiny{\@setfontsize\tiny{\l__gckanbun_dima_dim}{\z@}\__gckanbun_gluechange:n{0pt}}
+      % 親文字列には \返り・\KanHyphen 等の訓点コマンドを含められる。
+      % \hbox_set:Nn を使わない理由はモノルビ本体のコメントを参照。
+      \setbox \l__gckanbun_tmpa_box = \hbox{#2}
+      \setbox \l__gckanbun_tmpb_box = \hbox{\tiny#3}
+      % 親文字列内の訓点コマンドが更新した共有状態を外側へ漏らさない。
+      \dim_gzero:N \g__gckanbun_furigana_width_dim
+      \dim_gzero:N \g__gckanbun_furigana_width_s_dim
+      \dim_gzero:N \g__gckanbun_okurigana_width_dim
+      \dim_gzero:N \g__gckanbun_okurigana_width_s_dim
+      \dim_gzero:N \g__gckanbun_kaeriten_width_dim
+      \dim_gzero:N \g__gckanbun_intr_pre_dim
+      \dim_gzero:N \g__gckanbun_intr_post_dim
+      \dim_set:Nn \l__gckanbun_group_base_width_dim
+        { \box_wd:N \l__gckanbun_tmpa_box }
+      \dim_set:Nn \l__gckanbun_group_width_dim
+        {
+          \dim_max:nn
+            { \l__gckanbun_group_base_width_dim }
+            { \box_wd:N \l__gckanbun_tmpb_box }
+        }
+      \dim_compare:nNnTF
+        { \l__gckanbun_group_base_width_dim }
+        >
+        { \box_wd:N \l__gckanbun_tmpb_box }
+        { \bool_set_true:N \l__gckanbun_group_stretch_bool }
+        { \bool_set_false:N \l__gckanbun_group_stretch_bool }
+      \dim_set:Nn \l__gckanbun_group_overhang_dim
+        {
+          (
+            \l__gckanbun_group_width_dim
+            - \l__gckanbun_group_base_width_dim
+          ) / 2
+        }
+      \str_if_eq:VnTF \l__gckanbun_ruby_intr_tl { pre }
+        { \kern -\l__gckanbun_group_overhang_dim }
+        {
+          \str_if_eq:VnT \l__gckanbun_ruby_intr_tl { both }
+            { \kern -\l__gckanbun_group_overhang_dim }
+        }
+      \penalty\@lowpenalty
+      \raisebox{\l__gckanbun_adjust_yokotate_dim}{\hbox{%
+        \vbox{
+          \bool_if:NTF \l__gckanbun_group_stretch_bool
+            {
+              % 外側を1fil、ルビ文字間のkanjiskipを2filにする。
+              \hbox to \l__gckanbun_group_width_dim
+                {
+                  \hfil
+                  \tiny
+                  \__gckanbun_gluechange:n { 0pt plus 2fil }
+                  #3
+                  \hfil
+                }
+            }
+            {
+              \hbox to \l__gckanbun_group_width_dim
+                { \hss \box_use_drop:N \l__gckanbun_tmpb_box \hss }
+            }
+          \nointerlineskip
+          \hbox to \l__gckanbun_group_width_dim
+            { \hss \box_use_drop:N \l__gckanbun_tmpa_box \hss }
+        }}}
+      \str_if_eq:VnTF \l__gckanbun_ruby_intr_tl { post }
+        { \kern -\l__gckanbun_group_overhang_dim }
+        {
+          \str_if_eq:VnT \l__gckanbun_ruby_intr_tl { both }
+            { \kern -\l__gckanbun_group_overhang_dim }
+        }
+    \endgroup
+    \gck@ghost@char@post
   }
 
 % 次に来る文字を判定（\futurelet 機構はそのまま維持）
@@ -598,13 +688,15 @@
       }
   }
 
-%% \<prefix>ruby, \<prefix>okurigana, \<prefix>kaeriten
+%% \<prefix>ruby, \<prefix>groupruby, \<prefix>okurigana, \<prefix>kaeriten
 \cs_set_eq:cN { \l__gckanbun_prefix_tl ruby } \gcknbn@ruby
+\cs_set_eq:cN { \l__gckanbun_prefix_tl groupruby } \gcknbn@groupruby
 \cs_set_eq:cN { \l__gckanbun_prefix_tl okurigana } \gcknbn@okurigana
 \cs_set_eq:cN { \l__gckanbun_prefix_tl kaeriten } \gcknbn@kaeriten
 
 %% 短縮マクロ
 \cs_set_eq:cN { 振り } \gcknbn@ruby
+\cs_set_eq:cN { グ振り } \gcknbn@groupruby
 \cs_set_eq:cN { 送り } \gcknbn@okurigana
 \cs_set_eq:cN { 返り } \gcknbn@kaeriten
 

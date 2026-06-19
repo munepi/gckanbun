@@ -93,7 +93,7 @@
   Original ver. : Munehiro Yamamoto\\
   Modified ver. : Kosei Kawaguchi a.k.a. KKTeX
 }}
-\date{Version 2.4.1 (2026/06/19)}
+\date{Version 2.5.0 (2026/06/19)}
 
 
 \begin{document}
@@ -133,7 +133,7 @@ gckanbunパッケージはそのルビや返り点の制御構造において非
 ただし、\namiKK{推奨はLuaLaTeX+jlreq}です。LuaLaTeX以外で扱う場合、内部で使用している\verb|\ltjghostbeforejachar|と\verb|\ltjghostafterjachar|の恩恵を受けることができず、bxghostパッケージを用いた和文ゴーストの挿入に切り替わります。その際に出力が劣化し得るため、LuaLaTeXが望ましいのです。
 
 \subsection{オプション}
-パッケージオプションは\verb|prefix=<prefix>|（デフォルト値：\verb|gckanbun|）となっていて、\texttt{gckanbun}パッケージが提供する3つのコマンド\verb|\gckanbunruby|、\verb|\gckanbunokurigana|、\verb|\gckanbunkaeriten| をそれぞれ\verb|<prefix>ruby|、\verb|<prefix>okurigana|、\verb|<prefix>kaeriten| として提供します。このオプションにより、他のパッケージで提供されるルビ振りコマンド \verb|\ruby| との衝突を避けられます。
+パッケージオプションは\verb|prefix=<prefix>|（デフォルト値：\verb|gckanbun|）となっていて、\texttt{gckanbun}パッケージが提供する4つのコマンド\verb|\gckanbunruby|、\verb|\gckanbungroupruby|、\verb|\gckanbunokurigana|、\verb|\gckanbunkaeriten| をそれぞれ\verb|<prefix>ruby|、\verb|<prefix>groupruby|、\verb|<prefix>okurigana|、\verb|<prefix>kaeriten| として提供します。このオプションにより、他のパッケージで提供されるルビ振りコマンド \verb|\ruby| との衝突を避けられます。
 
 \namiKK{以下の説明においては、\texttt{prefix}を空白として指定したものと仮定してコマンド名を表記しています。必要に応じて補って読んでください。}
 
@@ -144,6 +144,7 @@ gckanbunパッケージはそのルビや返り点の制御構造において非
 \begin{itemize}
   \item 返り点
   \item 振り仮名（モノルビ）
+  \item グループルビ
   \item 送り仮名
   \item 再読振り仮名
   \item 再読送り仮名
@@ -156,6 +157,7 @@ gckanbunパッケージはそのルビや返り点の制御構造において非
 \begin{itemize}
   \item \verb|\<prefix>kaeriten|、\verb|\返り|
   \item \verb|\<prefix>ruby|、\verb|\振り|
+  \item \verb|\<prefix>groupruby|、\verb|\グ振り|
   \item \verb|\<prefix>okurigana|、\verb|\送り|
   \item \verb|\<prefix>ruby|、\verb|\振り|のオプショナル引数
   \item \verb|\<prefix>okurigana|、\verb|\送り|のオプショナル引数
@@ -165,7 +167,7 @@ gckanbunパッケージはそのルビや返り点の制御構造において非
 
 \noindent が対応しています。
 
-このうち、\texttt{prefix}が適用されるのは\verb|\<prefix>kaeriten|、\verb|\<prefix>ruby|、\verb|\<prefix>okurigana|のみであることに注意が必要です。
+このうち、\texttt{prefix}が適用されるのは\verb|\<prefix>kaeriten|、\verb|\<prefix>ruby|、\verb|\<prefix>groupruby|、\verb|\<prefix>okurigana|のみであることに注意が必要です。
 
 \subsection{追記：LuaTeX-ja v20260107.0に伴って}
 gckanbunパッケージは、v2.2.7以降より、\verb|\振り|、\verb|\送り|、\verb|\返り|などの各種コマンドの後に、適切なkanjiskipが挿入されるような設計を導入しました。ただし、この設計の重要な要素である\verb|\ltjghostbeforejachar|と\verb|\ltjghostafterjachar|の仕組みは、LuaTeX-jaにおけるv20260107.0より前のバージョンを使用する場合機能しません。したがって、本パッケージをv2.2.7以降のものにアップデートする場合には、LuaTeX-jaも同時にv20260107.0以後のものにアップデートされている必要があります。
@@ -215,7 +217,37 @@ gckanbunパッケージは、v2.2.7以降より、\verb|\振り|、\verb|\送り
 
 v2.1.0以前では、各コマンドにはスターオプションがありましたが、現在では別の仕様に変更されました\footnote{以前は、スターオプションをつけると振り仮名や送り仮名の部分が行間計算に影響を与えなくなるという仕様を設けていましたが、使用されることがほぼないため削除しました。}。
 
-ちなみに、「所以」のようなハイフンを含んだ熟語を打つ場合、\verb|\返り[intrusion=post]{二}|のように\verb|[intrusion=post]|のオプションを入れると出力は綺麗になります。v2.4.1以降では、通常の縦組と局所縦組のどちらでも、\verb|\KanHyphen|の前後に余分な和文グルーは入りません。
+「所以」のように訓読用ハイフンを含む語をモノルビで組む場合は、\verb|\返り[intrusion=post]{二}|のように返り点へ\verb|intrusion=post|を指定します。v2.4.1以降では、通常の縦組と局所縦組のどちらでも、\verb|\KanHyphen|を親文字とするルビ外箱の前後に余分な和文グルーが入りません。
+
+\subsubsection{\textbackslash <prefix>groupruby、\textbackslash グ振り}
+
+\verb|\<prefix>groupruby|と\verb|\グ振り|は同一のコマンドで、複数の親文字を一つの親文字列として扱うグループルビを配置します。デフォルトのprefixでは\verb|\gckanbungroupruby|となります。書式は
+
+\begin{verbatim}
+\グ振り[intrusion=pre|post|both]{親文字列}{ルビ文字列}
+\end{verbatim}
+
+\noindent です。親文字列とルビ文字列はそれぞれ不可分な一群となり、途中では改行されません。親文字列が長い場合は、LuaTeX-jaの標準グループルビと同じく、ルビ前・ルビ文字間・ルビ後の空きを1:2:1の比率で配分します。ルビ文字列が長い場合は自然幅で中央配置します。
+
+\begin{SourceCode}{Input}{TeX}
+  \グ振り{所以}{ゆえん}\送り{ノミ}
+
+  \グ振り{所\返り[intrusion=post]{一}\KanHyphen 以}{ゆえん}\送り{ノミ}
+
+  \グ振り[intrusion=both]{不可思議}{ふかしぎ}
+\end{SourceCode}
+
+\begin{OutPut}{Output}[横書き]
+  \グ振り{所以}{ゆえん}\送り{ノミ}
+
+  \グ振り{所\返り[intrusion=post]{一}\KanHyphen 以}{ゆえん}\送り{ノミ}
+
+  \グ振り[intrusion=both]{不可思議}{ふかしぎ}
+\end{OutPut}
+
+親文字列には\verb|\返り|や\verb|\KanHyphen|などの訓点コマンドを含められます。親文字列内で更新された内部状態はグループルビの外へ持ち越されません。
+
+\verb|intrusion|にはモノルビと同じく\verb|pre|、\verb|post|、\verb|both|を指定できます。ルビが親文字列より長い場合に限り、指定した側の突出量を前後の字送りから差し引きます。無指定の場合はルビ全体の自然幅を確保します。
 
 \section{局所縦書き}
 このパッケージによって提供されるコマンドは局所的な縦書きにも対応しています（v2.2.0以降限定ですので、それ以前のものだと出力が壊れることに注意してください。）。
@@ -515,7 +547,8 @@ v2.2.7以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   \item \textbf{v2.3.0 (2026/06/12)} --- Each command now auto-detects writing direction at invocation time, enabling correct behavior in partial-vertical contexts without explicit \verb|\GCKTateOn|. Added \verb|\GCKTateAuto| to resume auto-detection after manual override. Internal code cleanup and bug fixes.
   \item \textbf{v2.3.2 (2026/06/13)} --- Suppress \verb|\KanHyphen| surrounding kanjiskip via \verb|\inhibitglue|. Replace \verb|\llap| with \verb|\makebox[0pt][r]| in special return-mark commands for clarity.
   \item \textbf{v2.4.0 (2026/06/13)} --- Migrated internal implementation to \textsf{expl3}: variable declarations (\verb|\dim_new:N|, \verb|\bool_new:N|), option processing (\verb|l3keys2e|), arithmetic (\verb|\dim_compare:nNnTF|), named scratch boxes, and load-time engine branching (\verb|\sys_if_engine_luatex:TF|). Fixed \verb|\AtBeginDocument| ignoring the manual tdir flag. The \verb|\futurelet| lookahead mechanism is retained.
-  \item \textbf{v2.4.1 (2026/06/19)} --- Suppress Japanese glue around a ruby whose parent is \verb|\KanHyphen| at the outer ruby-box level, so \verb|intrusion=post| remains effective in both full and partial vertical writing.
+  \item \textbf{v2.4.1 (2026/06/19)} --- Suppressed Japanese glue around a ruby whose parent is \verb|\KanHyphen| at the outer ruby-box level, preserving \verb|intrusion=post| in full and partial vertical writing.
+  \item \textbf{v2.5.0 (2026/06/19)} --- Added group ruby command \verb|\gckanbungroupruby| (\verb|\グ振り|). Ruby shorter than its base uses LuaTeX-ja-compatible 1:2:1 spacing; longer ruby supports \verb|intrusion=pre|, \verb|post|, and \verb|both|. Parent text may contain Kanbun annotation commands.
 \end{itemize}
 
 \section{Source Code}

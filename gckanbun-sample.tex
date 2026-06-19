@@ -1,0 +1,44 @@
+\documentclass[luatex,fontsize=10pt,paper=a5]{jlreq}
+\usepackage{gckanbun,lltjext}
+
+\begin{document}
+
+\section*{gckanbun sample}
+
+このサンプルは LuaLaTeX でそのまま試せる最小例です。
+
+\subsection*{基本の訓点}
+
+\begin{GCKEnv}{2\zw}
+  \振り{学}{まな}\送り{ビテ}\返り{レ}時\送り{ニ}習\送り{フ}
+\end{GCKEnv}
+
+\subsection*{\textbackslash KanHyphen}
+
+\begin{GCKEnv}{2\zw}
+  \振り{所}{ゆ}\返り[intrusion=post]{二}\振り{\KanHyphen}{ゑ}\振り{以}{ん}
+\end{GCKEnv}
+
+\subsection*{グループルビ}
+
+\begin{GCKEnv}{2\zw}
+  \グ振り{所以}{ゆえん}\送り{ナリ}
+
+  \bigskip
+
+  \グ振り{所\返り[intrusion=post]{一}\KanHyphen 以}{ゆえん}\送り{ノミ}
+\end{GCKEnv}
+
+\subsection*{局所縦組}
+
+横組の文中でも、次のように一部分だけ縦組にできます。
+
+\parbox<t>{8\zw}{\GCKTateOn
+  \begin{GCKEnv}{2\zw}
+    \振り{雖}{いへど}\送り{モ}\\
+    \振り{所}{ゆ}\返り[intrusion=post]{二}\振り{\KanHyphen}{ゑ}\振り{以}{ん}\\
+    \グ振り{以心}{いしん}\グ振り{伝心}{でんしん}
+  \end{GCKEnv}
+\par}
+
+\end{document}
