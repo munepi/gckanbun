@@ -34,7 +34,7 @@
 %   * 公開コマンド名（\振り, \送り, \返り, \GCKTateOn 等）は変更なし。
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{gckanbun}[2026/06/19, Version 2.5.0]
+\ProvidesPackage{gckanbun}[2026/06/20, Version 2.5.1]
 
 \RequirePackage{l3keys2e}
 
@@ -54,7 +54,6 @@
 \dim_new:N \l__gckanbun_group_base_width_dim
 \dim_new:N \l__gckanbun_group_width_dim
 \dim_new:N \l__gckanbun_group_overhang_dim
-\bool_new:N \l__gckanbun_group_stretch_bool
 % 句読点用カーン
 \dim_new:N \l__gckanbun_kutouten_kern_dim
 % ルビ・訓点間で共有する寸法（グローバル）
@@ -298,10 +297,43 @@
       \gcknbn@furigana@okurigana
   }
 
+% グループルビの伸縮ルビ行（上段ルビ・再読ルビ共通）
+% 内容を group_width 幅へ、外側1fil・文字間kanjiskip2filの
+% 前:中:後 = 1:2:1 で伸縮配置する。内容が箱幅と等幅のときは fil が
+% 潰れて自然幅で並ぶため、最も広い行にもそのまま使える。
+\cs_new_protected:Npn \__gckanbun_groupruby_rubyrow:n #1
+  {
+    \hbox to \l__gckanbun_group_width_dim
+      {
+        \hfil
+        \tiny
+        \__gckanbun_gluechange:n { 0pt plus 2fil }
+        #1
+        \hfil
+      }
+  }
+
+% グループルビの親文字列を組む前後で、隣接コマンドから受け渡される
+% 訓点状態を初期化する。組版前の初期化により、直前の送り仮名などが残した
+% intrusion量を親文字列内の返り点が誤って再利用することを防ぐ。
+\cs_new_protected:Npn \__gckanbun_groupruby_reset_annotation_state:
+  {
+    \dim_gzero:N \g__gckanbun_furigana_width_dim
+    \dim_gzero:N \g__gckanbun_furigana_width_s_dim
+    \dim_gzero:N \g__gckanbun_okurigana_width_dim
+    \dim_gzero:N \g__gckanbun_okurigana_width_s_dim
+    \dim_gzero:N \g__gckanbun_kaeriten_width_dim
+    \dim_gzero:N \g__gckanbun_intr_pre_dim
+    \dim_gzero:N \g__gckanbun_intr_post_dim
+  }
+
 % グループルビ本体
 % 親文字列を不可分な一群として扱う。親文字が長い場合のルビ配置は
 % LuaTeX-ja の既定 stretchruby={1}{2}{1} と同じ前:中:後 = 1:2:1。
-\DeclareDocumentCommand{\gcknbn@groupruby}{ O{} m m }
+% モノルビと同じ3行構成（上段ルビ／親文字列／再読ルビ）とし、ベースラインを
+% 最下行（再読ルビ）に置く。これにより親文字列の高さと後続送り仮名の高さが
+% モノルビと一致する。第4引数は再読振り仮名（既定は \gckanbun@phantom）。
+\DeclareDocumentCommand{\gcknbn@groupruby}{ O{} m m O{\gckanbun@phantom} }
   {
     \gcknbn@autocheck@direction
     \__gckanbun_adjust_yokotate:
@@ -314,30 +346,32 @@
       \def\tiny{\@setfontsize\tiny{\l__gckanbun_dima_dim}{\z@}\__gckanbun_gluechange:n{0pt}}
       % 親文字列には \返り・\KanHyphen 等の訓点コマンドを含められる。
       % \hbox_set:Nn を使わない理由はモノルビ本体のコメントを参照。
-      \setbox \l__gckanbun_tmpa_box = \hbox{#2}
+      \__gckanbun_groupruby_reset_annotation_state:
+      % 親文字列に \KanHyphen を含む場合のみベタ組（kanjiskip=0）で組む。
+      % luatexja の kanjiskip は hbox 単位で一律のため位置別の指定ができず、
+      % \KanHyphen の \inhibitglue だけでは大きい kanjiskip 下で前後に空きが
+      % 残る。ハイフンで連結した語は不可分な一群なのでベタ組とし、ハイフンを
+      % 含まない親文字列では通常の kanjiskip を活かす。
+      \tl_if_in:nnTF {#2} { \KanHyphen }
+        { \setbox \l__gckanbun_tmpa_box = \hbox{\__gckanbun_gluechange:n{0pt}#2} }
+        { \setbox \l__gckanbun_tmpa_box = \hbox{#2} }
       \setbox \l__gckanbun_tmpb_box = \hbox{\tiny#3}
+      \setbox \l__gckanbun_tmpc_box = \hbox{\tiny#4}% 再読ルビ（既定はファントム）
       % 親文字列内の訓点コマンドが更新した共有状態を外側へ漏らさない。
-      \dim_gzero:N \g__gckanbun_furigana_width_dim
-      \dim_gzero:N \g__gckanbun_furigana_width_s_dim
-      \dim_gzero:N \g__gckanbun_okurigana_width_dim
-      \dim_gzero:N \g__gckanbun_okurigana_width_s_dim
-      \dim_gzero:N \g__gckanbun_kaeriten_width_dim
-      \dim_gzero:N \g__gckanbun_intr_pre_dim
-      \dim_gzero:N \g__gckanbun_intr_post_dim
+      \__gckanbun_groupruby_reset_annotation_state:
       \dim_set:Nn \l__gckanbun_group_base_width_dim
         { \box_wd:N \l__gckanbun_tmpa_box }
+      % 箱幅 = max(親文字列, 上段ルビ, 再読ルビ)
       \dim_set:Nn \l__gckanbun_group_width_dim
         {
           \dim_max:nn
-            { \l__gckanbun_group_base_width_dim }
-            { \box_wd:N \l__gckanbun_tmpb_box }
+            {
+              \dim_max:nn
+                { \l__gckanbun_group_base_width_dim }
+                { \box_wd:N \l__gckanbun_tmpb_box }
+            }
+            { \box_wd:N \l__gckanbun_tmpc_box }
         }
-      \dim_compare:nNnTF
-        { \l__gckanbun_group_base_width_dim }
-        >
-        { \box_wd:N \l__gckanbun_tmpb_box }
-        { \bool_set_true:N \l__gckanbun_group_stretch_bool }
-        { \bool_set_false:N \l__gckanbun_group_stretch_bool }
       \dim_set:Nn \l__gckanbun_group_overhang_dim
         {
           (
@@ -352,27 +386,15 @@
             { \kern -\l__gckanbun_group_overhang_dim }
         }
       \penalty\@lowpenalty
+      % 3行構成（上段ルビ／親文字列／再読ルビ）。ベースラインは最下行。
       \raisebox{\l__gckanbun_adjust_yokotate_dim}{\hbox{%
         \vbox{
-          \bool_if:NTF \l__gckanbun_group_stretch_bool
-            {
-              % 外側を1fil、ルビ文字間のkanjiskipを2filにする。
-              \hbox to \l__gckanbun_group_width_dim
-                {
-                  \hfil
-                  \tiny
-                  \__gckanbun_gluechange:n { 0pt plus 2fil }
-                  #3
-                  \hfil
-                }
-            }
-            {
-              \hbox to \l__gckanbun_group_width_dim
-                { \hss \box_use_drop:N \l__gckanbun_tmpb_box \hss }
-            }
+          \__gckanbun_groupruby_rubyrow:n {#3}
           \nointerlineskip
           \hbox to \l__gckanbun_group_width_dim
             { \hss \box_use_drop:N \l__gckanbun_tmpa_box \hss }
+          \nointerlineskip
+          \__gckanbun_groupruby_rubyrow:n {#4}
         }}}
       \str_if_eq:VnTF \l__gckanbun_ruby_intr_tl { post }
         { \kern -\l__gckanbun_group_overhang_dim }
@@ -380,9 +402,24 @@
           \str_if_eq:VnT \l__gckanbun_ruby_intr_tl { both }
             { \kern -\l__gckanbun_group_overhang_dim }
         }
-    \endgroup
-    \gck@ghost@char@post
+      \gcknbn@groupruby@trail
   }
+
+% グループルビ直後のトークンに応じた後処理（\futurelet 機構はモノルビと同様）
+\def\gcknbn@groupruby@trail
+  { \futurelet\gckanbun@let@token\gcknbn@@groupruby@trail }
+\def\gcknbn@@groupruby@trail{%
+  \ifx\gckanbun@let@token\gcknbn@okurigana% 次が送り仮名
+    % 送り仮名は（伸縮）ルビ末尾の直後＝箱右端に置く。モノルビで振り仮名の
+    % 末尾直後に送り仮名が来るのと同じ挙動。furigana_width=1\zw とすると
+    % 送り仮名側の水平シフト（furigana_width-1\zw）が 0 になり、箱右端から
+    % そのまま並ぶ。高さはモノルビと同じ3行ベースライン共有で自動的に揃う。
+    \dim_gset:Nn \g__gckanbun_furigana_width_dim { 1\zw }
+    \dim_gset:Nn \g__gckanbun_furigana_width_s_dim { 1\zw }
+  \else
+    \gck@ghost@char@post
+  \fi
+\endgroup}
 
 % 次に来る文字を判定（\futurelet 機構はそのまま維持）
 \def\gcknbn@furigana@okurigana{% normal
@@ -656,6 +693,20 @@
   \else\ifx\gckanbun@let@token。%
     \__gckanbun_kaeriten_kutoten_skip:
     \dim_gzero:N \g__gckanbun_kaeriten_width_dim
+  \else\ifx\gckanbun@let@token\KanHyphen
+    % 生の \KanHyphen は一文字分の幅を持つため、返り点幅を相殺して
+    % 親文字へ寄せる。ハイフン本体の幅はそのまま維持される。
+    \str_if_eq:VnTF \l__gckanbun_kaeri_intr_tl { post }
+      {
+        \kern -\g__gckanbun_intr_post_dim
+      }
+      {
+        \str_if_eq:VnT \l__gckanbun_kaeri_intr_tl { both }
+          {
+            \kern -\g__gckanbun_intr_post_dim
+          }
+      }
+    \gck@ghost@char@post
   \else
     \str_if_eq:VnTF \l__gckanbun_kaeri_intr_tl { post }
       { \kern -\g__gckanbun_intr_post_dim }
@@ -665,7 +716,7 @@
           { \__gckanbun_kaeriten_okurigana_skip: }
       }
     \gck@ghost@char@post
-  \fi\fi
+  \fi\fi\fi
 }
 
 % 各場合分け毎に入れるスペース

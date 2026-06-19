@@ -41,3 +41,7 @@ Add minimal regression examples to `gckanbun-test.tex`; add user-facing examples
 Use short, imperative commit subjects, for example `Fix KanHyphen intrusion spacing` or `Add group ruby support`. Keep each commit focused. Work on a task-specific branch and do not mix unrelated generated or reference files.
 
 Pull requests should explain the layout problem, implementation choice, affected commands, and test commands run. Include before/after screenshots or cropped PDF comparisons for visible typesetting changes, and note any compatibility or version-number updates.
+
+## Agent Delegation
+
+Delegate routine Git operations—status checks, staging, commits, pushes, and straightforward merges—to a GPT-5.3 subagent. The main agent remains responsible for reviewing the diff, resolving substantive conflicts, and verifying the final branch state. If GPT-5.3 is unavailable, use the nearest available GPT-5.x subagent and state the substitution.

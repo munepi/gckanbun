@@ -93,7 +93,7 @@
   Original ver. : Munehiro Yamamoto\\
   Modified ver. : Kosei Kawaguchi a.k.a. KKTeX
 }}
-\date{Version 2.5.0 (2026/06/19)}
+\date{Version 2.5.1 (2026/06/20)}
 
 
 \begin{document}
@@ -224,10 +224,12 @@ v2.1.0以前では、各コマンドにはスターオプションがありま�
 \verb|\<prefix>groupruby|と\verb|\グ振り|は同一のコマンドで、複数の親文字を一つの親文字列として扱うグループルビを配置します。デフォルトのprefixでは\verb|\gckanbungroupruby|となります。書式は
 
 \begin{verbatim}
-\グ振り[intrusion=pre|post|both]{親文字列}{ルビ文字列}
+\グ振り[intrusion=pre|post|both]{親文字列}{ルビ文字列}[再読ルビ文字列]
 \end{verbatim}
 
 \noindent です。親文字列とルビ文字列はそれぞれ不可分な一群となり、途中では改行されません。親文字列が長い場合は、LuaTeX-jaの標準グループルビと同じく、ルビ前・ルビ文字間・ルビ後の空きを1:2:1の比率で配分します。ルビ文字列が長い場合は自然幅で中央配置します。
+
+第4引数（オプション）には、モノルビ（\verb|\振り|）の第4引数と同様に、再読文字用の再読ルビを指定できます。再読ルビは親文字列の下段（縦組では左側）に、上段ルビと同じ1:2:1の比率で伸縮配置されます。直後に\verb|\送り{送り仮名}[再読送り仮名]|を続けると、送り仮名は上段ルビの末尾に、再読送り仮名は再読ルビの末尾に、それぞれモノルビと同じ高さで並びます。箱幅は\verb|max(親文字列, 上段ルビ, 再読ルビ)|で決まり、いずれの段もはみ出しません。
 
 \begin{SourceCode}{Input}{TeX}
   \グ振り{所以}{ゆえん}\送り{ノミ}
@@ -235,6 +237,8 @@ v2.1.0以前では、各コマンドにはスターオプションがありま�
   \グ振り{所\返り[intrusion=post]{一}\KanHyphen 以}{ゆえん}\送り{ノミ}
 
   \グ振り[intrusion=both]{不可思議}{ふかしぎ}
+
+  \グ振り{所以}{ゆえん}[かくか]\送り{ナリ}[シム]
 \end{SourceCode}
 
 \begin{OutPut}{Output}[横書き]
@@ -243,9 +247,13 @@ v2.1.0以前では、各コマンドにはスターオプションがありま�
   \グ振り{所\返り[intrusion=post]{一}\KanHyphen 以}{ゆえん}\送り{ノミ}
 
   \グ振り[intrusion=both]{不可思議}{ふかしぎ}
+
+  \グ振り{所以}{ゆえん}[かくか]\送り{ナリ}[シム]
 \end{OutPut}
 
-親文字列には\verb|\返り|や\verb|\KanHyphen|などの訓点コマンドを含められます。親文字列内で更新された内部状態はグループルビの外へ持ち越されません。
+親文字列には\verb|\返り|や\verb|\KanHyphen|などの訓点コマンドを含められます。親文字列内で更新された内部状態はグループルビの外へ持ち越されません。なお、親文字列に\verb|\KanHyphen|を含む場合は、ハイフンで連結した語を不可分な一群として扱うため、親文字列全体をベタ組（\verb|kanjiskip=0|）で組みます。\verb|\KanHyphen|を含まない親文字列では、通常どおり\verb|kanjiskip|による字間が入ります。
+
+親文字列内で\verb|\返り[intrusion=post]{...}\KanHyphen|と直接続けた場合、返り点の占有幅だけを完全に相殺します。ハイフン本体の一文字分の幅は維持されるため、返り点とハイフンの間に余計な空白を作らず、ハイフンが直前の親文字へ重なることもありません。
 
 \verb|intrusion|にはモノルビと同じく\verb|pre|、\verb|post|、\verb|both|を指定できます。ルビが親文字列より長い場合に限り、指定した側の突出量を前後の字送りから差し引きます。無指定の場合はルビ全体の自然幅を確保します。
 
@@ -549,6 +557,7 @@ v2.2.7以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   \item \textbf{v2.4.0 (2026/06/13)} --- Migrated internal implementation to \textsf{expl3}: variable declarations (\verb|\dim_new:N|, \verb|\bool_new:N|), option processing (\verb|l3keys2e|), arithmetic (\verb|\dim_compare:nNnTF|), named scratch boxes, and load-time engine branching (\verb|\sys_if_engine_luatex:TF|). Fixed \verb|\AtBeginDocument| ignoring the manual tdir flag. The \verb|\futurelet| lookahead mechanism is retained.
   \item \textbf{v2.4.1 (2026/06/19)} --- Suppressed Japanese glue around a ruby whose parent is \verb|\KanHyphen| at the outer ruby-box level, preserving \verb|intrusion=post| in full and partial vertical writing.
   \item \textbf{v2.5.0 (2026/06/19)} --- Added group ruby command \verb|\gckanbungroupruby| (\verb|\グ振り|). Ruby shorter than its base uses LuaTeX-ja-compatible 1:2:1 spacing; longer ruby supports \verb|intrusion=pre|, \verb|post|, and \verb|both|. Parent text may contain Kanbun annotation commands.
+  \item \textbf{v2.5.1 (2026/06/20)} --- Added re-read ruby support to group ruby and aligned its three-row structure with monoruby. Fixed spacing when a return mark with \verb|intrusion=post| is followed directly by \verb|\KanHyphen| inside the parent string: only the return-mark width is cancelled, keeping the hyphen width without an extra gap.
 \end{itemize}
 
 \section{Source Code}
