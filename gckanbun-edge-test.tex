@@ -1,0 +1,170 @@
+\documentclass[luatex,fontsize=9pt,paper=a4]{jlreq}
+\usepackage{gckanbun,lltjext}
+
+\newcommand{\Case}[2]{%
+  \par\noindent
+  \makebox[9em][l]{\ttfamily\scriptsize #1}%
+  \fbox{\strut #2}\par
+}
+\newcommand{\HyphenAlias}{\KanHyphen}
+\newsavebox{\EdgeA}
+\newsavebox{\EdgeB}
+\newcommand{\AssertSameWidth}[3]{%
+  \sbox{\EdgeA}{#2}%
+  \sbox{\EdgeB}{#3}%
+  \ifdim\dimexpr\wd\EdgeA-\wd\EdgeB\relax<0pt
+    \dimen0=\dimexpr\wd\EdgeB-\wd\EdgeA\relax
+  \else
+    \dimen0=\dimexpr\wd\EdgeA-\wd\EdgeB\relax
+  \fi
+  \ifdim\dimen0<0.01pt
+    \typeout{GCK-EDGE PASS #1: \the\wd\EdgeA = \the\wd\EdgeB}%
+  \else
+    \PackageError{gckanbun-edge-test}{Width mismatch in #1:
+      \the\wd\EdgeA\space vs \the\wd\EdgeB}{The tested boxes should have equal widths.}%
+  \fi
+}
+\newcommand{\AssertSameMetrics}[3]{%
+  \sbox{\EdgeA}{#2}%
+  \sbox{\EdgeB}{#3}%
+  \ifdim\wd\EdgeA=\wd\EdgeB
+    \ifdim\ht\EdgeA=\ht\EdgeB
+      \ifdim\dp\EdgeA=\dp\EdgeB
+        \typeout{GCK-EDGE PASS #1: identical box metrics}%
+      \else
+        \PackageError{gckanbun-edge-test}{Depth mismatch in #1}{The tested boxes should have equal metrics.}%
+      \fi
+    \else
+      \PackageError{gckanbun-edge-test}{Height mismatch in #1}{The tested boxes should have equal metrics.}%
+    \fi
+  \else
+    \PackageError{gckanbun-edge-test}{Width mismatch in #1}{The tested boxes should have equal metrics.}%
+  \fi
+}
+
+\begin{document}
+
+\section*{gckanbun edge-case matrix}
+
+\AssertSameWidth{return-post-hyphen}
+  {\グ振り{所\KanHyphen 以}{ゆえん}}
+  {\グ振り{所\返り[intrusion=post]{一}\KanHyphen 以}{ゆえん}}
+\AssertSameWidth{return-both-hyphen}
+  {\グ振り{所\KanHyphen 以}{ゆえん}}
+  {\グ振り{所\返り[intrusion=both]{一}\KanHyphen 以}{ゆえん}}
+\AssertSameWidth{aliased-hyphen}
+  {\グ振り{所\KanHyphen 以}{ゆえん}}
+  {\グ振り{所\HyphenAlias 以}{ゆえん}}
+\AssertSameWidth{braced-hyphen}
+  {\グ振り{所\KanHyphen 以}{ゆえん}}
+  {\グ振り{所{{\KanHyphen}}以}{ゆえん}}
+\AssertSameMetrics{empty-reread-baseline}
+  {\グ振り{天地}{てんち}}
+  {\グ振り{天地}{てんち}[]}
+\newcommand{\AssertReturnAddsMarkWidth}[3]{%
+  \sbox{\EdgeA}{#2}%
+  \sbox{\EdgeB}{#3}%
+  \sbox0{\tiny レ}%
+  \dimen0=\dimexpr\wd\EdgeB-\wd\EdgeA-\wd0\relax
+  \ifdim\dimen0<0pt \dimen0=-\dimen0\fi
+  \ifdim\dimen0<0.01pt
+    \typeout{GCK-EDGE PASS #1: return mark width preserved}%
+  \else
+    \PackageError{gckanbun-edge-test}{Return-mark width mismatch in #1}{The return mark must occupy its natural width.}%
+  \fi
+}
+\AssertReturnAddsMarkWidth{group-return-width}
+  {\グ振り{読}{よ}書}
+  {\グ振り{読}{よ}\返り{レ}書}
+\AssertReturnAddsMarkWidth{group-return-post-width}
+  {\グ振り{読}{よ}書}
+  {\グ振り{読}{よ}\返り[intrusion=post]{レ}書}
+
+\subsection*{Group width and intrusion}
+\begin{GCKEnv}{2\zw}
+  \Case{base=ruby}{甲乙／\グ振り{天地}{てんち}／甲乙}
+  \Case{base>ruby}{甲乙／\グ振り{不可思議}{ふしぎ}／甲乙}
+  \Case{ruby>base}{甲乙／\グ振り{天地}{てんちげんこう}／甲乙}
+  \Case{pre}{甲乙／\グ振り[intrusion=pre]{天地}{てんちげんこう}／甲乙}
+  \Case{post}{甲乙／\グ振り[intrusion=post]{天地}{てんちげんこう}／甲乙}
+  \Case{both}{甲乙／\グ振り[intrusion=both]{天地}{てんちげんこう}／甲乙}
+  \Case{reread>all}{甲乙／\グ振り{天地}{てんち}[てんちげんこう]／甲乙}
+  \Case{reread+both}{甲乙／\グ振り[intrusion=both]{天地}{てんち}[てんちげんこう]／甲乙}
+\end{GCKEnv}
+
+\subsection*{Following annotations and punctuation}
+\begin{GCKEnv}{2\zw}
+  \Case{okuri}{\グ振り{所以}{ゆえん}\送り{ナリ}}
+  \Case{reread okuri}{\グ振り{所以}{ゆえん}[かくか]\送り{ナリ}[シム]}
+  \Case{kaeri}{\グ振り{所以}{ゆえん}\返り{レ}文}
+  \Case{comma}{\グ振り{所以}{ゆえん}、文}
+  \Case{period}{\グ振り{所以}{ゆえん}。文}
+  \Case{adjacent}{\グ振り{以心}{いしん}\グ振り{伝心}{でんしん}}
+  \Case{before group}{文\送り[intrusion=post]{ヲ}\グ振り{天地}{てんち}文}
+  \Case{group then return}{\グ振り{読}{よ}\返り{レ}書}
+  \Case{group return post}{\グ振り{読}{よ}\返り[intrusion=post]{レ}書}
+  \Case{return long ruby}{\グ振り{読}{よみかた}\返り{レ}書}
+  \Case{return long pre}{\グ振り[intrusion=pre]{読}{よみかた}\返り{レ}書}
+  \Case{return long post}{\グ振り[intrusion=post]{読}{よみかた}\返り{レ}書}
+  \Case{return long both}{\グ振り[intrusion=both]{読}{よみかた}\返り{レ}書}
+  \Case{return long reread}{\グ振り{読}{よ}[よみかた]\返り{レ}書}
+  \Case{return multi base}{\グ振り{読書}{どくしょながい}\返り{レ}文}
+\end{GCKEnv}
+
+\subsection*{Return-mark stress}
+\begin{GCKEnv}{2\zw}
+  \Case{plain sequence}{不\返り{レ}知未\返り{二}見書\返り{一}、将\返り{レ}読之。}
+  \Case{levels}{欲\返り{三}使\返り{二}人読\返り{一}書、未\返り{レ}果。}
+  \Case{composites}{雖\返り{\IchiRe}鬼、雖\返り{\JyouRe}鬼、雖\返り{\KouRe}鬼、雖\返り{\TenRe}鬼。}
+  \Case{with okuri}{読\送り{ミ}\返り{レ}書、未\送り{ダ}\返り{二}知\送り{ラ}\返り{一}義。}
+  \Case{with punctuation}{読\返り{レ}書、問\返り{二}其義\返り{一}。}
+  \Case{grouped single}{\グ振り{読}{よ}\返り{レ}書、\グ振り{問}{と}\返り{二}師\返り{一}。}
+  \Case{grouped composite}{\グ振り{雖}{いえども}\返り{\IchiRe}鬼、\グ振り{雖}{いえども}\返り{\JyouRe}鬼。}
+  \Case{grouped intrusion}{\グ振り{読}{よ}\返り[intrusion=post]{レ}書、\グ振り{問}{と}\返り[intrusion=both]{二}師\返り{一}。}
+\end{GCKEnv}
+
+\subsection*{Degenerate and nested input}
+\begin{GCKEnv}{2\zw}
+  \Case{single}{甲乙／\グ振り{天}{て}／甲乙}
+  \Case{empty ruby}{甲乙／\グ振り{天地}{}／甲乙}
+  \Case{empty reread}{甲乙／\グ振り{天地}{てんち}[]／甲乙}
+  \Case{omitted reread}{甲乙／\グ振り{天地}{てんち}／甲乙}
+  \Case{mixed latin}{甲乙／\グ振り{A天地B}{AてんちB}／甲乙}
+  \Case{hyphen ruby}{甲乙／\グ振り{所以}{ゆ\KanHyphen えん}／甲乙}
+\end{GCKEnv}
+
+\subsection*{KanHyphen placement}
+\begin{GCKEnv}{3\zw}
+  \Case{plain}{甲／所\KanHyphen 以／乙}
+  \Case{group}{甲／\グ振り{所\KanHyphen 以}{ゆえん}／乙}
+  \Case{return none}{甲／\グ振り{所\返り{一}\KanHyphen 以}{ゆえん}／乙}
+  \Case{return post}{甲／\グ振り{所\返り[intrusion=post]{一}\KanHyphen 以}{ゆえん}／乙}
+  \Case{return both}{甲／\グ振り{所\返り[intrusion=both]{一}\KanHyphen 以}{ゆえん}／乙}
+  \Case{leading}{甲／\グ振り{\KanHyphen 所以}{ゆえん}／乙}
+  \Case{trailing}{甲／\グ振り{所以\KanHyphen}{ゆえん}／乙}
+  \Case{double}{甲／\グ振り{所\KanHyphen\KanHyphen 以}{ゆえん}／乙}
+  \Case{two joins}{甲／\グ振り{甲\KanHyphen 乙\KanHyphen 丙}{こうおつへい}／乙}
+  \Case{alias}{甲／\グ振り{所\HyphenAlias 以}{ゆえん}／乙}
+  \Case{braced}{甲／\グ振り{所{\KanHyphen}以}{ゆえん}／乙}
+  \Case{monoruby}{甲／\振り{所}{ゆ}\返り[intrusion=post]{二}\振り{\KanHyphen}{ゑ}\振り{以}{ん}／乙}
+\end{GCKEnv}
+
+\subsection*{Font sizes}
+\begin{GCKEnv}{2\zw}
+  \Case{small}{\small\グ振り{所\返り[intrusion=post]{一}\KanHyphen 以}{ゆえん}}
+  \Case{normal}{\normalsize\グ振り{所\返り[intrusion=post]{一}\KanHyphen 以}{ゆえん}}
+  \Case{large}{\Large\グ振り{所\返り[intrusion=post]{一}\KanHyphen 以}{ゆえん}}
+\end{GCKEnv}
+
+\subsection*{Partial vertical writing}
+\parbox<t>{16\zw}{\GCKTateOn
+  \begin{GCKEnv}{2\zw}
+    \グ振り{天地}{てんち}、\par
+    \グ振り{不可思議}{ふしぎ}。\par
+    \グ振り[intrusion=both]{天地}{てんちげんこう}\par
+    \グ振り{所\返り[intrusion=post]{一}\KanHyphen 以}{ゆえん}\送り{ノミ}\par
+    \グ振り{所以}{ゆえん}[かくか]\送り{ナリ}[シム]\par
+  \end{GCKEnv}
+\par}
+
+\end{document}

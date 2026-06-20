@@ -1,0 +1,35 @@
+\documentclass[uplatex,fontsize=9pt,paper=a4]{jlreq}
+\usepackage{gckanbun}
+
+\newcommand{\Case}[2]{%
+  \par\noindent
+  \makebox[9em][l]{\ttfamily\scriptsize #1}%
+  \fbox{\strut #2}\par
+}
+\newcommand{\HyphenAlias}{\KanHyphen}
+
+\begin{document}
+
+\section*{gckanbun upLaTeX edge cases}
+
+\begin{GCKEnv}{2\zw}
+  \Case{base>ruby}{甲乙／\グ振り{不可思議}{ふしぎ}／甲乙}
+  \Case{ruby>base}{甲乙／\グ振り{天地}{てんちげんこう}／甲乙}
+  \Case{both}{甲乙／\グ振り[intrusion=both]{天地}{てんちげんこう}／甲乙}
+  \Case{reread}{\グ振り{所以}{ゆえん}[かくか]\送り{ナリ}[シム]}
+  \Case{group return}{\グ振り{読}{よ}\返り{レ}書}
+  \Case{return intrusion}{\グ振り{読}{よ}\返り[intrusion=post]{レ}書}
+  \Case{empty reread}{甲乙／\グ振り{天地}{てんち}[]／甲乙}
+  \Case{omitted reread}{甲乙／\グ振り{天地}{てんち}／甲乙}
+  \Case{return sequence}{不\返り{レ}知未\返り{二}見書\返り{一}、将\返り{レ}読之。}
+  \Case{grouped returns}{\グ振り{読}{よ}\返り{レ}書、\グ振り{問}{と}\返り{二}師\返り{一}。}
+  \Case{group composite}{\グ振り{雖}{いえども}\返り{\IchiRe}鬼、\グ振り{雖}{いえども}\返り{\JyouRe}鬼。}
+  \Case{return post}{甲／\グ振り{所\返り[intrusion=post]{一}\KanHyphen 以}{ゆえん}／乙}
+  \Case{return both}{甲／\グ振り{所\返り[intrusion=both]{一}\KanHyphen 以}{ゆえん}／乙}
+  \Case{leading}{甲／\グ振り{\KanHyphen 所以}{ゆえん}／乙}
+  \Case{trailing}{甲／\グ振り{所以\KanHyphen}{ゆえん}／乙}
+  \Case{double}{甲／\グ振り{所\KanHyphen\KanHyphen 以}{ゆえん}／乙}
+  \Case{alias}{甲／\グ振り{所\HyphenAlias 以}{ゆえん}／乙}
+\end{GCKEnv}
+
+\end{document}
