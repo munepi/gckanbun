@@ -1,18 +1,18 @@
-gckanbun v2.5.3
+gckanbun v2.6.0
 
 The gckanbun package provides commands for typesetting Classical Chinese
 (Kanbun) with Japanese reading marks, okurigana, ruby, re-reading annotations,
 special return marks, and Chinese-poetry layouts.
 
-Version 2.5.3 publishes the corrected group-ruby implementation introduced in
-the recent 2.5 series. Return marks following group ruby now keep their natural
-width and no longer overlap the preceding parent character, including cases
-where the ruby or re-reading ruby is wider than its base. Detection of
-\KanHyphen inside group-ruby bases also works through aliases and nested
-groups, and explicitly empty re-reading ruby preserves the expected baseline.
+Version 2.6.0 makes command chaining whitespace-insensitive: a space, line
+break, or comment between cooperating commands (for example a ruby or group
+ruby followed by okurigana or a return mark) no longer breaks the lookahead or
+inserts spurious glue, so spaced and adjacent input now produce identical
+layout. Invalid "intrusion" option values are now rejected with a package error
+instead of being silently ignored.
 
-This release adds expanded horizontal and full vertical LuaLaTeX regression
-matrices, an upLaTeX compatibility smoke test, and complete release metadata.
+This release adds a whitespace regression matrix and a LuaLaTeX-only
+"make check" release gate, and drops an unused documentation dependency.
 
 LuaLaTeX remains the recommended engine. Basic (u)pLaTeX compatibility is
 retained, with the limitations documented in the package manual.
