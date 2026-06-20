@@ -2,7 +2,7 @@
 
 Last reviewed: 2026-06-21
 
-This document records issues that remain after the v2.5.2 group-ruby and
+This document records issues that remain after the v2.5.3 group-ruby and
 return-mark fixes. Items marked **confirmed** were reproduced locally. Items
 marked **risk** are implementation or maintenance risks that need a dedicated
 test before being treated as user-visible bugs.

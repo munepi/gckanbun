@@ -1,0 +1,32 @@
+Package: gckanbun
+Version: 2.5.3
+Release date: 2026-06-21
+License: MIT
+Author: Munehiro Yamamoto
+Maintainer: Kosei Kawaguchi
+Repository: https://github.com/munepi/gckanbun
+Support: p.c.aces1056@gmail.com
+
+Summary:
+Typeset Classical Chinese texts with Japanese Kanbun reading annotations.
+
+Description:
+gckanbun provides commands for Japanese-style Kanbun typesetting, including
+ruby, group ruby, okurigana, return marks, re-reading annotations, special
+compound return marks, local vertical typesetting, and aligned Chinese-poetry
+layouts. LuaLaTeX is recommended; basic (u)pLaTeX support is also provided.
+
+Announcement:
+Version 2.5.3 releases the corrected group-ruby and return-mark layout from the
+2.5 series. A return mark following group ruby now preserves its natural width
+and avoids overlap with both the preceding parent character and following
+text, including long ruby and re-reading ruby cases. Group-ruby KanHyphen
+detection now works through aliases and nested groups, and empty re-reading
+ruby preserves normal box metrics. The distribution includes horizontal and
+vertical LuaLaTeX regression matrices and an upLaTeX compatibility smoke test.
+
+Suggested CTAN topics:
+kanbun, Japanese, ruby, vertical typesetting, Classical Chinese
+
+Archive:
+gckanbun.zip
