@@ -1,0 +1,68 @@
+% Regression matrix for whitespace-insensitive command chaining (adopted in
+% v2.6.0; ISSUE_BACKLOG.md #1). Asserts that a space, line break, or comment
+% between cooperating gckanbun commands produces the SAME box width as the
+% adjacent form, i.e. the \peek_remove_spaces:n lookahead neutralises the space.
+%
+% Part of the LuaLaTeX regression gate (`make check`). See FIX_WORKLOG.md (#1).
+%
+% Engine: LuaLaTeX. A width mismatch raises \PackageError (fails make check).
+\documentclass[luatex,fontsize=9pt,paper=a4]{jlreq}
+\usepackage{gckanbun,lltjext}
+
+\newsavebox{\EdgeA}
+\newsavebox{\EdgeB}
+\newcommand{\AssertSameWidth}[3]{%
+  \sbox{\EdgeA}{#2}%
+  \sbox{\EdgeB}{#3}%
+  \ifdim\dimexpr\wd\EdgeA-\wd\EdgeB\relax<0pt
+    \dimen0=\dimexpr\wd\EdgeB-\wd\EdgeA\relax
+  \else
+    \dimen0=\dimexpr\wd\EdgeA-\wd\EdgeB\relax
+  \fi
+  \ifdim\dimen0<0.01pt
+    \typeout{GCK-WS PASS #1: \the\wd\EdgeA = \the\wd\EdgeB}%
+  \else
+    \PackageError{gckanbun-edge-test-whitespace}{Width mismatch in #1:
+      \the\wd\EdgeA\space vs \the\wd\EdgeB}{Adjacent and space-separated forms
+      should have equal widths once whitespace is ignored.}%
+  \fi
+}
+
+\begin{document}
+
+\section*{Whitespace-insensitivity assertions (\#1)}
+
+% group ruby + return mark
+\AssertSameWidth{groupruby-kaeri-space}
+  {\グ振り{読}{よ}\返り{レ}書}
+  {\グ振り{読}{よ} \返り{レ}書}
+
+% mono ruby + return mark
+\AssertSameWidth{ruby-kaeri-space}
+  {\振り{天}{てん}\返り{レ}地}
+  {\振り{天}{てん} \返り{レ}地}
+
+% ruby + okurigana
+\AssertSameWidth{ruby-okuri-space}
+  {\振り{行}{ゆ}\送り{ク}}
+  {\振り{行}{ゆ} \送り{ク}}
+
+% okurigana + return mark
+\AssertSameWidth{okuri-kaeri-space}
+  {\振り{読}{よ}\送り{ム}\返り{レ}}
+  {\振り{読}{よ}\送り{ム} \返り{レ}}
+
+% group ruby + okurigana
+\AssertSameWidth{groupruby-okuri-space}
+  {\グ振り{所以}{ゆえん}\送り{ナリ}}
+  {\グ振り{所以}{ゆえん} \送り{ナリ}}
+
+% newline (single line break = space) between ruby and return mark
+\AssertSameWidth{ruby-kaeri-newline}
+  {\振り{天}{てん}\返り{レ}地}
+  {\振り{天}{てん}
+   \返り{レ}地}
+
+All whitespace assertions passed.
+
+\end{document}

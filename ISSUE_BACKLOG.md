@@ -1,27 +1,32 @@
-# gckanbun: Known Issues and Follow-up Work
+# gckanbun: Issue Backlog and Follow-up Work
 
-Last reviewed: 2026-06-21
+Last reviewed: 2026-06-21 (updated for v2.6.0)
 
-This document records issues that remain after the v2.5.3 group-ruby and
-return-mark fixes. Items marked **confirmed** were reproduced locally. Items
-marked **risk** are implementation or maintenance risks that need a dedicated
-test before being treated as user-visible bugs.
+This document tracks issues and follow-up work for gckanbun. Items marked
+**confirmed** were reproduced locally; **risk** items are implementation or
+maintenance risks needing a dedicated test before being treated as user-visible
+bugs. Items addressed in a release are marked **Resolved**; the detailed record
+of what changed (with timestamps and verification) lives in `FIX_WORKLOG.md`.
+
+Policy note: gckanbun is developed LuaLaTeX-first. upLaTeX-only shortcomings
+(#7, and the upLaTeX parts of #5/#6) are treated as out of scope rather than
+release-blocking bugs.
 
 ## Priority Summary
 
 | Priority | Status | Area | Issue |
 | --- | --- | --- | --- |
-| P1 | Confirmed | Command parsing | Whitespace between related commands changes layout and disables lookahead handling |
-| P1 | Confirmed | Build | `gckanbun-doc.pdf` does not depend on the embedded `gckanbun-test.pdf` |
+| P1 | Resolved (v2.6.0) | Command parsing | Whitespace between related commands changes layout and disables lookahead handling |
+| P1 | Resolved (pre-2.6.0) | Build | `gckanbun-doc.pdf` does not depend on the embedded `gckanbun-test.pdf` |
 | P1 | Confirmed | Regression tests | Current assertions verify box metrics, but not actual glyph overlap or coordinates |
-| P2 | Confirmed | Option handling | Invalid `intrusion` values are silently accepted |
-| P2 | Confirmed | Build coverage | `make all` does not run the upLaTeX smoke test |
-| P2 | Confirmed | Distribution | The CTAN ZIP omits the advertised upLaTeX edge-test files |
-| P2 | Confirmed | Engine coverage | upLaTeX coverage is visual-only and has no full vertical-writing matrix |
+| P2 | Resolved (v2.6.0) | Option handling | Invalid `intrusion` values are silently accepted |
+| P2 | Resolved (v2.6.0) | Build coverage | `make all` does not run the upLaTeX smoke test (added LuaLaTeX `make check`; upLaTeX out of scope) |
+| P2 | Resolved | Distribution | The CTAN ZIP omits the advertised upLaTeX edge-test files (already included) |
+| P2 | Out of scope | Engine coverage | upLaTeX coverage is visual-only and has no full vertical-writing matrix |
 | P2 | Confirmed | Reproducibility | Documentation requires macOS Hiragino fonts and emits font substitutions elsewhere |
 | P2 | Risk | Internal state | Layout commands communicate through mutable global dimensions and booleans |
 | P3 | Confirmed | Test maintenance | Horizontal and vertical edge matrices duplicate most cases manually |
-| P3 | Confirmed | Documentation build | The documentation currently emits known layout and class warnings |
+| P3 | Partly resolved (v2.6.0) | Documentation build | The documentation currently emits known layout and class warnings (caption warning fixed; `paper=b5` and overfull box remain) |
 | P3 | Confirmed | Automation | No CI or `l3build`-style automated regression runner is present |
 
 ## 1. Whitespace-sensitive command chaining

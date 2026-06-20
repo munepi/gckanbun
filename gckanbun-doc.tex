@@ -1,6 +1,6 @@
 \documentclass[luatex,fontsize=8pt,paper=b5,twoside]{jlreq}%
 \usepackage{amsmath,amssymb}
-\usepackage{booktabs,caption}
+\usepackage{booktabs}
 \usepackage{luwa-ul}
 \usepackage{KKsymbols}
 \usepackage[most]{tcolorbox}
@@ -93,7 +93,7 @@
   Original ver. : Munehiro Yamamoto\\
   Modified ver. : Kosei Kawaguchi a.k.a. KKTeX
 }}
-\date{Version 2.5.3 (2026/06/21)}
+\date{Version 2.6.0 (2026/06/21)}
 
 
 \begin{document}
@@ -171,6 +171,13 @@ gckanbunパッケージはそのルビや返り点の制御構造において非
 
 \subsection{追記：LuaTeX-ja v20260107.0に伴って}
 gckanbunパッケージは、v2.2.7以降より、\verb|\振り|、\verb|\送り|、\verb|\返り|などの各種コマンドの後に、適切なkanjiskipが挿入されるような設計を導入しました。ただし、この設計の重要な要素である\verb|\ltjghostbeforejachar|と\verb|\ltjghostafterjachar|の仕組みは、LuaTeX-jaにおけるv20260107.0より前のバージョンを使用する場合機能しません。したがって、本パッケージをv2.2.7以降のものにアップデートする場合には、LuaTeX-jaも同時にv20260107.0以後のものにアップデートされている必要があります。
+
+\subsection{コマンド間の空白について}
+\verb|\振り|・\verb|\グ振り|・\verb|\送り|・\verb|\返り|は、直後に続くコマンドや文字を\verb|\futurelet|で先読みし、送り仮名や返り点・句読点が続く場合に字送りを調整します。v2.6.0以降では、この先読みが\namiKK{協調するコマンドの間に挟まった空白・改行・コメントを無視}するようになりました。そのため、
+\begin{quotation}
+\verb|\グ振り{読}{よ}\返り{レ}書| と \verb|\グ振り{読}{よ} \返り{レ}書|
+\end{quotation}
+\noindent は同一の組版結果になります。ソースを読みやすく改行・字下げしても、余分な和文グルーが入ったり調整が外れたりしません。
 
 \subsection{使用方法}
 
@@ -375,6 +382,8 @@ v2.3.0以降では、各コマンドは呼び出し時に文書の組方向を�
   \item[\texttt{\textbackslash 返り}] \verb|intrusion=post/both| の２種類
 \end{description}
 
+\noindent v2.6.0以降、上記以外の値を\verb|intrusion|に指定すると（例：\verb|intrusion=typo|）、黙って無視せずパッケージエラーを送出します。値の打ち間違いに気付きやすくなっています。
+
 \noindent が各コマンドで提供されるオプションであることに注意し、
 
 \begin{SourceCode}{Input}{TeX}
@@ -551,6 +560,7 @@ v2.2.7以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   \item \textbf{v2.5.1 (2026/06/20)} --- Added re-read ruby support to group ruby and aligned its three-row structure with monoruby. Fixed spacing when a return mark with \verb|intrusion=post| is followed directly by \verb|\KanHyphen| inside the parent string: only the return-mark width is cancelled, keeping the hyphen width without an extra gap.
   \item \textbf{v2.5.2 (2026/06/20)} --- Made group-ruby hyphen detection robust through alias macros and nested braces by propagating the zero-\verb|kanjiskip| request to the parent box. A return mark following group ruby now preserves its natural width and is aligned after the final parent character, avoiding overlap on either side even when ruby is wider than its base. Explicitly empty reread ruby now preserves the same baseline as an omitted reread argument. Added horizontal, vertical, and upLaTeX edge-case regression matrices.
   \item \textbf{v2.5.3 (2026/06/21)} --- Prepared the corrected group-ruby and return-mark implementation for CTAN release. Added complete CTAN release metadata, included all horizontal, vertical, and upLaTeX regression files in the distribution archive, and made the documentation build depend explicitly on its embedded test PDF.
+  \item \textbf{v2.6.0 (2026/06/21)} --- Made command chaining whitespace-insensitive: a space, line break, or comment between cooperating commands (e.g.\ \verb|\振り|/\verb|\グ振り| followed by \verb|\送り| or \verb|\返り|) no longer breaks the \verb|\futurelet| lookahead nor inserts spurious glue, so spaced and adjacent input now produce identical layout. Invalid \verb|intrusion| values are now rejected: \verb|\振り| accepts \verb|pre|/\verb|post|/\verb|both| and \verb|\送り|/\verb|\返り| accept \verb|post|/\verb|both|; any other value raises a package error instead of being silently ignored. Added a whitespace regression matrix (\texttt{gckanbun-edge-test-whitespace.tex}) and a LuaLaTeX-only \texttt{make check} release gate, and dropped the unused \textsf{caption} dependency from the documentation build.
 \end{itemize}
 
 % \section{Source Code}

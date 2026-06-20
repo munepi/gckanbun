@@ -1,5 +1,5 @@
 Package: gckanbun
-Version: 2.5.3
+Version: 2.6.0
 Release date: 2026-06-21
 License: MIT
 Author: Munehiro Yamamoto
@@ -17,13 +17,14 @@ compound return marks, local vertical typesetting, and aligned Chinese-poetry
 layouts. LuaLaTeX is recommended; basic (u)pLaTeX support is also provided.
 
 Announcement:
-Version 2.5.3 releases the corrected group-ruby and return-mark layout from the
-2.5 series. A return mark following group ruby now preserves its natural width
-and avoids overlap with both the preceding parent character and following
-text, including long ruby and re-reading ruby cases. Group-ruby KanHyphen
-detection now works through aliases and nested groups, and empty re-reading
-ruby preserves normal box metrics. The distribution includes horizontal and
-vertical LuaLaTeX regression matrices and an upLaTeX compatibility smoke test.
+Version 2.6.0 makes command chaining whitespace-insensitive: a space, line
+break, or comment between cooperating commands (such as a ruby or group ruby
+followed by okurigana or a return mark) no longer breaks the lookahead or
+inserts spurious glue, so spaced and adjacent input produce identical layout.
+Invalid "intrusion" option values now raise a package error instead of being
+silently accepted. The distribution adds a whitespace regression matrix and a
+LuaLaTeX-only "make check" release gate, alongside the existing horizontal,
+vertical, and upLaTeX matrices.
 
 Suggested CTAN topics:
 kanbun, Japanese, ruby, vertical typesetting, Classical Chinese
