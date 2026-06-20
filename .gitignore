@@ -11,7 +11,7 @@ Icon
 .Spotlight-V100
 .Trashes
 
-/tmp/*
+tmp/
 *~
 !*.pdf
 *.xbb
@@ -26,6 +26,13 @@ Icon
 *.synctex.*
 *.fls
 *.fdb_latexmk
+gckanbun.zip
+
+## Local agent configuration and references
+AGENTS.md
+CLAUDE.md
+.claude/
+ref/
 
 # extras/
 
