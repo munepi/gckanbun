@@ -34,7 +34,7 @@
 %   * 公開コマンド名（\振り, \送り, \返り, \GCKTateOn 等）は変更なし。
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{gckanbun}[2026/06/20, Version 2.5.1]
+\ProvidesPackage{gckanbun}[2026/06/20, Version 2.5.2]
 
 \RequirePackage{l3keys2e}
 
@@ -65,6 +65,7 @@
 \dim_new:N \g__gckanbun_okurigana_width_dim
 \dim_new:N \g__gckanbun_okurigana_width_s_dim
 \dim_new:N \g__gckanbun_kaeriten_width_dim
+\dim_new:N \g__gckanbun_group_follow_kaeri_shift_dim
 % 名前付きスクラッチボックス（旧 \box\z@ / \box\@ne / \box\tw@）
 \box_new:N \l__gckanbun_tmpa_box
 \box_new:N \l__gckanbun_tmpb_box
@@ -72,6 +73,8 @@
 % 縦書きフラグ
 \bool_new:N \l__gckanbun_tdir_bool
 \bool_new:N \l__gckanbun_tdir_manual_bool
+\bool_new:N \l__gckanbun_group_parent_bool
+\bool_new:N \g__gckanbun_group_follow_kaeri_bool
 % 親文字が \KanHyphen か
 \bool_new:N \l__gckanbun_ruby_kanhyphen_bool
 % intrusion オプション値
@@ -79,6 +82,7 @@
 \tl_new:N \l__gckanbun_ruby_intr_tl
 \tl_new:N \l__gckanbun_okuri_intr_tl
 \tl_new:N \l__gckanbun_kaeri_intr_tl
+\tl_new:N \l__gckanbun_reread_tl
 % ルビ文字列（グローバル受け渡し）
 \tl_new:N \g__gckanbun_rubybox_text_tl
 \tl_new:N \g__gckanbun_rubybox_text_s_tl
@@ -282,7 +286,13 @@
       % （LuaTeX-ja は hpack 時のパラメータ値を参照する）。よってプリミティブ \setbox を使う。
       \setbox \l__gckanbun_tmpa_box = \hbox{#2}% 親文字
       \setbox \l__gckanbun_tmpb_box = \hbox{\tiny#3}% 振り仮名
-      \setbox \l__gckanbun_tmpc_box = \hbox{\tiny#4}% 再読振り仮名（通常はvphantomを入れている）
+      % 明示的な空の再読ルビ [] も、省略時と同じファントム行として扱う。
+      % 空箱のままだと最下行の高さが失われ、周囲とベースラインがずれる。
+      \tl_set:Nn \l__gckanbun_reread_tl {#4}
+      \tl_if_blank:VT \l__gckanbun_reread_tl
+        { \tl_set:Nn \l__gckanbun_reread_tl { \gckanbun@phantom } }
+      \setbox \l__gckanbun_tmpc_box =
+        \hbox{\tiny\tl_use:N \l__gckanbun_reread_tl}
       \__gckanbun_intrusioncal:% 侵入量を計算
       \str_if_eq:VnTF \l__gckanbun_ruby_intr_tl { pre }
         { \kern -\g__gckanbun_intr_pre_dim }
@@ -292,7 +302,7 @@
           % それ以外は何もなし
         }
       \tl_gset:Nn \g__gckanbun_rubybox_text_tl {#3}
-      \tl_gset:Nn \g__gckanbun_rubybox_text_s_tl {#4}
+      \tl_gset:NV \g__gckanbun_rubybox_text_s_tl \l__gckanbun_reread_tl
       \dim_gset:Nn \g__gckanbun_rubybox_width_dim { \box_wd:N \l__gckanbun_tmpa_box }
       \gcknbn@furigana@okurigana
   }
@@ -327,6 +337,18 @@
     \dim_gzero:N \g__gckanbun_intr_post_dim
   }
 
+% グループルビの親文字列で \KanHyphen が現れたことを、親文字 hbox の
+% グループ階層まで伝播する。波括弧や別名マクロを何段経由しても、各階層で
+% kanjiskip=0 を再設定するため、hpack 時には必ずベタ組になる。
+\cs_new_protected:Npn \__gckanbun_groupruby_hyphen_seen:
+  {
+    \bool_if:NT \l__gckanbun_group_parent_bool
+      {
+        \__gckanbun_gluechange:n { 0pt }
+        \aftergroup \__gckanbun_groupruby_hyphen_seen:
+      }
+  }
+
 % グループルビ本体
 % 親文字列を不可分な一群として扱う。親文字が長い場合のルビ配置は
 % LuaTeX-ja の既定 stretchruby={1}{2}{1} と同じ前:中:後 = 1:2:1。
@@ -347,16 +369,19 @@
       % 親文字列には \返り・\KanHyphen 等の訓点コマンドを含められる。
       % \hbox_set:Nn を使わない理由はモノルビ本体のコメントを参照。
       \__gckanbun_groupruby_reset_annotation_state:
-      % 親文字列に \KanHyphen を含む場合のみベタ組（kanjiskip=0）で組む。
-      % luatexja の kanjiskip は hbox 単位で一律のため位置別の指定ができず、
-      % \KanHyphen の \inhibitglue だけでは大きい kanjiskip 下で前後に空きが
-      % 残る。ハイフンで連結した語は不可分な一群なのでベタ組とし、ハイフンを
-      % 含まない親文字列では通常の kanjiskip を活かす。
-      \tl_if_in:nnTF {#2} { \KanHyphen }
-        { \setbox \l__gckanbun_tmpa_box = \hbox{\__gckanbun_gluechange:n{0pt}#2} }
-        { \setbox \l__gckanbun_tmpa_box = \hbox{#2} }
+      % 親文字箱の組版中であることを \KanHyphen へ伝える。
+      % \KanHyphen 自身が kanjiskip=0 を親文字 hbox 階層まで伝播するため、
+      % 別名マクロや任意の深さのグループを経由した場合でも検出できる。
+      \bool_set_true:N \l__gckanbun_group_parent_bool
+      \setbox \l__gckanbun_tmpa_box = \hbox{#2}
+      \bool_set_false:N \l__gckanbun_group_parent_bool
       \setbox \l__gckanbun_tmpb_box = \hbox{\tiny#3}
-      \setbox \l__gckanbun_tmpc_box = \hbox{\tiny#4}% 再読ルビ（既定はファントム）
+      % [] は省略時と同じファントム行へ正規化し、ベースラインを維持する。
+      \tl_set:Nn \l__gckanbun_reread_tl {#4}
+      \tl_if_blank:VT \l__gckanbun_reread_tl
+        { \tl_set:Nn \l__gckanbun_reread_tl { \gckanbun@phantom } }
+      \setbox \l__gckanbun_tmpc_box =
+        \hbox{\tiny\tl_use:N \l__gckanbun_reread_tl}
       % 親文字列内の訓点コマンドが更新した共有状態を外側へ漏らさない。
       \__gckanbun_groupruby_reset_annotation_state:
       \dim_set:Nn \l__gckanbun_group_base_width_dim
@@ -394,7 +419,7 @@
           \hbox to \l__gckanbun_group_width_dim
             { \hss \box_use_drop:N \l__gckanbun_tmpa_box \hss }
           \nointerlineskip
-          \__gckanbun_groupruby_rubyrow:n {#4}
+          \__gckanbun_groupruby_rubyrow:n { \tl_use:N \l__gckanbun_reread_tl }
         }}}
       \str_if_eq:VnTF \l__gckanbun_ruby_intr_tl { post }
         { \kern -\l__gckanbun_group_overhang_dim }
@@ -416,9 +441,24 @@
     % そのまま並ぶ。高さはモノルビと同じ3行ベースライン共有で自動的に揃う。
     \dim_gset:Nn \g__gckanbun_furigana_width_dim { 1\zw }
     \dim_gset:Nn \g__gckanbun_furigana_width_s_dim { 1\zw }
+  \else\ifx\gckanbun@let@token\gcknbn@kaeriten% 次が返り点
+    % 返り点をグループ末尾の親文字の直後へ置く。ルビが親文字列より長く、
+    % post側へ侵入していない場合は、外箱右端から突出量だけ戻す。
+    \bool_gset_true:N \g__gckanbun_group_follow_kaeri_bool
+    \str_if_eq:VnTF \l__gckanbun_ruby_intr_tl { post }
+      { \dim_gzero:N \g__gckanbun_group_follow_kaeri_shift_dim }
+      {
+        \str_if_eq:VnTF \l__gckanbun_ruby_intr_tl { both }
+          { \dim_gzero:N \g__gckanbun_group_follow_kaeri_shift_dim }
+          {
+            \dim_gset_eq:NN
+              \g__gckanbun_group_follow_kaeri_shift_dim
+              \l__gckanbun_group_overhang_dim
+          }
+      }
   \else
     \gck@ghost@char@post
-  \fi
+  \fi\fi
 \endgroup}
 
 % 次に来る文字を判定（\futurelet 機構はそのまま維持）
@@ -677,7 +717,21 @@
       \dim_gset:Nn \g__gckanbun_kaeriten_width_dim { \box_wd:N \l__gckanbun_tmpa_box }
       \dim_compare:nNnT { \box_wd:N \l__gckanbun_tmpa_box } > { \g__gckanbun_intr_post_dim }
         { \dim_gset:Nn \g__gckanbun_intr_post_dim { \box_wd:N \l__gckanbun_tmpa_box } }
-      \lower\l__gckanbun_adjust_kaeri_dim\hbox{ \box_use_drop:N \l__gckanbun_tmpa_box \hss }%
+      \bool_if:NTF \g__gckanbun_group_follow_kaeri_bool
+        {
+          % グループルビ直後でも通常の返り点と同じ幅を確保し、前の親文字や
+          % 後続本文と重ならないようにする。ルビ外箱が親文字列より長い場合
+          % だけ、返り点の前でpost側の突出量を戻して末尾親文字へ寄せる。
+          \kern -\g__gckanbun_group_follow_kaeri_shift_dim
+          \lower\l__gckanbun_adjust_kaeri_dim
+            \hbox{ \box_use_drop:N \l__gckanbun_tmpa_box \hss }%
+          \dim_gzero:N \g__gckanbun_group_follow_kaeri_shift_dim
+          \bool_gset_false:N \g__gckanbun_group_follow_kaeri_bool
+        }
+        {
+          \lower\l__gckanbun_adjust_kaeri_dim
+            \hbox{ \box_use_drop:N \l__gckanbun_tmpa_box \hss }%
+        }
     \endgroup
     \gcknbn@kaeriten@kutoten
   }
@@ -777,7 +831,11 @@
       { 天\hspace{-0.17\zw}レ }
       { \raisebox{0.82\zw}{天}\makebox[0pt][r]{レ} }
   }
-\NewDocumentCommand{\KanHyphen}{}{\inhibitglue\symbol{"2015}\inhibitglue}
+\NewDocumentCommand{\KanHyphen}{}
+  {
+    \__gckanbun_groupruby_hyphen_seen:
+    \inhibitglue\symbol{"2015}\inhibitglue
+  }
 
 
 %% GCKEnv
