@@ -93,7 +93,7 @@
   Original ver. : Munehiro Yamamoto\\
   Modified ver. : Kosei Kawaguchi a.k.a. KKTeX
 }}
-\date{Version 2.5.1 (2026/06/20)}
+\date{Version 2.5.2 (2026/06/20)}
 
 
 \begin{document}
@@ -251,9 +251,15 @@ v2.1.0以前では、各コマンドにはスターオプションがありま�
   \グ振り{所以}{ゆえん}[かくか]\送り{ナリ}[シム]
 \end{OutPut}
 
-親文字列には\verb|\返り|や\verb|\KanHyphen|などの訓点コマンドを含められます。親文字列内で更新された内部状態はグループルビの外へ持ち越されません。なお、親文字列に\verb|\KanHyphen|を含む場合は、ハイフンで連結した語を不可分な一群として扱うため、親文字列全体をベタ組（\verb|kanjiskip=0|）で組みます。\verb|\KanHyphen|を含まない親文字列では、通常どおり\verb|kanjiskip|による字間が入ります。
+親文字列には\verb|\返り|や\verb|\KanHyphen|などの訓点コマンドを含められます。親文字列内で更新された内部状態はグループルビの外へ持ち越されません。なお、親文字列に\verb|\KanHyphen|を含む場合は、ハイフンで連結した語を不可分な一群として扱うため、親文字列全体をベタ組（\verb|kanjiskip=0|）で組みます。\verb|\KanHyphen|を別名マクロやグループで包んだ場合も同じ処理になります。\verb|\KanHyphen|を含まない親文字列では、通常どおり\verb|kanjiskip|による字間が入ります。
 
 親文字列内で\verb|\返り[intrusion=post]{...}\KanHyphen|と直接続けた場合、返り点の占有幅だけを完全に相殺します。ハイフン本体の一文字分の幅は維持されるため、返り点とハイフンの間に余計な空白を作らず、ハイフンが直前の親文字へ重なることもありません。
+
+親文字列中の\verb|\KanHyphen|は、別名マクロや波括弧を何段か経由しても検出され、同じベタ組処理が適用されます。ただし、親文字列内へさらに\verb|\振り|や\verb|\グ振り|を入れ子にすると上下のルビが競合するため、この用法はサポートしません。
+
+\verb|\グ振り{天地}{てんち}\返り{レ}文|のように直後へ返り点を置く場合、返り点は通常の\verb|\返り|と同じ幅を確保してグループ末尾の親文字の後へ配置されます。ルビや再読ルビが親文字列より長い場合も、ルビ外箱の右端ではなく末尾親文字の直後へ位置を戻します。そのため、前の親文字や続く本文文字とは重なりません。
+
+\verb|\グ振り{天地}{てんち}[]|のように再読ルビへ空のオプション引数を明示した場合は、再読ルビを省略した場合と同じ行高・ベースラインになります。
 
 \verb|intrusion|にはモノルビと同じく\verb|pre|、\verb|post|、\verb|both|を指定できます。ルビが親文字列より長い場合に限り、指定した側の突出量を前後の字送りから差し引きます。無指定の場合はルビ全体の自然幅を確保します。
 
@@ -543,6 +549,7 @@ v2.2.7以降、\verb|GCKEnv|という環境が新規追加されました。こ�
   \item \textbf{v2.4.1 (2026/06/19)} --- Suppressed Japanese glue around a ruby whose parent is \verb|\KanHyphen| at the outer ruby-box level, preserving \verb|intrusion=post| in full and partial vertical writing.
   \item \textbf{v2.5.0 (2026/06/19)} --- Added group ruby command \verb|\gckanbungroupruby| (\verb|\グ振り|). Ruby shorter than its base uses LuaTeX-ja-compatible 1:2:1 spacing; longer ruby supports \verb|intrusion=pre|, \verb|post|, and \verb|both|. Parent text may contain Kanbun annotation commands.
   \item \textbf{v2.5.1 (2026/06/20)} --- Added re-read ruby support to group ruby and aligned its three-row structure with monoruby. Fixed spacing when a return mark with \verb|intrusion=post| is followed directly by \verb|\KanHyphen| inside the parent string: only the return-mark width is cancelled, keeping the hyphen width without an extra gap.
+  \item \textbf{v2.5.2 (2026/06/20)} --- Made group-ruby hyphen detection robust through alias macros and nested braces by propagating the zero-\verb|kanjiskip| request to the parent box. A return mark following group ruby now preserves its natural width and is aligned after the final parent character, avoiding overlap on either side even when ruby is wider than its base. Explicitly empty reread ruby now preserves the same baseline as an omitted reread argument. Added horizontal, vertical, and upLaTeX edge-case regression matrices.
 \end{itemize}
 
 % \section{Source Code}
