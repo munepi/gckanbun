@@ -11,7 +11,7 @@
 `gckanbun` provides a comprehensive set of commands for typesetting classical Chinese texts (Kanbun) in the traditional Japanese style.<br>
 `gckanbun` は、漢文を日本式の表記法（返り点、送り仮名など）で組版するための包括的なコマンドを提供するパッケージです。
 
-- **Version**: 2.5.1
+- **Version**: 2.5.2
 - **Date**: 2026-06-20
 - **Original Author**: Munehiro Yamamoto
 - **Modified Author**: Kosei Kawaguchi (a.k.a. KKTeX)
@@ -59,6 +59,10 @@ For detailed usage and examples, please refer to the documentation file: `gckanb
 
 A compact LuaLaTeX example is available as `gckanbun-sample.tex` and `gckanbun-sample.pdf`.<br>
 LuaLaTeX用の簡潔な使用例は `gckanbun-sample.tex` および `gckanbun-sample.pdf` に収録しています。
+
+Run `make edge-test` for the horizontal LuaLaTeX corner-case matrix,
+`make edge-test-tate` for the full vertical-writing matrix, and
+`make edge-test-uptex` for the upLaTeX compatibility smoke test.
 
 ---
 
