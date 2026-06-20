@@ -5,6 +5,9 @@ LATEXMK := latexmk
 DOCS    := gckanbun-doc gckanbun-test gckanbun-sample gckanbun-edge-test gckanbun-edge-test-tate
 PDFS    := $(addsuffix .pdf,$(DOCS))
 UPTEX_TEST := gckanbun-edge-test-uptex
+# LuaLaTeX regression matrices used by `make check` (the supported engine).
+LUA_TESTS  := gckanbun-test gckanbun-edge-test gckanbun-edge-test-tate
+LUA_TEST_PDFS := $(addsuffix .pdf,$(LUA_TESTS))
 CTAN_ZIP := gckanbun.zip
 CTAN_FILES := \
 	gckanbun.sty \
@@ -18,10 +21,17 @@ CTAN_FILES := \
 	CTAN-ANNOUNCEMENT.txt CTAN-SUBMISSION.txt \
 	Makefile .latexmkrc
 
-.PHONY: all doc test sample edge-test edge-test-tate edge-test-uptex zip clean distclean
+.PHONY: all check doc test sample edge-test edge-test-tate edge-test-uptex zip clean distclean
 
 # Build everything.
 all: $(PDFS)
+
+# Release gate: build the LuaLaTeX regression matrices. latexmk exits non-zero
+# on any TeX error, so a clean `make check` means the supported engine passed.
+# upLaTeX is intentionally excluded: gckanbun is being developed LuaLaTeX-first
+# (see KNOWN_ISSUES.md), so its upLaTeX file is a non-gating visual smoke test.
+check: $(LUA_TEST_PDFS)
+	@echo "LuaLaTeX regression matrices built OK (upLaTeX excluded by policy)."
 
 doc:  gckanbun-doc.pdf
 test: gckanbun-test.pdf

@@ -96,14 +96,27 @@
 \ProcessKeysOptions { gckanbun }
 
 %% intrusion keys
+% choice キーにすることで不正値を l3keys が自動でエラーにする。
 % ルビは pre, post, both をとれる。
 \keys_define:nn { gckanbun / ruby }
-  { intrusion .tl_set:N = \l__gckanbun_ruby_intr_tl }
+  {
+    intrusion .choices:nn =
+      { pre , post , both }
+      { \tl_set:NV \l__gckanbun_ruby_intr_tl \l_keys_choice_tl } ,
+  }
 % 送り仮名・返り点は post, both をとれるが挙動は一緒
 \keys_define:nn { gckanbun / okurigana }
-  { intrusion .tl_set:N = \l__gckanbun_okuri_intr_tl }
+  {
+    intrusion .choices:nn =
+      { post , both }
+      { \tl_set:NV \l__gckanbun_okuri_intr_tl \l_keys_choice_tl } ,
+  }
 \keys_define:nn { gckanbun / kaeriten }
-  { intrusion .tl_set:N = \l__gckanbun_kaeri_intr_tl }
+  {
+    intrusion .choices:nn =
+      { post , both }
+      { \tl_set:NV \l__gckanbun_kaeri_intr_tl \l_keys_choice_tl } ,
+  }
 
 %% auto-detect engine
 \sys_if_engine_luatex:TF
