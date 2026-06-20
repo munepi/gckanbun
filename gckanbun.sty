@@ -445,7 +445,7 @@
 
 % グループルビ直後のトークンに応じた後処理（\futurelet 機構はモノルビと同様）
 \def\gcknbn@groupruby@trail
-  { \futurelet\gckanbun@let@token\gcknbn@@groupruby@trail }
+  { \peek_remove_spaces:n { \futurelet\gckanbun@let@token\gcknbn@@groupruby@trail } }
 \def\gcknbn@@groupruby@trail{%
   \ifx\gckanbun@let@token\gcknbn@okurigana% 次が送り仮名
     % 送り仮名は（伸縮）ルビ末尾の直後＝箱右端に置く。モノルビで振り仮名の
@@ -476,7 +476,7 @@
 
 % 次に来る文字を判定（\futurelet 機構はそのまま維持）
 \def\gcknbn@furigana@okurigana{% normal
-  \futurelet\gckanbun@let@token\gcknbn@@furigana@okurigana
+  \peek_remove_spaces:n { \futurelet\gckanbun@let@token\gcknbn@@furigana@okurigana }
 }
 
 % 各種ボックスの長さを計算
@@ -668,7 +668,7 @@
   }
 
 % 次に来る文字をセット（\futurelet 機構はそのまま維持）
-\def\gcknbn@okurigana@kaeriten{\futurelet\gckanbun@let@token\gcknbn@@okurigana@kaeriten}
+\def\gcknbn@okurigana@kaeriten{\peek_remove_spaces:n{\futurelet\gckanbun@let@token\gcknbn@@okurigana@kaeriten}}
 
 % 次に来るトークン毎に処理を変更
 \def\gcknbn@@okurigana@kaeriten{%
@@ -750,7 +750,7 @@
   }
 
 % 次に来る文字をセット（\futurelet 機構はそのまま維持）
-\def\gcknbn@kaeriten@kutoten{\futurelet\gckanbun@let@token\gcknbn@@kaeriten@kutoten}
+\def\gcknbn@kaeriten@kutoten{\peek_remove_spaces:n{\futurelet\gckanbun@let@token\gcknbn@@kaeriten@kutoten}}
 
 % 次に来る文字毎に処理を変更
 \def\gcknbn@@kaeriten@kutoten{%
