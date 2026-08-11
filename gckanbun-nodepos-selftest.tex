@@ -1,0 +1,56 @@
+% gckanbun-nodepos.lua の自己検査。座標が解析的に分かるケースだけで構成する。
+% 期待値は 1\zw = 9pt = 589824sp（fontsize=9pt）を単位にした手計算。
+% gckanbun は読み込まない。ヘルパ単体の正しさだけを見る。
+\documentclass[luatex,fontsize=9pt,paper=a4]{jlreq}
+\usepackage{luatexja}
+
+\directlua{ NPT = dofile("gckanbun-nodepos-selftest.lua") }
+
+\newsavebox{\Probe}
+
+% #1 ケース名, #2 期待値, #3 内容
+\newcommand{\Check}[3]{%
+  \sbox{\Probe}{#3}%
+  \directlua{ NPT.check(\number\Probe, "#1", "#2", false) }%
+}
+
+\begin{document}
+
+% 1zw = 589824sp。以下の期待値はすべてこの単位の手計算。
+
+% (1) 素直な連結
+\Check{plain}{U+5929/1=0,0; U+5730/1=589824,0}{\hbox{天地}}
+
+% (2) 負のカーン: 地 は 1zw - 0.5zw = 0.5zw
+\Check{negative-kern}{U+5929/1=0,0; U+5730/1=294912,0}{\hbox{天\kern-0.5\zw 地}}
+
+% (3) \hbox to で伸長: 自然幅 2zw を 3zw へ。\hfil が 1zw 取るので 地 は 2zw
+\Check{hbox-to-stretch}{U+5929/1=0,0; U+5730/1=1179648,0}{\hbox to 3\zw{天\hfil 地}}
+
+% (4) \hbox to で収縮: 自然幅 2zw を 1zw へ。\hss が -1zw なので 地 は 0
+\Check{hbox-to-shrink}{U+5929/1=0,0; U+5730/1=0,0}{\hbox to 1\zw{天\hss 地}}
+
+% (5) 幅ゼロの右揃え箱: 中身の右端が基準点に来るので 地 は -1zw
+\Check{makebox-zero-right}{U+5730/1=-589824,0}{\hbox{\makebox[0pt][r]{地}}}
+
+% (6) 幅ゼロ箱の中で後ろに kern: -1zw-0.5zw = -1.5zw（T2 で捉えた挙動）
+\Check{makebox-zero-right-kern}{U+5730/1=-884736,0}{\hbox{\makebox[0pt][r]{地\kern0.5\zw}}}
+
+% (7) hlist -> vlist -> hlist の入れ子: 垂直箱の中では x が進まないこと
+\Check{nested-vbox}{U+5929/1=0; U+5730/1=0}{\hbox{\vbox{\hbox{天}\hbox{地}}}}
+
+% (8) 同じ文字が複数回出る場合の対応付け
+\Check{repeat-char}{U+5929/1=0,0; U+5929/2=589824,0; U+5929/3=1179648,0}{\hbox{天天天}}
+
+% (9) 入れ子の中の伸長: 外箱が伸びても内箱の内部座標は内箱基準
+\Check{nested-stretch}{U+5730/1=589824,0}{\hbox to 5\zw{\hbox{天地}\hfil}}
+
+\directlua{
+  if NPT.report() > 0 then
+    tex.error("nodepos selftest failed")
+  end
+}
+
+自己検査完了。
+
+\end{document}

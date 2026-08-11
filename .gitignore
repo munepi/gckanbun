@@ -28,6 +28,10 @@ tmp/
 *.fdb_latexmk
 gckanbun.zip
 
+## ヘルパの自己検査は合否だけが目的で、PDF に価値がないので追跡しない
+gckanbun-nodepos-selftest.pdf
+gckanbun-nodepos-selftest-tate.pdf
+
 ## Local agent configuration and references
 .claude/
 ref/

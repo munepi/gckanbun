@@ -1,0 +1,49 @@
+% 縦組での自己検査。既存の gckanbun-edge-test-tate.tex と同じ組み方
+% （jlreq の tate クラスオプション）に合わせる。
+%
+% 当初の予測「箱ローカル座標は横組と同じ値になる」は外れた。実測では
+% 縦組は LuaTeX-ja がグリフをもう1階層深い箱に包み、その包み箱が一律の
+% オフセットを持つ（横組比で x に -0.5zw、y にも定数）。箱自体も
+% h = d = 0.5zw の縦組メトリックになる。
+%
+% 一方でグリフ間の距離は横組と一致する。手計算で期待値を書けるのは
+% 相対座標の方なので、縦組の検査は相対座標で行う。
+\documentclass[luatex,fontsize=9pt,paper=a4,tate]{jlreq}
+\usepackage{luatexja,lltjext}
+
+\directlua{ NPT = dofile("gckanbun-nodepos-selftest.lua") }
+
+\newsavebox{\Probe}
+
+\newcommand{\Check}[3]{%
+  \sbox{\Probe}{#3}%
+  \directlua{ NPT.check(\number\Probe, "#1", "#2", true) }%
+}
+
+\begin{document}
+
+% (1) 素直な連結。1zw の間隔が縦組でも保たれること
+\Check{tate-plain}{U+5929/1->U+5730/1=589824,0}{\hbox{天地}}
+
+% (2) 負のカーン。1zw - 0.5zw = 0.5zw
+\Check{tate-negative-kern}{U+5929/1->U+5730/1=294912,0}{\hbox{天\kern-0.5\zw 地}}
+
+% (3) \hbox to の伸長。自然幅 2zw を 3zw へ伸ばすので間隔は 2zw
+\Check{tate-hbox-to-stretch}{U+5929/1->U+5730/1=1179648,0}{\hbox to 3\zw{天\hfil 地}}
+
+% (4) 幅ゼロ右揃え箱の中の kern（特殊返り点が使う形）。
+%     \makebox は 天 の直後、すなわち x=1zw に置かれる。中身の自然幅は
+%     地(1zw) + kern(0.5zw) = 1.5zw で、右揃えなので 1zw - 1.5zw = -0.5zw から
+%     始まる。よって 天 からの差は -0.5zw = -294912。
+\Check{tate-makebox-kern}{U+5929/1->U+5730/1=-294912,0}%
+  {\hbox{天\makebox[0pt][r]{地\kern0.5\zw}}}
+
+\directlua{
+  if NPT.report() > 0 then
+    tex.error("nodepos tate selftest failed")
+  end
+}
+
+縦組自己検査完了。
+
+\end{document}
