@@ -7,10 +7,11 @@
 - `gckanbun-doc.tex` / `.pdf`: user documentation and full examples.
 - `gckanbun-test.tex` / `.pdf`: compact regression and visual test cases.
 - `gckanbun-sample.tex` / `.pdf`: minimal standalone LuaLaTeX example.
+- `gckanbun-edge-test.tex` / `.pdf`: LuaLaTeX corner-case regression matrix.
+- `gckanbun-edge-test-uptex.tex`: upLaTeX compatibility smoke test.
 - `README.md`: package overview, version, and compatibility notes.
 - `Makefile` and `.latexmkrc`: LuaLaTeX build configuration.
-- `task/`: design notes and issue descriptions.
-- `luatexja/` and `kanbun/`: reference implementations; consult relevant ruby, glue, and Kanbun layout code before changing spacing behavior.
+- `ref/luatexja/` and `ref/kanbun/`: reference implementations; consult relevant ruby, glue, and Kanbun layout code before changing spacing behavior.
 
 ## Build, Test, and Development Commands
 
@@ -21,6 +22,8 @@ make             # Build documentation and test PDFs
 make doc         # Build gckanbun-doc.pdf
 make test        # Build gckanbun-test.pdf
 make sample      # Build gckanbun-sample.pdf
+make edge-test   # Build the LuaLaTeX corner-case matrix
+make edge-test-uptex  # Build the upLaTeX smoke-test PDF
 latexmk -g gckanbun-test.tex  # Force a clean regression rebuild
 make clean       # Remove auxiliary files, preserving PDFs
 make distclean   # Remove auxiliary files and generated PDFs

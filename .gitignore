@@ -29,8 +29,6 @@ tmp/
 gckanbun.zip
 
 ## Local agent configuration and references
-AGENTS.md
-CLAUDE.md
 .claude/
 ref/
 codex_doctor.json
