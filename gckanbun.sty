@@ -586,9 +586,10 @@
   \bool_if:NTF \l__gckanbun_ruby_kanhyphen_bool
     { \inhibitglue }
     {
-      \ifx\gckanbun@let@token、%
-        \gck@ghost@char@post
-      \else\ifx\gckanbun@let@token。%
+      % 送り仮名・返り点が続くときは、それらが自分で位置を決めて親字に密着する。
+      % ここで境界を作ると意図に反するので出さない（グループルビと同じ規則）。
+      \ifx\gckanbun@let@token\gcknbn@okurigana
+      \else\ifx\gckanbun@let@token\gcknbn@kaeriten
       \else
         \gck@ghost@char@post
       \fi\fi
@@ -682,7 +683,6 @@
     \gck@ghost@char@post
   \else\ifx\gckanbun@let@token\gcknbn@kaeriten% 次が返り点
     \__gckanbun_okurigana_kutoten_skip:
-    \gck@ghost@char@post
   \else
     \str_if_eq:VnTF \l__gckanbun_okuri_intr_tl { post }
       { \kern -\g__gckanbun_intr_post_dim }
@@ -754,6 +754,11 @@
 
 % 次に来る文字毎に処理を変更
 \def\gcknbn@@kaeriten@kutoten{%
+  % 注意: 、。 の分岐では ghost を出さないこと。他のハンドラと揃えたくなるが、
+  % ここに \gck@ghost@char@post を足すと返り点と句読点の間に空きが入り、
+  % 「書一、」が「書一 、」になる（doc と edge-test の見た目が変わる）。
+  % 既存の幅アサーションはこの変化を検出しないので、消す前に必ず
+  % gckanbun-doc.pdf と gckanbun-edge-test.pdf をレンダリング比較すること。
   \ifx\gckanbun@let@token、%
     \__gckanbun_kaeriten_kutoten_skip:
     \dim_gzero:N \g__gckanbun_kaeriten_width_dim
