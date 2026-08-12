@@ -1,6 +1,6 @@
 Package: gckanbun
-Version: 2.6.0
-Release date: 2026-06-21
+Version: 2.6.1
+Release date: 2026-08-12
 License: MIT
 Author: Munehiro Yamamoto
 Maintainer: Kosei Kawaguchi
@@ -17,14 +17,13 @@ compound return marks, local vertical typesetting, and aligned Chinese-poetry
 layouts. LuaLaTeX is recommended; basic (u)pLaTeX support is also provided.
 
 Announcement:
-Version 2.6.0 makes command chaining whitespace-insensitive: a space, line
-break, or comment between cooperating commands (such as a ruby or group ruby
-followed by okurigana or a return mark) no longer breaks the lookahead or
-inserts spurious glue, so spaced and adjacent input produce identical layout.
-Invalid "intrusion" option values now raise a package error instead of being
-silently accepted. The distribution adds a whitespace regression matrix and a
-LuaLaTeX-only "make check" release gate, alongside the existing horizontal,
-vertical, and upLaTeX matrices.
+Version 2.6.1 is an internal consistency fix with no change to typeset output.
+The rule for inserting the boundary ghost character after ruby and okurigana is
+now uniform across all four annotation commands: no ghost is emitted when a
+cooperating command follows, and a ghost is emitted before any other following
+character. Three edge-test cases that applied "intrusion" where it had no
+overhang to work with, making the return mark collide with the next character,
+have been removed.
 
 Suggested CTAN topics:
 kanbun, Japanese, ruby, vertical typesetting, Classical Chinese
